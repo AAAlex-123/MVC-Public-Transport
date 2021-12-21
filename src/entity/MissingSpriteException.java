@@ -1,6 +1,8 @@
 package entity;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import localisation.Languages;
 
@@ -9,7 +11,7 @@ import localisation.Languages;
  *
  * @author Alex Mandelias
  */
-public final class MissingSpriteException extends RuntimeException {
+public final class MissingSpriteException extends UncheckedIOException {
 
 	/**
 	 * Constructs the Exception with a {@code file}.
@@ -17,6 +19,7 @@ public final class MissingSpriteException extends RuntimeException {
 	 * @param file the image file that contains the sprite
 	 */
 	public MissingSpriteException(File file) {
-		super(String.format(Languages.getString("MissingSpriteException.0"), file)); //$NON-NLS-1$
+		//the UncheckedIOException needs to be wrapped around an IOException before being thrown
+		super(new IOException(String.format(Languages.getString("MissingSpriteException.0"), file))); //$NON-NLS-1$
 	}
 }
