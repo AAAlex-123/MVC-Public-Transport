@@ -1,7 +1,5 @@
 package entity;
 
-import localisation.Languages;
-
 /**
  * Describes a time stamp composed of an <Hour, Minute> pair.
  *
