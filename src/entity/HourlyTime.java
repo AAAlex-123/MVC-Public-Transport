@@ -1,5 +1,7 @@
 package entity;
 
+import localisation.Languages;
+
 /**
  * Describes a time stamp composed of an <Hour, Minute> pair.
  *
@@ -21,13 +23,13 @@ public class HourlyTime {
 	 */
 	public HourlyTime(int hours, int minutes) throws IllegalArgumentException {
 		if ((hours < 0) || (hours > 23))
-			throw new IllegalArgumentException("Invalid hour value :" + hours);
+			throw new IllegalArgumentException("Invalid hour value :" + hours); //$NON-NLS-1$
 
 		if ((minutes < 0) || (minutes > 59))
-			throw new IllegalArgumentException("Invalid minute value :" + minutes);
+			throw new IllegalArgumentException("Invalid minute value :" + minutes); //$NON-NLS-1$
 
-		this.HOURS = hours;
-		this.MINUTES = minutes;
+		HOURS = hours;
+		MINUTES = minutes;
 	}
 
 	/**
@@ -50,6 +52,6 @@ public class HourlyTime {
 
 	@Override
 	public String toString() {
-		return String.format("%d:%d", HOURS, MINUTES);
+		return String.format("%d:%d", HOURS, MINUTES); //$NON-NLS-1$
 	}
 }

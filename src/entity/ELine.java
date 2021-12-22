@@ -13,11 +13,11 @@ import java.util.List;
  */
 public class ELine {
 
-	private final String           	ID;
-	private final LineType      	type;
-	private final String        	name;
-	private final List<EStation> 	stations;
-	private final List<HourlyTime> 		startTimes;
+	private final String           ID;
+	private final LineType         type;
+	private final String           name;
+	private final List<EStation>   stations;
+	private final List<HourlyTime> startTimes;
 
 	/**
 	 * Constructs a Line.
@@ -29,8 +29,8 @@ public class ELine {
 	 * @param startTimes the list of Times when the Line departs
 	 */
 	public ELine(String lineNo, LineType type, String name,
-			List<EStation> stations, List<HourlyTime> startTimes) {
-		this.ID = lineNo;
+	        List<EStation> stations, List<HourlyTime> startTimes) {
+		ID = lineNo;
 		this.type = type;
 		this.name = name;
 		this.stations = Collections.unmodifiableList(stations);
