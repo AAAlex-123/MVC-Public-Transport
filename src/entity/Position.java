@@ -1,19 +1,26 @@
 package entity;
 
 /**
- * The Position class describes objects that hold
- * an immutable pair of x and y coordinates representing 
- * a geographical location.
+ * The Position class describes objects that hold an immutable pair of x and y
+ * coordinates representing a geographical location. The base class implements
+ * limited functionality and users are encouraged to subclass it.
  *
- * The base class implements limited functionality and so
- * users are encouraged to subclass it.
- * 
  * @author Alex Mandelias
  * @author Dimitris Tsirbas
  */
 public class Position {
 
-	protected final double x, y;
+	/**
+	 * The X coordinate of this Position expressed in the Cartesian coordinate
+	 * system.
+	 */
+	protected final double x;
+
+	/**
+	 * The Y coordinate of this Position expressed in the Cartesian coordinate
+	 * system.
+	 */
+	protected final double y;
 
 	/**
 	 * Construct a new position using x-y coordinates.
@@ -27,9 +34,10 @@ public class Position {
 	}
 
 	/**
-	 * Calculates the euclidean distance between this position and the given position.
+	 * Calculates the euclidean distance between this position and the given
+	 * position.
 	 *
-	 * @param other the 2nd position
+	 * @param other the other position
 	 *
 	 * @return the distance between the 2 positions
 	 */

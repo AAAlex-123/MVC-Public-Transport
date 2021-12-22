@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The ELine class represents a public transport line. 
- * It contains details about the line as well as the stations
- * and timetables associated with it.
+ * The ELine class represents a public transport Line. It contains details about
+ * the line as well as the {@link EStation Stations} and {@link HourlyTime
+ * timetables} associated with it.
  *
  * @author Alex Mandelias
- * @author Dimitris Tsirmpas 
+ * @author Dimitris Tsirmpas
  */
 public class ELine {
 
@@ -19,7 +19,16 @@ public class ELine {
 	private final List<EStation> 	stations;
 	private final List<HourlyTime> 		startTimes;
 
-	public ELine(String lineNo, LineType type, String name, 
+	/**
+	 * Constructs a Line.
+	 *
+	 * @param lineNo     the ID number of the Line
+	 * @param type       the type of the Line
+	 * @param name       the description of the Line
+	 * @param stations   the list of Stations the Line goes through
+	 * @param startTimes the list of Times when the Line departs
+	 */
+	public ELine(String lineNo, LineType type, String name,
 			List<EStation> stations, List<HourlyTime> startTimes) {
 		this.ID = lineNo;
 		this.type = type;
@@ -27,40 +36,40 @@ public class ELine {
 		this.stations = Collections.unmodifiableList(stations);
 		this.startTimes = Collections.unmodifiableList(startTimes);
 	}
-	
+
 	/**
-	 * Get the line's ID number. Keep in mind this is unique
-	 * ONLY to each {@link LineType}.
-	 * 
-	 * For example Line 3 (Subway) is different than the Trolley-line 3
-	 * despite having the same IDs.
-	 * 
-	 * @return The line's ID number
+	 * Returns the Line's ID number. Keep in mind this is unique ONLY to each
+	 * {@link LineType}. For example Line 3 (Subway) is different than the
+	 * Trolley-line 3 despite having the same IDs.
+	 *
+	 * @return the ID number
 	 */
 	public String getID() {
 		return ID;
 	}
 
 	/**
-	 * Get the  {@link LineType type} of the public
-	 * transport vehicle operating on this line.
-	 * 
-	 * @return the type of the line
+	 * Returns the {@link LineType type} of the public transport vehicle operating
+	 * on this Line.
+	 *
+	 * @return the type
 	 */
 	public LineType getType() {
 		return type;
 	}
 
 	/**
-	 * @return The name of the line
+	 * Returns the name of this Line, a description of its route.
+	 *
+	 * @return the name
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * Get the {@link EStations stations} on which this line is assigned.
-	 * 
+	 * Returns the {@link EStation stations} this Line passes through.
+	 *
 	 * @return an immutable list containing the stations
 	 */
 	public List<EStation> getStations() {
@@ -68,14 +77,13 @@ public class ELine {
 	}
 
 	/**
-	 * Get the timetables for this line, that is
-	 * the times a transport vehicle departs from its
-	 * starting station.
-	 * 
-	 * @return an immutable list containing the {@link HourlyTime departure times}
-	 * for this line. 
+	 * Returns the timetables for this Line, that is the times a transport vehicle
+	 * departs from its starting station. These times are represented by
+	 * {@link HourlyTime} objects.
+	 *
+	 * @return an immutable list containing the departure times for this Line.
 	 */
 	public List<HourlyTime> getTimeTables() {
 		return startTimes;
-	}	
+	}
 }

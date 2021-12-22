@@ -7,14 +7,13 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
- * An enum describing the different types of public
- * transport vehicles.
+ * An enum describing the different types of public transport vehicles.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirbas
  */
 public enum LineType {
-	
+
 	//actual real life averages
 	BUS("Bus",  20.5, "bus"),
 	METRO("Subway", 28.0, "metro"),
@@ -32,9 +31,9 @@ public enum LineType {
 		this.sprite = loadImage(spriteName);
 		this.averageSpeed = averageSpeed;
 	}
-	
+
 	//should this go to its own Model class since the files are presumably saved locally?
-	private static final BufferedImage loadImage(String imageFileName) { 
+	private static final BufferedImage loadImage(String imageFileName) {
 		BufferedImage img  = null;
 		File          file = null;
 
@@ -50,8 +49,8 @@ public enum LineType {
 	}
 
 	/**
-	 * Get the name of the vehicle type.
-	 * 
+	 * Returns the name of this vehicle type.
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -59,21 +58,20 @@ public enum LineType {
 	}
 
 	/**
-	 * Get an image representation of this vehicle type.
-	 * 
-	 * @return the sprite associated with the vehicle
+	 * Returns an image representation of this vehicle type.
+	 *
+	 * @return the sprite associated with this vehicle
 	 */
 	public BufferedImage getSprite() {
 		return sprite;
 	}
 
 	/**
-	 * Get the average speed of the vehicle.
-	 * Used in arrival time calculations.
-	 * 
-	 * @return the average speed of the vehicle
+	 * Returns the average speed of this vehicle. Used in arrival time calculations.
+	 *
+	 * @return the average speed of this vehicle
 	 */
-	public double getAverageSpeed() {
+	double getAverageSpeed() {
 		return averageSpeed;
 	}
 }

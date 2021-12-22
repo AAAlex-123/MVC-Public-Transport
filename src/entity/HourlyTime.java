@@ -1,53 +1,55 @@
 package entity;
 
-
 /**
- * Describes a time stamp composed of pair of HOUR::MINUTES integers.
- * 
+ * Describes a time stamp composed of an <Hour, Minute> pair.
+ *
  * @author Dimitris Tsirmpas
  */
 public class HourlyTime {
-	
-	protected final int HOURS;
-	protected final int MINUTES;
-	
+
+	private final int HOURS;
+	private final int MINUTES;
+
 	/**
-	 * Checks the validity of and creates a hour::minute time stamp.
-	 * 
-	 * @param hours the timestamp's hour
+	 * Constructs a new HourlyTime object, a time stamp.
+	 *
+	 * @param hours   the timestamp's hours
 	 * @param minutes the timestamp's minutes
-	 * @throws IllegalArgumentException if the hours or minutes are out of range (e.g hours = -1 or minutes == 60)
+	 *
+	 * @throws IllegalArgumentException if the hours are outside of [0, 23] or the
+	 *                                  minutes are outside of [0, 59]
 	 */
 	public HourlyTime(int hours, int minutes) throws IllegalArgumentException {
-		if(hours < 0 || hours >= 24)
-			throw new IllegalArgumentException("Invalid hour parameter value :" + hours);
-		
-		if(minutes < 0 || minutes >= 60)
-			throw new IllegalArgumentException("Invalid minute parameter value :" + minutes);
-		
-		HOURS = hours;
-		MINUTES = minutes;
+		if ((hours < 0) || (hours > 23))
+			throw new IllegalArgumentException("Invalid hour value :" + hours);
+
+		if ((minutes < 0) || (minutes > 59))
+			throw new IllegalArgumentException("Invalid minute value :" + minutes);
+
+		this.HOURS = hours;
+		this.MINUTES = minutes;
 	}
-	
+
 	/**
-	 * Get the time stamp's hour.
-	 * @return the time stamp's hour
+	 * Returns this time stamp's hour.
+	 *
+	 * @return this time stamp's hour
 	 */
 	public int getHour() {
 		return HOURS;
 	}
-	
+
 	/**
-	 * Get the time stamp's minutes.
-	 * @return the time stamp's minutes
+	 * Returns this time stamp's minutes.
+	 *
+	 * @return this time stamp's minutes
 	 */
 	public int getMinutes() {
 		return MINUTES;
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.format("%d:%d", HOURS, MINUTES);
 	}
-
 }

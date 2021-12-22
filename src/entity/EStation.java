@@ -1,59 +1,55 @@
 package entity;
 
 /**
- * The EStation class contains information about any 
- * public transport station. 
- * 
- * Multiple lines of different type can operate the same station.
- *
+ * The EStation class contains information about any public transport Station.
+ * Multiple {@link ELine lines} can use the same Station.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirbas
  */
-public final class EStation {
+public class EStation {
 
 	private final String   name;
 	private final Position position;
-	private final ETown    eTown;
-	
+	private final ETown    town;
+
 	/**
-	 * Create a new station record.
-	 * @param name the station's name
-	 * @param position the station's geographical position
-	 * @param town the town in which the station is situated
+	 * Creates a Station.
+	 *
+	 * @param name     the Station's name
+	 * @param position the Station's geographical position
+	 * @param town     the town in which the Station is located
 	 */
 	public EStation(String name, Position position, ETown town) {
 		this.name = name;
 		this.position = position;
-		this.eTown = town;
+		this.town = town;
 	}
 
 	/**
-	 * Get the station's name.
-	 * 
-	 * @return the station's name
+	 * Returns this Station's name.
+	 *
+	 * @return this Station's name
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * Get the geographical {@link Position position} of the station
-	 * 
-	 * @return the station's position
+	 * Returns the geographical {@link Position position} of this Station.
+	 *
+	 * @return this Station's position
 	 */
 	public Position getPosition() {
 		return position;
 	}
 
 	/**
-	 * Get the {@link ETown town} in which the station is situated.
-	 * 
-	 * @return the station's town 
+	 * Returns the {@link ETown town} where this Station is located.
+	 *
+	 * @return this Station's town
 	 */
 	public ETown getTown() {
-		return eTown;
+		return town;
 	}
-	
-	
 }

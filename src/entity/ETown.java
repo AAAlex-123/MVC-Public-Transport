@@ -1,26 +1,26 @@
 package entity;
 
-//is this actually needed anywhere?
-//why do we care that a station belongs to a town?
-//what about stations outside of city limits?
-
 /**
- * A class containing information about a town.
- *
+ * A class containing information about a Town.
  *
  * @author Alex Mandelias
  */
-public final class ETown {
+public class ETown {
 
 	private final String name;
 
+	/**
+	 * Constructs a Town.
+	 *
+	 * @param name the name of the Town
+	 */
 	public ETown(String name) {
 		this.name = name;
 	}
-	
+
 	/**
-	 * Get the town's name.
-	 * 
+	 * Returns the town's name.
+	 *
 	 * @return the town's name
 	 */
 	public String getName() {
