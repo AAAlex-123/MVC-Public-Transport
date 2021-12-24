@@ -14,13 +14,13 @@ public class Position {
 	 * The X coordinate of this Position expressed in the Cartesian coordinate
 	 * system.
 	 */
-	protected final double x;
+	private final double x;
 
 	/**
 	 * The Y coordinate of this Position expressed in the Cartesian coordinate
 	 * system.
 	 */
-	protected final double y;
+	private final double y;
 
 	/**
 	 * Construct a new position using x-y coordinates.
