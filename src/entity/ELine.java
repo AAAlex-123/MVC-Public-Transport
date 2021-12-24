@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * The ELine class represents a public transport Line. It contains details about
- * the line as well as the {@link EStation Stations} and {@link HourlyTime
+ * the line as well as the {@link EStation Stations} and {@link ETimetable
  * timetables} associated with it.
  *
  * @author Alex Mandelias
@@ -17,7 +17,7 @@ public class ELine {
 	private final LineType         type;
 	private final String           name;
 	private final List<EStation>   stations;
-	private final List<HourlyTime> startTimes;
+	private final List<ETimetable> startTimes;
 
 	/**
 	 * Constructs a Line.
@@ -79,11 +79,11 @@ public class ELine {
 	/**
 	 * Returns the timetables for this Line, that is the times a transport vehicle
 	 * departs from its starting station. These times are represented by
-	 * {@link HourlyTime} objects.
+	 * {@link ETimetable} objects.
 	 *
 	 * @return an immutable list containing the departure times for this Line.
 	 */
-	public List<HourlyTime> getTimeTables() {
+	public List<ETimetable> getTimeTables() {
 		return startTimes;
 	}
 }
