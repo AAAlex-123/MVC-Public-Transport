@@ -1,0 +1,55 @@
+
+select screens:
+	- 1) show a single line -> 4, 5 (6)
+	- 2) show a single station -> 6 (5, 8, 9)
+	- 3) show a single town -> 8 (7)
+	- 4) show all departure times that line (1)
+	- 5) show all stations of that line -> 2 (1)
+	- 6) show all lines (sorted by arrival time) -> 1 (2)
+	- 7) show all towns -> 3 (-)
+	- 8) show all stations of that town -> 2(3)
+	- 9) show nearest k stations -> 2 (-)
+	
+	------------------------------------------------------------
+	
+	-  1) show a-collection-of towns (=9) -> 2
+	-  2) show a single town (1) -> [3, 4]
+	-  3) show all stations of a town [2] = 10
+	-  4) show all lines that pass through a town [2] = 5
+
+	-  5) show a-collection-of lines (=4, =12) -> 6
+	-  6) show a single line (5) -> [7, 8, 9]
+	-  7) show all stations of a line [6] = 10
+	-  8) show all departure times of a line [6] -> -
+	-  9) show all towns this line passes through [6] = 1
+
+	- 10) show a-collection-of stations (=3, =7) -> 11
+	- 11) show a single station (10) -> 12
+	- 12) show all lines that pass through a station (11) = 5
+	
+	------------------------------------------------------------
+	
+	-  0) home (all) -> (1, 5, 10)
+	
+	-  1) show a-collection-of towns (0, =9) -> (3, 4)
+	-  3) show all stations of a town (1) = 10
+	-  4) show all lines that pass through a town (1) = 5
+
+	-  5) show a-collection-of lines (0, =4, =12) -> (7, 8, 9)
+	-  7) show all stations of a line (5) = 10
+	-  8) show all departure times of a line (5) -> -
+	-  9) show all towns this line passes through (5) = 1
+
+	- 10) show a-collection-of stations (0, =3, =7) -> 12
+	- 12) show all lines that pass through a station 1(0) = 5
+
+update screens (security) (javax.crypto):
+	- 0) authentication
+	- 1) add/remove a single town (add always / remove if no stations with it)
+	- 2) add/remove a single station (add if town / remove always)
+	- 3) add/remove a signle line (add if there are stations / remove always (stations remain))
+
+other stuff:
+	- settings
+	- language
+
