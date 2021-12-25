@@ -28,7 +28,9 @@ public interface IModel {
 	 * Get all {@link ETown towns} in the system.
 	 *
 	 * @param req additional search parameters
+	 *
 	 * @throw SQLException if the database can't satisfy the request
+	 *
 	 * @return a list of all towns
 	 */
 	List<ETown> getTowns(Requirements req) throws SQLException;
@@ -37,7 +39,9 @@ public interface IModel {
 	 * Get all {@link ELine lines} registered in the system.
 	 *
 	 * @param req additional search parameters
+	 *
 	 * @throw SQLException if the database can't satisfy the request
+	 *
 	 * @return a list of all lines
 	 */
 	List<ELine> getLines(Requirements req) throws SQLException;
@@ -46,7 +50,9 @@ public interface IModel {
 	 * Get all {@link EStation stations} registered in the system.
 	 *
 	 * @param req additional search parameters
+	 *
 	 * @throw SQLException if the database can't satisfy the request
+	 *
 	 * @return a list of all stations
 	 */
 	List<EStation> getStations(Requirements req) throws SQLException;
@@ -55,7 +61,9 @@ public interface IModel {
 	 * Get the image for the specified public transport vehicle.
 	 *
 	 * @param type the vehicle type
+	 *
 	 * @throw MissingSpriteException if the image couldn't be loaded
+	 *
 	 * @return a {@link BufferedImage image} representing the vehicle
 	 */
 	BufferedImage getVehicleSprite(LineType type) throws MissingSpriteException;
@@ -64,6 +72,7 @@ public interface IModel {
 	 * Insert a new {@link ELine line} in the database.
 	 *
 	 * @param line the line to be added
+	 *
 	 * @throws SQLException if the database couldn't be updated
 	 */
 	void insertLine(ELine line) throws SQLException;
@@ -72,6 +81,7 @@ public interface IModel {
 	 * Insert a new {@link ETown town} in the database.
 	 *
 	 * @param town the town to be added
+	 *
 	 * @throws SQLException if the database couldn't be updated
 	 */
 	void insertTown(ETown town) throws SQLException;
@@ -80,6 +90,7 @@ public interface IModel {
 	 * Insert a new {@link EStation station} in the database.
 	 *
 	 * @param station the station to be added
+	 *
 	 * @throws SQLException if the database couldn't be updated
 	 */
 	void insertStation(EStation station) throws SQLException;
@@ -87,8 +98,9 @@ public interface IModel {
 	/**
 	 * Insert a {@link ETimetable timetable} into an existing {@link ELine line}.
 	 *
-	 * @param line the line to which the timetable will be added
+	 * @param line      the line to which the timetable will be added
 	 * @param timetable the timetable to be added
+	 *
 	 * @throws SQLException if the database couldn't be updated
 	 */
 	void insertTimetable(ELine line, ETimetable timetable) throws SQLException;
@@ -97,8 +109,9 @@ public interface IModel {
 	 * Delete a town from the database.
 	 *
 	 * @param town the town to be updated
-	 * @throws SQLException if the object doesn't exist or
-	 * if the database couldn't be updated
+	 *
+	 * @throws SQLException if the object doesn't exist or if the database couldn't
+	 *                      be updated
 	 */
 	void deleteTown(ETown town) throws SQLException;
 
@@ -106,28 +119,32 @@ public interface IModel {
 	 * Delete a station from the database.
 	 *
 	 * @param station the station to be updated
-	 * @throws SQLException if the object doesn't exist or
-	 * if the database couldn't be updated
+	 *
+	 * @throws SQLException if the object doesn't exist or if the database couldn't
+	 *                      be updated
 	 */
 	void deleteStation(EStation station) throws SQLException;
 
 	/**
 	 * Delete a {@link ELine line} from the database.
 	 *
-	 * @param line the line to be updated
+	 * @param line      the line to be updated
 	 * @param timetable the timetable to be deleted
-	 * @throws SQLException if the object doesn't exist or
-	 * if the database couldn't be updated
+	 *
+	 * @throws SQLException if the object doesn't exist or if the database couldn't
+	 *                      be updated
 	 */
 	void deleteLine(ELine line, ETimetable timetable) throws SQLException;
 
 	/**
-	 * Delete a {@link ETimetable timetable} from a {@link ELine line} in the database.
+	 * Delete a {@link ETimetable timetable} from a {@link ELine line} in the
+	 * database.
 	 *
-	 * @param line the line to be updated
+	 * @param line      the line to be updated
 	 * @param timetable the timetable to be deleted
-	 * @throws SQLException if the object doesn't exist or
-	 * if the database couldn't be updated
+	 *
+	 * @throws SQLException if the object doesn't exist or if the database couldn't
+	 *                      be updated
 	 */
 	void deleteTimeTable(ELine line, ETimetable timetable) throws SQLException;
 }
