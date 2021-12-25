@@ -24,16 +24,17 @@ import requirement.util.Requirements;
 public class Model implements IModel {
 
 	private static final String URL  = "jdbc:mysql://localhost/oasaripoff"; //$NON-NLS-1$
-	private static final String USER = "root";                              //$NON-NLS-1$
-	private static final String PASS = "localhostMVCMy$QL";                 //$NON-NLS-1$
+	private static final String USER = "***";                               //$NON-NLS-1$
+	private static final String PASS = "***";                               //$NON-NLS-1$
 
 	@FunctionalInterface
-	private static interface SQLExecutable<S extends Statement, R> {
-		public R execute(S statement) throws SQLException;
+	private interface SQLExecutable<S extends Statement, R> {
+		R execute(S statement) throws SQLException;
 	}
 
-	private static <R> R executeStatement(SQLExecutable<Statement, R> executable) throws SQLException {
-		try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+	private static <R> R executeStatement(SQLExecutable<Statement, R> executable)
+	        throws SQLException {
+		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS);
 		        Statement stmt = conn.createStatement();) {
 			return executable.execute(stmt);
 		}
@@ -41,7 +42,7 @@ public class Model implements IModel {
 
 	private static <R> R executePrepared(String sql, SQLExecutable<PreparedStatement, R> executable)
 	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS);
 		        PreparedStatement stmt = conn.prepareStatement(sql);) {
 			return executable.execute(stmt);
 		}
