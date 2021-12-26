@@ -20,12 +20,13 @@ import requirement.util.Requirements;
  * An implementation of the {@link IModel} interface.
  *
  * @author Alex Mandelias
+ * @author Dimitris Tsirmpas
  */
 public class Model implements IModel {
 
 	private static final String URL  = "jdbc:mysql://localhost/oasaripoff"; //$NON-NLS-1$
-	private static final String USER = "***";                               //$NON-NLS-1$
-	private static final String PASS = "***";                               //$NON-NLS-1$
+	private static final String USER = "root";                              //$NON-NLS-1$
+	private static final String PASS = "localhostMVCMy$QL";                 //$NON-NLS-1$
 
 	@FunctionalInterface
 	private interface SQLExecutable<S extends Statement, R> {
@@ -117,30 +118,6 @@ public class Model implements IModel {
 
 	@Override
 	public void insertTimetable(ELine line, ETimetable timetable) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteTown(ETown town) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteStation(EStation station) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteLine(ELine line, ETimetable timetable) throws SQLException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteTimeTable(ELine line, ETimetable timetable) throws SQLException {
 		// TODO Auto-generated method stub
 
 	}
