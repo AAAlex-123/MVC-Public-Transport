@@ -2,6 +2,7 @@ package controller;
 
 import entity.ELine;
 import entity.EStation;
+import entity.ETimetable;
 import entity.ETown;
 
 /**
@@ -12,6 +13,7 @@ import entity.ETown;
  * interface and returns them to the {@code View} using its interface.
  *
  * @author Alex Mandelias
+ * @author Dimitris Tsirmpas
  */
 public interface IController {
 
@@ -26,4 +28,13 @@ public interface IController {
 	void getTownsByLine(ELine line);
 
 	void getLinesByStation(EStation station);
+
+	void insertTown(ETown town);
+
+	void insertLine(ELine line);
+
+	void insertStation(EStation station);
+
+	void insertTimetable(ETimetable timetable);
+
 }

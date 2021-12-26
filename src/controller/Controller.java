@@ -2,6 +2,7 @@ package controller;
 
 import entity.ELine;
 import entity.EStation;
+import entity.ETimetable;
 import entity.ETown;
 import model.IModel;
 import view.IView;
@@ -10,6 +11,7 @@ import view.IView;
  * An implementation of the {@link IController} interface.
  *
  * @author Alex Mandelias
+ * @author Dimitris Tsirmpas
  */
 public class Controller implements IController {
 
@@ -41,7 +43,7 @@ public class Controller implements IController {
 			stations.add(new EStation(String.valueOf(c), new Position(c, c), town));
 
 		view.updateViewWithStations(stations);
-		@on
+		@fon
 		*/
 	}
 
@@ -55,6 +57,13 @@ public class Controller implements IController {
 	public void getStationsByLine(ELine line) {
 		// TODO Auto-generated method stub
 
+		/*
+		Example implementation of this method:
+
+		@foff
+		view.updateViewWithStations(line.getStations());
+		@fon
+		 */
 	}
 
 	@Override
@@ -74,4 +83,29 @@ public class Controller implements IController {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void insertTown(ETown town) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void insertLine(ELine line) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void insertStation(EStation station) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void insertTimetable(ETimetable timetable) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
