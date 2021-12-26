@@ -25,8 +25,8 @@ import requirement.util.Requirements;
 public class Model implements IModel {
 
 	private static final String URL  = "jdbc:mysql://localhost/oasaripoff"; //$NON-NLS-1$
-	private static final String USER = "root";                              //$NON-NLS-1$
-	private static final String PASS = "localhostMVCMy$QL";                 //$NON-NLS-1$
+	private static final String USER = "***";                               //$NON-NLS-1$
+	private static final String PASS = "***";                               //$NON-NLS-1$
 
 	@FunctionalInterface
 	private interface SQLExecutable<S extends Statement, R> {
