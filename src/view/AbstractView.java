@@ -11,12 +11,18 @@ import controller.IController;
  * An implementation of the {@link IView} interface.
  *
  * @author Alex Mandelias
+ * @author Dimitris Tsirmpas
  */
 public abstract class AbstractView extends JFrame implements IView {
 
 	private IController controller;
+	protected final AbstractEntityGraphicFactory factory;
 
 	private JPanel panel;
+
+	public AbstractView(AbstractEntityGraphicFactory factory) {
+		this.factory = factory;
+	}
 
 	@Override
 	public final void start() {

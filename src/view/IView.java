@@ -15,6 +15,7 @@ import entity.ETown;
  * interface, which then returns them using this interface.
  *
  * @author Alex Mandelias
+ * @author Dimitris Tsirmpas
  */
 public interface IView {
 
