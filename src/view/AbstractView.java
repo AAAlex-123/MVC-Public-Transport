@@ -13,7 +13,7 @@ import controller.IController;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-public abstract class AbstractView extends JFrame implements IView {
+abstract class AbstractView extends JFrame implements IView {
 
 	private IController controller;
 	protected final AbstractEntityGraphicFactory factory;
