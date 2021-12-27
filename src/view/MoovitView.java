@@ -48,4 +48,10 @@ public class MoovitView extends AbstractView {
 
 	}
 
+	@Override
+	public void updateViewWithError(Exception e) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

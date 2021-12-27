@@ -31,4 +31,6 @@ public interface IView {
 
 	void updateViewWithTimetables(List<ETimetable> timetables);
 
+	void updateViewWithError(Exception e);
+
 }

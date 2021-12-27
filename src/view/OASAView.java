@@ -68,4 +68,10 @@ public class OASAView extends AbstractView {
 	public void updateViewWithTimetables(List<ETimetable> timetables) {
 		// TODO: implement
 	}
+
+	@Override
+	public void updateViewWithError(Exception e) {
+		// TODO Auto-generated method stub
+
+	}
 }
