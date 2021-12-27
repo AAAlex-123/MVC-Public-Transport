@@ -11,9 +11,9 @@ import java.util.List;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-public class ELine {
+public class ELine extends AbstractEntity {
 
-	private final String           ID;
+	private final String           lineNo;
 	private final LineType         type;
 	private final String           name;
 	private final List<EStation>   stations;
@@ -22,15 +22,17 @@ public class ELine {
 	/**
 	 * Constructs a Line.
 	 *
-	 * @param lineNo     the ID number of the Line
+	 * @param id         the Line's id
+	 * @param lineNo     the number of the Line
 	 * @param type       the type of the Line
 	 * @param name       the description of the Line
 	 * @param stations   the list of Stations the Line goes through
 	 * @param startTimes the list of Times when the Line departs
 	 */
-	public ELine(String lineNo, LineType type, String name,
-	        List<EStation> stations, List<HourlyTime> startTimes) {
-		ID = lineNo;
+	public ELine(int id, String lineNo, LineType type, String name,
+	        List<EStation> stations, List<ETimetable> startTimes) {
+		super(id);
+		this.lineNo = lineNo;
 		this.type = type;
 		this.name = name;
 		this.stations = Collections.unmodifiableList(stations);
@@ -44,8 +46,8 @@ public class ELine {
 	 *
 	 * @return the ID number
 	 */
-	public String getID() {
-		return ID;
+	public String getLineNumber() {
+		return lineNo;
 	}
 
 	/**
