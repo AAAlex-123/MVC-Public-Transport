@@ -33,7 +33,6 @@ public class ETimetable extends AbstractEntity {
 		HOURS = hours;
 		MINUTES = minutes;
 	}
-
 	/**
 	 * Get the time stamp's hour.
 	 * @return the time stamp's hour
@@ -53,5 +52,5 @@ public class ETimetable extends AbstractEntity {
 	@Override
 	public String toString() {
 		return String.format("%d:%d", HOURS, MINUTES);
-	}
+  }
 }
