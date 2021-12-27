@@ -5,7 +5,7 @@ import controller.IController;
 import model.IModel;
 import model.Model;
 import view.IView;
-import view.View;
+import view.OASAView;
 
 /**
  * The entry point of the program. Constructs and runs an {@link view.IView
@@ -23,7 +23,7 @@ public class App {
 	public static void main(String[] args) {
 
 		IModel      model      = new Model();
-		IView       view       = new View();
+		IView       view       = new OASAView();
 		IController controller = new Controller(model, view);
 
 		view.registerController(controller);

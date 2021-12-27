@@ -4,8 +4,10 @@ import java.awt.image.BufferedImage;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.List;
 
 import entity.ELine;
@@ -57,27 +59,21 @@ public class Model implements IModel {
 
 	@Override
 	public List<ETown> getTowns(Requirements reqs) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		final String query = "SELECT * FROM City WHERE name REGEXP=?"; //$NON-NLS-1$
 
-		/*
-		Example use of the private static methods and interface:
+		return executePrepared(query,
+		        (PreparedStatement stmt) -> {
 
-		@foff
-		return executePrepared("SELECT * FROM City WHERE name REGEXP=?",
-		        (PreparedStatement s) -> {
+			        stmt.setString(0, reqs.getValue("regex", String.class)); //$NON-NLS-1$
 
-		            s.setString(0, reqs.getValue("regex", String.class));
 			        List<ETown> towns = new LinkedList<>();
-			        try (ResultSet rs = s.executeQuery()) {
-				        while (rs.next()) {
-					        towns.add(new ETown(rs.getString("name")));
-				        }
+			        try (ResultSet rs = stmt.executeQuery()) {
+				        while (rs.next())
+					        towns.add(new ETown(rs.getString("name"))); //$NON-NLS-1$
 			        }
+
 			        return towns;
 		});
-		@on
-		*/
 	}
 
 	@Override
