@@ -5,16 +5,18 @@ package entity;
  *
  * @author Alex Mandelias
  */
-public class ETown {
+public class ETown extends AbstractEntity {
 
 	private final String name;
 
 	/**
 	 * Constructs a Town.
 	 *
-	 * @param name the name of the Town
+	 * @param id   the Town's id
+	 * @param name the Town's name
 	 */
-	public ETown(String name) {
+	public ETown(int id, String name) {
+		super(id);
 		this.name = name;
 	}
 
