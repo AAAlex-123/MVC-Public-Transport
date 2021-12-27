@@ -1,20 +1,32 @@
 package entity;
 
 /**
- * TODO
- *
+ * The Position class describes objects that hold an immutable pair of x and y
+ * coordinates representing a geographical location. The base class implements
+ * limited functionality and users are encouraged to subclass it.
  *
  * @author Alex Mandelias
+ * @author Dimitris Tsirbas
  */
-public final class Position {
-
-	private final double x, y;
+public class Position {
 
 	/**
-	 * TODO
+	 * The X coordinate of this Position expressed in the Cartesian coordinate
+	 * system.
+	 */
+	private final double x;
+
+	/**
+	 * The Y coordinate of this Position expressed in the Cartesian coordinate
+	 * system.
+	 */
+	private final double y;
+
+	/**
+	 * Construct a new position using x-y coordinates.
 	 *
-	 * @param x
-	 * @param y
+	 * @param x the x coordinate
+	 * @param y the y coordinate
 	 */
 	public Position(double x, double y) {
 		this.x = x;
@@ -22,11 +34,12 @@ public final class Position {
 	}
 
 	/**
-	 * TODO
+	 * Calculates the euclidean distance between this position and the given
+	 * position.
 	 *
-	 * @param other
+	 * @param other the other position
 	 *
-	 * @return
+	 * @return the distance between the 2 positions
 	 */
 	public double distanceFrom(Position other) {
 		return Math.hypot(getX() - other.getX(), getY() - other.getY());
