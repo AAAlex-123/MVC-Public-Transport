@@ -1,6 +1,7 @@
 
 # Java build
 bin/
+*.class
 
 # Eclipse
 .settings/
