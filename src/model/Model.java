@@ -1,13 +1,18 @@
 package model;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import entity.ELine;
 import entity.EStation;
@@ -55,11 +60,15 @@ public class Model implements IModel {
 		}
 	}
 
+	private final HashMap<LineType, BufferedImage> spriteCache;
+
 	/**
 	 * Constructs a Model that communicates with the underlying database to retrieve
 	 * data and return them using Entity objects from the {@link entity} package.
 	 */
-	public Model() {}
+	public Model() {
+		spriteCache = new HashMap<>();
+	}
 
 	@Override
 	public List<ETown> getTowns(ELine line) throws SQLException {
@@ -105,8 +114,25 @@ public class Model implements IModel {
 
 	@Override
 	public BufferedImage getVehicleSprite(LineType type) throws MissingSpriteException {
-		// TODO Auto-generated method stub
-		return null;
+
+		BufferedImage cachedSprite = spriteCache.get(type);
+		if (cachedSprite != null)
+			return cachedSprite;
+
+		BufferedImage loadedSprite = null;
+		File          file         = null;
+
+		try {
+			file = new File(type.getName());
+			loadedSprite = ImageIO.read(file);
+		} catch (final IOException e) {
+			// should this simply consume the exception and not load anything?
+			throw new MissingSpriteException(file);
+		}
+
+		spriteCache.put(type, loadedSprite);
+
+		return loadedSprite;
 	}
 
 	@Override

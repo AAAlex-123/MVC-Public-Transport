@@ -1,11 +1,5 @@
 package entity;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
 import localisation.Languages;
 
 /**
@@ -30,31 +24,13 @@ public enum LineType {
 	TRAM(Languages.getString("LineType.6"), 16, "tram"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private final String        name;
-	private final BufferedImage sprite;
+	private final String spriteName;
 	private final double        averageSpeed;
 
-	LineType(String name, double averageSpeed, String SPRITE_NAME) {
-		final String spriteName = SPRITE_NAME + ".png"; //$NON-NLS-1$
-
+	LineType(String name, double averageSpeed, String spriteName) {
 		this.name = name;
-		sprite = LineType.loadImage(spriteName);
+		this.spriteName = spriteName + ".png"; //$NON-NLS-1$
 		this.averageSpeed = averageSpeed;
-	}
-
-	//should this go to its own Model class since the files are presumably saved locally?
-	private static final BufferedImage loadImage(String imageFileName) {
-		BufferedImage img  = null;
-		File          file = null;
-
-		try {
-			file = new File(imageFileName);
-			img = ImageIO.read(file);
-		} catch (final IOException e) {
-			//should this simply consume the exception and not load anything?
-			throw new MissingSpriteException(file);
-		}
-
-		return img;
 	}
 
 	/**
@@ -67,12 +43,12 @@ public enum LineType {
 	}
 
 	/**
-	 * Returns an image representation of this vehicle type.
+	 * Returns the file name for the sprite of this vehicle.
 	 *
-	 * @return the sprite associated with this vehicle
+	 * @return the file name
 	 */
-	public BufferedImage getSprite() {
-		return sprite;
+	public String getSpriteName() {
+		return spriteName;
 	}
 
 	/**
