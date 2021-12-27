@@ -7,7 +7,7 @@ package entity;
  * @author Alex Mandelias
  * @author Dimitris Tsirbas
  */
-public class EStation {
+public class EStation extends AbstractEntity {
 
 	private final String   name;
 	private final Position position;
@@ -16,11 +16,13 @@ public class EStation {
 	/**
 	 * Creates a Station.
 	 *
+	 * @param id       the Station's id
 	 * @param name     the Station's name
 	 * @param position the Station's geographical position
 	 * @param town     the town in which the Station is located
 	 */
-	public EStation(String name, Position position, ETown town) {
+	public EStation(int id, String name, Position position, ETown town) {
+		super(id);
 		this.name = name;
 		this.position = position;
 		this.town = town;
