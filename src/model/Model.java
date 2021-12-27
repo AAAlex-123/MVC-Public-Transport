@@ -3,7 +3,6 @@ package model;
 import java.awt.image.BufferedImage;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,29 +23,34 @@ import requirement.util.Requirements;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
+@SuppressWarnings("nls")
 public class Model implements IModel {
 
-	private static final String URL  = "jdbc:mysql://localhost/oasaripoff"; //$NON-NLS-1$
-	private static final String USER = "***";                               //$NON-NLS-1$
-	private static final String PASS = "***";                               //$NON-NLS-1$
+	private static final String URL  = "jdbc:mysql://localhost/oasaripoff";
+	private static final String USER = "***";
+	private static final String PASS = "***";
 
 	@FunctionalInterface
 	private interface SQLExecutable<S extends Statement, R> {
 		R execute(S statement) throws SQLException;
 	}
 
+	/**
+	 * Creates a new {@code Connection} that executes an {@code SQLExecutable}. A
+	 * {@code Statement} is created from that Connection and is passed as a
+	 * parameter to the SQLExecutable.
+	 *
+	 * @param executable the instance of {@code SQLExecutable} to run
+	 * @param <R>        the type of object that the executable returns
+	 *
+	 * @return whatever the executable returns
+	 *
+	 * @throws SQLException if the executable threw an SQLException
+	 */
 	private static <R> R executeStatement(SQLExecutable<Statement, R> executable)
 	        throws SQLException {
 		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS);
 		        Statement stmt = conn.createStatement();) {
-			return executable.execute(stmt);
-		}
-	}
-
-	private static <R> R executePrepared(String sql, SQLExecutable<PreparedStatement, R> executable)
-	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS);
-		        PreparedStatement stmt = conn.prepareStatement(sql);) {
 			return executable.execute(stmt);
 		}
 	}
@@ -58,26 +62,37 @@ public class Model implements IModel {
 	public Model() {}
 
 	@Override
-	public List<ETown> getTowns(Requirements reqs) throws SQLException {
-		final String query = "SELECT * FROM City WHERE name REGEXP=?"; //$NON-NLS-1$
+	public List<ETown> getTowns(ELine line) throws SQLException {
+		final String allTowns    = "SELECT * FROM City";
+		final String townsByLine = "SELECT DISTINCT City.id, City.name FROM City"
+		        + "JOIN Station ON Station.city_id = City.id"
+		        + "JOIN LineStation ON LineStation.station_id = Station.id"
+		        + "JOIN Line ON Line.id = LineStation.line_id"
+		        + "WHERE Line.name=@1 AND Line.type=@2";
 
-		return executePrepared(query,
-		        (PreparedStatement stmt) -> {
+		String query;
+		if (line == null)
+			query = allTowns;
+		else {
+			final String name = line.getLineNumber();
+			final String type = line.getType().getName();
+			query = townsByLine.replaceAll("@1", name).replace("@2", type);
+		}
 
-			        stmt.setString(0, reqs.getValue("regex", String.class)); //$NON-NLS-1$
+		return executeStatement((Statement stmt) -> {
+			List<ETown> towns = new LinkedList<>();
 
-			        List<ETown> towns = new LinkedList<>();
-			        try (ResultSet rs = stmt.executeQuery()) {
-				        while (rs.next())
-					        towns.add(new ETown(rs.getString("name"))); //$NON-NLS-1$
-			        }
+			try (ResultSet rs = stmt.executeQuery(query)) {
+				while (rs.next())
+					towns.add(new ETown(rs.getInt("id"), rs.getString("name")));
+			}
 
-			        return towns;
+			return towns;
 		});
 	}
 
 	@Override
-	public List<ELine> getLines(Requirements reqs) throws SQLException {
+	public List<ELine> getLines(ETown town, EStation station) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}

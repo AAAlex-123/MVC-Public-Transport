@@ -16,8 +16,8 @@ import requirement.util.Requirements;
  * An interface for the {@code Model} of the {@code MVC architecture}. The Model
  * communicates with the database to perform select and update operations on the
  * data. It receives database requests from the {@link controller.IController
- * Controller}, and returns the results (if any) in the form of
- * {@link entity.Entity Entity} objects.
+ * Controller}, and returns the results (if any) in the form of {@code Entity}
+ * objects of the {@link entity} package.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
@@ -27,24 +27,28 @@ public interface IModel {
 	/**
 	 * Get all {@link ETown towns} in the system.
 	 *
-	 * @param req additional search parameters
+	 * @param line the line by which to filter the towns ({@code null} if not
+	 *             applicable}.
 	 *
 	 * @throws SQLException if the database can't satisfy the request
 	 *
 	 * @return a list of all towns
 	 */
-	List<ETown> getTowns(Requirements req) throws SQLException;
+	List<ETown> getTowns(ELine line) throws SQLException;
 
 	/**
 	 * Get all {@link ELine lines} registered in the system.
 	 *
-	 * @param req additional search parameters
+	 * @param town    the town by which to filter the lines ({@code null} if not
+	 *                applicable}.
+	 * @param station the station by which to filter the lines ({@code null} if not
+	 *                applicable}.
 	 *
 	 * @throws SQLException if the database can't satisfy the request
 	 *
 	 * @return a list of all lines
 	 */
-	List<ELine> getLines(Requirements req) throws SQLException;
+	List<ELine> getLines(ETown town, EStation station) throws SQLException;
 
 	/**
 	 * Get all {@link EStation stations} registered in the system.
