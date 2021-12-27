@@ -17,6 +17,10 @@ import entity.ETown;
  */
 public interface IController {
 
+	void getAllLines();
+
+	void getAllTowns();
+
 	void getStationsByTown(ETown town);
 
 	void getLinesByTown(ETown town);

@@ -1,5 +1,8 @@
 package controller;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
@@ -13,6 +16,7 @@ import view.IView;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
+@SuppressWarnings("nls")
 public class Controller implements IController {
 
 	private final IModel model;
@@ -30,58 +34,65 @@ public class Controller implements IController {
 		this.view = view;
 	}
 
+	private void getTowns(ELine line) {
+		try {
+			List<ETown> towns = model.getTowns(line);
+			view.updateViewWithTowns(towns);
+		} catch (SQLException e) {
+			view.updateViewWithError(e);
+		}
+	}
+
+	private void getLines(ETown town, EStation station) {
+		try {
+			List<ELine> lines = model.getLines(town, station);
+			view.updateViewWithLines(lines);
+		} catch (SQLException e) {
+			view.updateViewWithError(e);
+		}
+	}
+
+	@Override
+	public void getAllLines() {
+		getLines(null, null);
+	}
+
+	@Override
+	public void getAllTowns() {
+		getTowns(null);
+	}
+
 	@Override
 	public void getStationsByTown(ETown town) {
 		// TODO Auto-generated method stub
 
-		/*
-		Example implementation of this method:
-
-		@foff
-		List<EStation> stations = new LinkedList<>();
-		for (char c = 'a'; c < 'f'; c++)
-			stations.add(new EStation(String.valueOf(c), new Position(c, c), town));
-
-		view.updateViewWithStations(stations);
-		@fon
-		*/
 	}
 
 	@Override
 	public void getLinesByTown(ETown town) {
-		// TODO Auto-generated method stub
-
+		getLines(town, null);
 	}
 
 	@Override
 	public void getStationsByLine(ELine line) {
-		// TODO Auto-generated method stub
-
-		/*
-		Example implementation of this method:
-
-		@foff
-		view.updateViewWithStations(line.getStations());
-		@fon
-		 */
+		List<EStation> stations = line.getStations();
+		view.updateViewWithStations(stations);
 	}
 
 	@Override
 	public void getTimetablesByLine(ELine line) {
-		// TODO Auto-generated method stub
-
+		List<ETimetable> timetables = line.getTimeTables();
+		view.updateViewWithTimetables(timetables);
 	}
 
 	@Override
 	public void getTownsByLine(ELine line) {
-		// TODO Auto-generated method stub
-
+		getTowns(line);
 	}
 
 	@Override
 	public void getLinesByStation(EStation station) {
-		// TODO Auto-generated method stub
-
+		getLines(null, station);
 	}
 
 	@Override
@@ -107,5 +118,4 @@ public class Controller implements IController {
 		// TODO Auto-generated method stub
 
 	}
-
 }
