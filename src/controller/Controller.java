@@ -64,8 +64,12 @@ public class Controller implements IController {
 
 	@Override
 	public void getStationsByTown(ETown town) {
-		// TODO Auto-generated method stub
-
+		try {
+			List<EStation> stations = model.getStations(town);
+			view.updateViewWithStations(stations);
+		} catch (SQLException e) {
+			view.updateViewWithError(e);
+		}
 	}
 
 	@Override
