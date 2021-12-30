@@ -10,7 +10,6 @@ import entity.ETimetable;
 import entity.ETown;
 import entity.LineType;
 import entity.MissingSpriteException;
-import requirement.util.Requirements;
 
 /**
  * An interface for the {@code Model} of the {@code MVC architecture}. The Model
@@ -28,7 +27,7 @@ public interface IModel {
 	 * Get all {@link ETown towns} in the system.
 	 *
 	 * @param line the line by which to filter the towns ({@code null} if not
-	 *             applicable}.
+	 *             applicable).
 	 *
 	 * @throws SQLException if the database can't satisfy the request
 	 *
@@ -40,9 +39,9 @@ public interface IModel {
 	 * Get all {@link ELine lines} registered in the system.
 	 *
 	 * @param town    the town by which to filter the lines ({@code null} if not
-	 *                applicable}.
+	 *                applicable).
 	 * @param station the station by which to filter the lines ({@code null} if not
-	 *                applicable}.
+	 *                applicable).
 	 *
 	 * @throws SQLException if the database can't satisfy the request
 	 *
@@ -53,13 +52,14 @@ public interface IModel {
 	/**
 	 * Get all {@link EStation stations} registered in the system.
 	 *
-	 * @param req additional search parameters
+	 * @param town the town by which to filter the stations ({@code null} if not
+	 *             applicable).
 	 *
 	 * @throws SQLException if the database can't satisfy the request
 	 *
 	 * @return a list of all stations
 	 */
-	List<EStation> getStations(Requirements req) throws SQLException;
+	List<EStation> getStations(ETown town) throws SQLException;
 
 	/**
 	 * Get the image for the specified public transport vehicle.
