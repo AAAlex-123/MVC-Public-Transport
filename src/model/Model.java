@@ -20,7 +20,6 @@ import entity.ETimetable;
 import entity.ETown;
 import entity.LineType;
 import entity.MissingSpriteException;
-import requirement.util.Requirements;
 
 /**
  * An implementation of the {@link IModel} interface.
@@ -36,27 +35,50 @@ public class Model implements IModel {
 	private static final String PASS = "***";
 
 	@FunctionalInterface
-	private interface SQLExecutable<S extends Statement, R> {
+	private interface ExecutableWithStatement<S extends Statement, R> {
 		R execute(S statement) throws SQLException;
 	}
 
+	private interface ExecutableWithConnection<C extends Connection> {
+		void execute(C connection) throws SQLException;
+	}
+
 	/**
-	 * Creates a new {@code Connection} that executes an {@code SQLExecutable}. A
-	 * {@code Statement} is created from that Connection and is passed as a
-	 * parameter to the SQLExecutable.
+	 * Creates a new {@code Connection} that executes an instance of an
+	 * {@code ExecutableWithStatement}. A {@code Statement} is created from that
+	 * Connection and is passed as a parameter to the ExecutableWithStatement.
+	 * <p>
+	 * Use to execute a single Statement with a single Statement.
 	 *
-	 * @param executable the instance of {@code SQLExecutable} to run
+	 * @param executable the instance of {@code ExecutableWithStatement} to run
 	 * @param <R>        the type of object that the executable returns
 	 *
 	 * @return whatever the executable returns
 	 *
-	 * @throws SQLException if the executable threw an SQLException
+	 * @throws SQLException if the executable throws an SQLException
 	 */
-	private static <R> R executeStatement(SQLExecutable<Statement, R> executable)
+	private static <R> R doWithStatement(ExecutableWithStatement<Statement, R> executable)
 	        throws SQLException {
 		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS);
 		        Statement stmt = conn.createStatement();) {
 			return executable.execute(stmt);
+		}
+	}
+
+	/**
+	 * Creates a new {@code Connection} that is passed as a parameter to the
+	 * {@code ExecutableWithConnection}, which is then executed.
+	 * <p>
+	 * Use to execute many Statements with a single Connection.
+	 *
+	 * @param executable the instance of {@code ExecutableWithConnection} to run
+	 *
+	 * @throws SQLException if the executable throws an SQLException
+	 */
+	private static void doWithConnection(ExecutableWithConnection<Connection> executable)
+	        throws SQLException {
+		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS)) {
+			executable.execute(conn);
 		}
 	}
 
@@ -88,7 +110,7 @@ public class Model implements IModel {
 			query = townsByLine.replaceAll("@1", name).replace("@2", type);
 		}
 
-		return executeStatement((Statement stmt) -> {
+		return doWithStatement((Statement stmt) -> {
 			List<ETown> towns = new LinkedList<>();
 
 			try (ResultSet rs = stmt.executeQuery(query)) {
@@ -107,7 +129,7 @@ public class Model implements IModel {
 	}
 
 	@Override
-	public List<EStation> getStations(Requirements reqs) throws SQLException {
+	public List<EStation> getStations(ETown town) throws SQLException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -137,8 +159,39 @@ public class Model implements IModel {
 
 	@Override
 	public void insertLine(ELine line) throws SQLException {
-		// TODO Auto-generated method stub
+		final String insertToLine          = "INSERT INTO Line VALUES (@1, '@2', '@3', '@4')";
+		final String insertToLineTimetable = "INSERT INTO LineTimetable VALUES (@1, @2)";
+		final String insertToLlineStation  = "INSERT INTO LineStation VALUES (@1, @1, @3)";
 
+		doWithStatement((Statement stmt) -> {
+			return stmt.execute(
+			        insertToLine.replace("@1", String.valueOf(line.getId()))
+			                .replace("@2", line.getLineNumber())
+			                .replace("@3", line.getName())
+			                .replace("@4", line.getType().getName()));
+		});
+
+		doWithConnection((Connection conn) -> {
+			for (ETimetable timetable : line.getTimeTables()) {
+				try (Statement stmt = conn.createStatement()) {
+					stmt.execute(insertToLineTimetable
+					        .replace("@1", String.valueOf(timetable.getId()))
+					        .replace("@2", timetable.toString()));
+				}
+			}
+		});
+
+		doWithConnection((Connection conn) -> {
+			List<EStation> stations = line.getStations();
+			for (EStation station : stations) {
+				try (Statement stmt = conn.createStatement()) {
+					stmt.execute(insertToLlineStation
+					        .replace("@1", String.valueOf(line.getId()))
+					        .replace("@2", String.valueOf(station.getId()))
+					        .replace("@3", String.valueOf(stations.indexOf(station))));
+				}
+			}
+		});
 	}
 
 	@Override
@@ -158,5 +211,4 @@ public class Model implements IModel {
 		// TODO Auto-generated method stub
 
 	}
-
 }
