@@ -1,7 +1,5 @@
 package view;
 
-import java.awt.Container;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -20,8 +18,11 @@ abstract class AbstractView extends JFrame implements IView {
 
 	private JPanel panel;
 
+	private UndoableHistory<Undoable> navigationHistory;
+
 	public AbstractView(AbstractEntityGraphicFactory factory) {
 		this.factory = factory;
+		navigationHistory = new UndoableHistory<>();
 	}
 
 	@Override
@@ -35,17 +36,25 @@ abstract class AbstractView extends JFrame implements IView {
 	}
 
 	/**
-	 * Replaces the panel inside this JFrame with a new one.
+	 * Replaces the panel inside this JFrame with a new one by executing the
+	 * appropriate {@code Command}.
+	 * <p>
+	 * To be called by Concrete View objects.
 	 *
 	 * @param newPanel the new panel
 	 */
 	protected final void updatePanel(JPanel newPanel) {
-		final Container contentPane = getContentPane();
-		contentPane.remove(panel);
-		contentPane.add(newPanel);
-		panel = newPanel;
-		invalidate();
-		repaint();
+		Undoable u = new ChangeViewCommand(this, panel, newPanel);
+		u.execute();
+		navigationHistory.add(u);
+	}
+
+	private final void prevPanel() {
+		navigationHistory.undo();
+	}
+
+	private final void nextPanel() {
+		navigationHistory.redo();
 	}
 
 	// TODO: define the actions that a view may take
