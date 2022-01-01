@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS City (
 CREATE TABLE IF NOT EXISTS Station (
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(63),
-	x_coord INT,
-	y_coord INT,
+	x_coord DOUBLE,
+	y_coord DOUBLE,
 	city_id INT,
 	FOREIGN KEY (city_id) REFERENCES City (id)
 );
