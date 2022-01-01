@@ -2,12 +2,16 @@ package controller;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.Function;
 
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
+import entity.LineType;
+import entity.Position;
 import model.IModel;
+import requirement.util.Requirements;
 import view.IView;
 
 /**
@@ -16,6 +20,7 @@ import view.IView;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
+@SuppressWarnings("nls")
 public class Controller implements IController {
 
 	private final IModel model;
@@ -99,26 +104,76 @@ public class Controller implements IController {
 	}
 
 	@Override
-	public void insertTown(ETown town) {
-		// TODO Auto-generated method stub
-
+	public void insertTown(Requirements reqs) {
+		ETown newTown = new ETown(-1, reqs.getValue("name", String.class));
+		try {
+			model.insertTown(newTown);
+		} catch (SQLException e) {
+			view.updateViewWithError(e);
+		}
 	}
 
 	@Override
-	public void insertLine(ELine line) {
-		// TODO Auto-generated method stub
+	public void insertLine(Requirements reqs) {
+		final String   lineNo      = reqs.getValue("lineNo", String.class);
+		final LineType type        = reqs.getValue("type", LineType.class);
+		final String   description = reqs.getValue("description", String.class);
 
+		final ELine newLine = new ELine(-1, lineNo, type, description, null, null);
+		try {
+			model.insertLine(newLine);
+		} catch (SQLException e) {
+			view.updateViewWithError(e);
+		}
 	}
 
 	@Override
-	public void insertStation(EStation station) {
-		// TODO Auto-generated method stub
+	public void insertStation(Requirements reqs) {
+		final Function<String, Double> dtoi = Double::parseDouble;
 
+		final double   x_coord  = dtoi.apply(reqs.getValue("x coord", String.class));
+		final double   y_coord  = dtoi.apply(reqs.getValue("y coord", String.class));
+		final Position position = new Position(x_coord, y_coord);
+
+		EStation newStation = new EStation(-1,
+		        reqs.getValue("name", String.class),
+		        position,
+		        reqs.getValue("city id", ETown.class));
+		try {
+			model.insertStation(newStation);
+		} catch (SQLException e) {
+			view.updateViewWithError(e);
+		}
 	}
 
 	@Override
-	public void insertTimetable(ETimetable timetable) {
-		// TODO Auto-generated method stub
+	public void insertStationToLine(Requirements reqs) {
+		final Function<String, Integer> stoi = Integer::parseInt;
 
+		final ELine    line    = reqs.getValue("line", ELine.class);
+		final EStation station = reqs.getValue("station", EStation.class);
+		final int      index   = stoi.apply(reqs.getValue("index", String.class));
+
+		try {
+			model.insertStationToLine(line, station, index);
+		} catch (SQLException e) {
+			view.updateViewWithError(e);
+		}
+	}
+
+	@Override
+	public void insertTimetableToLine(Requirements reqs) {
+		final Function<String, Integer> stoi = Integer::parseInt;
+
+		final ELine      line      = reqs.getValue("line", ELine.class);
+		final int        hours     = stoi.apply(reqs.getValue("hours", String.class));
+		final int        minutes   = stoi.apply(reqs.getValue("minutes", String.class));
+		final ETimetable timetable = new ETimetable(hours, minutes);
+
+		try {
+			model.insertTimetableToLine(line, timetable);
+		} catch (SQLException e) {
+			view.updateViewWithError(e);
+		}
 	}
 }

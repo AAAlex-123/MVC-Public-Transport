@@ -2,8 +2,8 @@ package controller;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
 import entity.ETown;
+import requirement.util.Requirements;
 
 /**
  * An interface for the {@code Controller} of the {@code MVC architecture}. The
@@ -33,12 +33,13 @@ public interface IController {
 
 	void getLinesByStation(EStation station);
 
-	void insertTown(ETown town);
+	void insertTown(Requirements reqs);
 
-	void insertLine(ELine line);
+	void insertLine(Requirements reqs);
 
-	void insertStation(EStation station);
+	void insertStation(Requirements reqs);
 
-	void insertTimetable(ETimetable timetable);
+	void insertStationToLine(Requirements reqs);
 
+	void insertTimetableToLine(Requirements reqs);
 }

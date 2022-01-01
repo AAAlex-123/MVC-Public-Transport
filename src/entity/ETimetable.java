@@ -13,16 +13,14 @@ public class ETimetable extends AbstractEntity {
 
 	/**
 	 * Checks the validity of and creates a hour::minute time stamp.
-	 *
-	 * @param id      the timestamp's id
 	 * @param hours   the timestamp's hour
 	 * @param minutes the timestamp's minutes
 	 *
 	 * @throws IllegalArgumentException if the hours or minutes are out of range
 	 *                                  (e.g hours = -1 or minutes == 60)
 	 */
-	public ETimetable(int id, int hours, int minutes) throws IllegalArgumentException {
-		super(id);
+	public ETimetable(int hours, int minutes) throws IllegalArgumentException {
+		super(-1);
 
 		if((hours < 0) || (hours >= 24))
 			throw new IllegalArgumentException("Invalid hour parameter value :" + hours);
@@ -33,6 +31,7 @@ public class ETimetable extends AbstractEntity {
 		HOURS = hours;
 		MINUTES = minutes;
 	}
+
 	/**
 	 * Get the time stamp's hour.
 	 * @return the time stamp's hour
