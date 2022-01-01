@@ -24,7 +24,7 @@ import entity.MissingSpriteException;
 public interface IModel {
 
 	/**
-	 * Get all {@link ETown towns} in the system.
+	 * Get all {@link ETown} in the system.
 	 *
 	 * @param line the line by which to filter the towns ({@code null} if not
 	 *             applicable).
@@ -36,7 +36,7 @@ public interface IModel {
 	List<ETown> getTowns(ELine line) throws SQLException;
 
 	/**
-	 * Get all {@link ELine lines} registered in the system.
+	 * Get all {@link ELine} registered in the system.
 	 *
 	 * @param town    the town by which to filter the lines ({@code null} if not
 	 *                applicable).
@@ -50,7 +50,7 @@ public interface IModel {
 	List<ELine> getLines(ETown town, EStation station) throws SQLException;
 
 	/**
-	 * Get all {@link EStation stations} registered in the system.
+	 * Get all {@link EStation} registered in the system.
 	 *
 	 * @param town the town by which to filter the stations ({@code null} if not
 	 *             applicable).
@@ -68,12 +68,12 @@ public interface IModel {
 	 *
 	 * @throws MissingSpriteException if the image couldn't be loaded
 	 *
-	 * @return a {@link BufferedImage image} representing the vehicle
+	 * @return a {@link BufferedImage} representing the vehicle
 	 */
 	BufferedImage getVehicleSprite(LineType type) throws MissingSpriteException;
 
 	/**
-	 * Insert a new {@link ELine line} in the database.
+	 * Insert a new {@link ELine} in the database.
 	 *
 	 * @param line the line to be added
 	 *
@@ -82,7 +82,7 @@ public interface IModel {
 	void insertLine(ELine line) throws SQLException;
 
 	/**
-	 * Insert a new {@link ETown town} in the database.
+	 * Insert a new {@link ETown} in the database.
 	 *
 	 * @param town the town to be added
 	 *
@@ -91,7 +91,7 @@ public interface IModel {
 	void insertTown(ETown town) throws SQLException;
 
 	/**
-	 * Insert a new {@link EStation station} in the database.
+	 * Insert a new {@link EStation} in the database.
 	 *
 	 * @param station the station to be added
 	 *
@@ -100,13 +100,24 @@ public interface IModel {
 	void insertStation(EStation station) throws SQLException;
 
 	/**
-	 * Insert a {@link ETimetable timetable} into an existing {@link ELine line}.
+	 * Insert an existing {@link EStation} into an existing {@link ELine}.
+	 *
+	 * @param line    the line to which the station will be added
+	 * @param station the station to be added
+	 * @param index   the index of the station in that line
+	 *
+	 * @throws SQLException if the database couldn't be updated
+	 */
+	void insertStationToLine(ELine line, EStation station, int index) throws SQLException;
+
+	/**
+	 * Insert a new {@link ETimetable} into an existing {@link ELine}.
 	 *
 	 * @param line      the line to which the timetable will be added
 	 * @param timetable the timetable to be added
 	 *
 	 * @throws SQLException if the database couldn't be updated
 	 */
-	void insertTimetable(ELine line, ETimetable timetable) throws SQLException;
+	void insertTimetableToLine(ELine line, ETimetable timetable) throws SQLException;
 
 }
