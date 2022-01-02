@@ -39,10 +39,6 @@ public class Model implements IModel {
 		R execute(S statement) throws SQLException;
 	}
 
-	private interface ExecutableWithConnection<C extends Connection> {
-		void execute(C connection) throws SQLException;
-	}
-
 	/**
 	 * Creates a new {@code Connection} that executes an instance of an
 	 * {@code ExecutableWithStatement}. A {@code Statement} is created from that
@@ -62,23 +58,6 @@ public class Model implements IModel {
 		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS);
 		        Statement stmt = conn.createStatement();) {
 			return executable.execute(stmt);
-		}
-	}
-
-	/**
-	 * Creates a new {@code Connection} that is passed as a parameter to the
-	 * {@code ExecutableWithConnection}, which is then executed.
-	 * <p>
-	 * Use to execute many Statements with a single Connection.
-	 *
-	 * @param executable the instance of {@code ExecutableWithConnection} to run
-	 *
-	 * @throws SQLException if the executable throws an SQLException
-	 */
-	private static void doWithConnection(ExecutableWithConnection<Connection> executable)
-	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS)) {
-			executable.execute(conn);
 		}
 	}
 
