@@ -26,7 +26,6 @@ import entity.Position;
  * An implementation of the {@link IModel} interface.
  *
  * @author Alex Mandelias
- * @author Dimitris Tsirmpas
  */
 @SuppressWarnings("nls")
 public class Model implements IModel {
@@ -200,34 +199,12 @@ public class Model implements IModel {
 		if (line == null)
 			throw new IllegalArgumentException("line can't be null");
 
-		final String insertToLine          = "INSERT INTO Line VALUES ('@2', '@3', '@4')";
-		final String insertToLineTimetable = "INSERT INTO LineTimetable VALUES (@LASTID, @2)";
-		final String insertToLlineStation  = "INSERT INTO LineStation VALUES (@LASTID, @1, @3)";
+		final String insertToLine = "INSERT INTO Line VALUES ('@2', '@3', '@4')";
 
-		doWithConnection((Connection conn) -> {
-			try (Statement stmt = conn.createStatement()) {
-				stmt.execute(insertToLine.replace("@2", line.getLineNumber())
+		doWithStatement((Statement stmt) -> {
+			return stmt.execute(insertToLine.replace("@2", line.getLineNumber())
 				        .replace("@3", line.getName())
 				        .replace("@4", line.getType().getName()));
-			}
-
-			try (Statement stmt = conn.createStatement()) {
-				stmt.executeUpdate("SET @LASTID=LAST_INSERT_ID()");
-			}
-
-			for (ETimetable timetable : line.getTimeTables()) {
-				try (Statement stmt = conn.createStatement()) {
-					stmt.execute(insertToLineTimetable.replace("@2", timetable.toString()));
-				}
-			}
-
-			List<EStation> stations = line.getStations();
-			for (EStation station : stations) {
-				try (Statement stmt = conn.createStatement()) {
-					stmt.execute(insertToLlineStation.replace("@2", String.valueOf(station.getId()))
-					        .replace("@3", String.valueOf(stations.indexOf(station))));
-				}
-			}
 		});
 	}
 
