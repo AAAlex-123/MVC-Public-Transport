@@ -1,5 +1,8 @@
 package controller;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Function;
@@ -175,5 +178,21 @@ public class Controller implements IController {
 		} catch (SQLException e) {
 			view.updateViewWithError(e);
 		}
+	}
+	
+	@Override 
+	public Image loadImage(String name, int maxWidth, int maxHeight) {
+		BufferedImage img;
+		try {
+			img = model.loadImage(name);
+		} catch(IOException ioe) {
+			img = new BufferedImage(54, 54, BufferedImage.TYPE_INT_RGB); //create empty image
+		}
+		
+		if(img.getHeight() > maxHeight || img.getWidth() > maxWidth)
+			return img.getScaledInstance(maxWidth, maxHeight,  java.awt.Image.SCALE_SMOOTH);
+		else
+			return img;
+			
 	}
 }
