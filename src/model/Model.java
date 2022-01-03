@@ -363,4 +363,20 @@ public class Model implements IModel {
 			        .replace("@2", timetable.toString()));
 		});
 	}
+	
+	@Override
+	public BufferedImage loadImage(String name) throws IOException {
+		BufferedImage loadedSprite = null;
+		File          file         = null;
+		file = getResourcePath(name);
+		loadedSprite = ImageIO.read(file);
+		return loadedSprite;
+	}
+	
+	private static File getResourcePath(String spriteName) {
+		Path path = Paths.get(System.getProperty("user.dir"));
+		String resource_dir = path.toString() + File.separator + "other_resources" + File.separator + "resources";
+		String icon_path = resource_dir + File.separator + spriteName;
+		return new File(icon_path);
+	}
 }
