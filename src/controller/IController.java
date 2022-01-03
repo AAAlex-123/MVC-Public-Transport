@@ -42,4 +42,13 @@ public interface IController {
 	void insertStationToLine(Requirements reqs);
 
 	void insertTimetableToLine(Requirements reqs);
+	
+	/**
+	 * Loads an image from the {@link IModel} and resizes it if necessary.
+	 * @param name the image's name
+	 * @param maxWidth the maximum width of the image
+	 * @param maxHeight the maximum height of the image
+	 * @return a possibly resized, loaded Image
+	 */
+	Image loadImage(String name, int maxWidth, int maxHeight);
 }
