@@ -8,9 +8,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -35,8 +37,12 @@ public class Model implements IModel {
 	private static final String PASS = "***";
 
 	@FunctionalInterface
-	private interface ExecutableWithStatement<S extends Statement, R> {
-		R execute(S statement) throws SQLException;
+	private interface ExecutableWithStatement<S extends Statement> {
+		void execute(S statement) throws SQLException;
+	}
+
+	private interface ExecutableWithConnection<C extends Connection> {
+		void execute(C connection) throws SQLException;
 	}
 
 	/**
@@ -47,17 +53,31 @@ public class Model implements IModel {
 	 * Use to execute a single Statement with a single Statement.
 	 *
 	 * @param executable the instance of {@code ExecutableWithStatement} to run
-	 * @param <R>        the type of object that the executable returns
-	 *
-	 * @return whatever the executable returns
 	 *
 	 * @throws SQLException if the executable throws an SQLException
 	 */
-	private static <R> R doWithStatement(ExecutableWithStatement<Statement, R> executable)
+	private static void doWithStatement(ExecutableWithStatement<Statement> executable)
 	        throws SQLException {
 		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS);
 		        Statement stmt = conn.createStatement();) {
-			return executable.execute(stmt);
+			executable.execute(stmt);
+		}
+	}
+
+	/**
+	 * Creates a new {@code Connection} that is passed as a parameter to the
+	 * {@code ExecutableWithConnection}, which is then executed.
+	 * <p>
+	 * Use to execute many Statements with a single Connection.
+	 *
+	 * @param executable the instance of {@code ExecutableWithConnection} to run
+	 *
+	 * @throws SQLException if the executable throws an SQLException
+	 */
+	private static void doWithConnection(ExecutableWithConnection<Connection> executable)
+	        throws SQLException {
+		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS)) {
+			executable.execute(conn);
 		}
 	}
 
@@ -73,32 +93,32 @@ public class Model implements IModel {
 
 	@Override
 	public List<ETown> getTowns(ELine line) throws SQLException {
-		final String allTowns    = "SELECT * FROM City";
-		final String townsByLine = "SELECT DISTINCT City.id, City.name FROM City "
-		        + "JOIN Station ON Station.city_id = City.id "
-		        + "JOIN LineStation ON LineStation.station_id = Station.id "
-		        + "JOIN Line ON Line.id = LineStation.line_id "
-		        + "WHERE Line.name=@1 AND Line.type=@2";
+		final String qSelectAllTowns    = "SELECT C.* FROM City AS C";
+		final String qSelectTownsByLine = "SELECT DISTINCT C.id, C.name FROM City AS C "
+		        + "JOIN Station AS S ON S.city_id = C.id "
+		        + "JOIN LineStation AS LS ON LS.station_id = S.id "
+		        + "JOIN Line AS L ON L.id = LS.line_id "
+		        + "WHERE L.name = @1 AND L.type = @2";
 
-		String query;
-		if (line == null)
-			query = allTowns;
-		else {
+		final String qFinalisedQuery;
+		if (line == null) {
+			qFinalisedQuery = qSelectAllTowns;
+		} else {
 			final String name = line.getLineNumber();
 			final String type = line.getType().getName();
-			query = townsByLine.replaceAll("@1", name).replace("@2", type);
+			qFinalisedQuery = qSelectTownsByLine.replaceAll("@1", name).replace("@2", type);
 		}
 
-		return doWithStatement((Statement stmt) -> {
-			List<ETown> towns = new LinkedList<>();
+		List<ETown> towns = new LinkedList<>();
 
-			try (ResultSet rs = stmt.executeQuery(query)) {
+		doWithStatement((Statement stmt) -> {
+			try (ResultSet rs = stmt.executeQuery(qFinalisedQuery)) {
 				while (rs.next())
-					towns.add(new ETown(rs.getInt("id"), rs.getString("name")));
+					towns.add(new ETown(rs.getInt("C.id"), rs.getString("C.name")));
 			}
-
-			return towns;
 		});
+
+		return towns;
 	}
 
 	@Override
@@ -106,22 +126,116 @@ public class Model implements IModel {
 		if ((town != null) && (station != null))
 			throw new IllegalArgumentException("town and station can't both be non-null");
 
+		final String qSelectAllLines;
+
 		if (town != null) {
-
+			qSelectAllLines = "SELECT DISTINCT L.* FROM Line AS L "
+			        + "JOIN LineStation AS LS ON L.id = LS.line_id "
+			        + "JOIN Station AS S ON LS.station_id = S.id "
+			        + "JOIN City AS C ON Station.city_id = C.id "
+			        + "WHERE C.id = " + town.getId();
 		} else if (station != null) {
-
+			qSelectAllLines = "SELECT DISTINCT L.* FROM Line AS L "
+			        + "JOIN LineStation AS LS ON L.id = LS.line_id "
+			        + "JOIN Station AS S ON LS.station_id = S.id "
+			        + "WHERE S.id = " + station.getId();
 		} else {
-
+			qSelectAllLines = "SELECT L.* FROM Line AS L ";
 		}
 
-		final String allLines = "SELECT * FROM Line "
-				+ "JOIN LineStation ON Line.id = LineStation.line_id "
-				+ "JOIN Station ON LineStation.station_id = Station.id "
-				+ "JOIN LineTimetable ON Line.id = LineTimetable.line_id ";
-		final String whereTown = "JOIN City ON City.id = Station.city_id "
-		        + "WHERE City.name == ";
+		final List<ELine>                    linesFromDatabase      = new LinkedList<>();
+		final Map<Integer, List<EStation>>   stationsFromDatabase   = new HashMap<>();
+		final Map<Integer, List<ETimetable>> timetablesFromDatabase = new HashMap<>();
 
-		return null;
+		doWithStatement((Statement stmt) -> {
+			try (ResultSet rs = stmt.executeQuery(qSelectAllLines)) {
+				while (rs.next()) {
+					final int      id          = rs.getInt("L.id");
+					final String   lineNo      = rs.getString("L.lineNo");
+					final LineType type        = LineType.valueOf(rs.getString("L.type"));
+					final String   description = rs.getString("L.description");
+
+					linesFromDatabase.add(new ELine(id, lineNo, type, description, null, null));
+				}
+			}
+		});
+
+		final String qSelectStationsForLine = "SELECT S.*, C.* FROM Station AS S "
+		        + "JOIN LineStation AS LS ON S.id = LS.station_id "
+		        + "JOIN City AS C ON C.id = S.id "
+		        + "WHERE LS.line_id = @1";
+
+		doWithConnection((Connection conn) -> {
+
+			for (ELine line : linesFromDatabase) {
+
+				List<EStation> newStations = new LinkedList<>();
+
+				final String lineID = String.valueOf(line.getId());
+				final String query  = qSelectStationsForLine.replace("@1", lineID);
+
+				try (Statement stmt = conn.createStatement();
+				        ResultSet rs = stmt.executeQuery(query)) {
+
+					while (rs.next()) {
+						final ETown    newTown = new ETown(rs.getInt("C.id"),
+						        rs.getString("C.name"));
+						final int      id      = rs.getInt("S.id");
+						final String   name    = rs.getString("S.name");
+						final Position pos     = new Position(rs.getDouble("S.x_coord"),
+						        rs.getDouble("S.y_coord"));
+
+						newStations.add(new EStation(id, name, pos, newTown));
+					}
+				}
+
+				stationsFromDatabase.put(line.getId(), newStations);
+			}
+		});
+
+		final String qSelectTimetablesForLine = "SELECLT LT.departure_time FROM LineTimetable AS LT"
+		        + "WHERE LT.line_id = @1";
+
+		doWithConnection((Connection conn) -> {
+
+			for (ELine line : linesFromDatabase) {
+
+				List<ETimetable> newTimetables = new LinkedList<>();
+
+				final String lineID = String.valueOf(line.getId());
+				final String query  = qSelectTimetablesForLine.replace("@1", lineID);
+
+				try (Statement stmt = conn.createStatement();
+				        ResultSet rs = stmt.executeQuery(query)) {
+
+					while (rs.next()) {
+						final Time     time    = rs.getTime("departure_time");
+						final String[] parts   = time.toString().split(":");
+						final int      hours   = Integer.parseInt(parts[0]);
+						final int      minutes = Integer.parseInt(parts[1]);
+
+						newTimetables.add(new ETimetable(hours, minutes));
+					}
+				}
+
+				timetablesFromDatabase.put(line.getId(), newTimetables);
+			}
+		});
+
+		final List<ELine> finalLines = new LinkedList<>();
+
+		for (ELine line : linesFromDatabase) {
+			final int              lineId            = line.getId();
+			final List<EStation>   stationsForLine   = stationsFromDatabase.get(lineId);
+			final List<ETimetable> timetablesForLine = timetablesFromDatabase.get(lineId);
+
+			final ELine newLine = new ELine(lineId, line.getLineNumber(), line.getType(),
+			        line.getName(), stationsForLine, timetablesForLine);
+
+			finalLines.add(newLine);
+		}
+
+		return finalLines;
 	}
 
 	@Override
@@ -129,23 +243,23 @@ public class Model implements IModel {
 		if (town == null)
 			throw new IllegalArgumentException("town can't be null");
 
-		final String stationsByTown = "SELECT Station.* FROM Station "
-		        + "JOIN City ON Station.city_id = City.id "
-				+ "WHERE City.name=@1";
+		final String stationsByTown = "SELECT S.* FROM Station AS S "
+		        + "JOIN City AS C ON S.city_id = C.id "
+		        + "WHERE C.name=@1";
 
 		final String query = stationsByTown.replaceAll("@1", town.getName());
 
-		return doWithStatement((Statement stmt) -> {
-			List<EStation> stations = new LinkedList<>();
+		List<EStation> stations = new LinkedList<>();
 
+		doWithStatement((Statement stmt) -> {
 			try (ResultSet rs = stmt.executeQuery(query)) {
 				while (rs.next())
 					stations.add(new EStation(rs.getInt("id"), rs.getString("name"),
 					        new Position(rs.getDouble("x_coord"), rs.getDouble("y_coord")), town));
 			}
-
-			return stations;
 		});
+
+		return stations;
 	}
 
 	@Override
@@ -181,7 +295,7 @@ public class Model implements IModel {
 		final String insertToLine = "INSERT INTO Line VALUES ('@2', '@3', '@4')";
 
 		doWithStatement((Statement stmt) -> {
-			return stmt.execute(insertToLine.replace("@2", line.getLineNumber())
+			stmt.execute(insertToLine.replace("@2", line.getLineNumber())
 				        .replace("@3", line.getName())
 				        .replace("@4", line.getType().getName()));
 		});
@@ -195,8 +309,7 @@ public class Model implements IModel {
 		final String insertToCity = "INSERT INTO City(name) VALUES ('@2')";
 
 		doWithStatement((Statement stmt) -> {
-			return stmt.execute(
-		            insertToCity.replace("@2", town.getName()));
+		    stmt.execute(insertToCity.replace("@2", town.getName()));
 		});
 	}
 
@@ -209,7 +322,7 @@ public class Model implements IModel {
 		final Position position        = station.getPosition();
 
 		doWithStatement((Statement stmt) -> {
-			return stmt.execute(
+			stmt.execute(
 			        insertToStation.replace("@2", station.getName())
 			                .replace("@3", String.valueOf(position.getX()))
 			                .replace("@4", String.valueOf(position.getY()))
@@ -230,10 +343,9 @@ public class Model implements IModel {
 		final String insertToLineStation = "INSERT INTO LineStation VALUES (@1, @2, @3)";
 
 		doWithStatement((Statement stmt) -> {
-			return stmt.execute(
-			        insertToLineStation.replace("@1", String.valueOf(line.getId()))
-			                .replace("@2", String.valueOf(station.getId()))
-			                .replace("@3", String.valueOf(index)));
+			stmt.execute(insertToLineStation.replace("@1", String.valueOf(line.getId()))
+			        .replace("@2", String.valueOf(station.getId()))
+			        .replace("@3", String.valueOf(index)));
 		});
 	}
 
@@ -247,9 +359,8 @@ public class Model implements IModel {
 		final String insertToLineTimetable = "INSERT INTO LineTimetable VALUES (@1, '@2')";
 
 		doWithStatement((Statement stmt) -> {
-			return stmt.execute(
-			        insertToLineTimetable.replace("@1", String.valueOf(line.getId()))
-			                .replace("@2", timetable.toString()));
+			stmt.execute(insertToLineTimetable.replace("@1", String.valueOf(line.getId()))
+			        .replace("@2", timetable.toString()));
 		});
 	}
 }
