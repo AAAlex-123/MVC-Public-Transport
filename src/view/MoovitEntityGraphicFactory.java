@@ -6,6 +6,7 @@ import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
+import view.AbstractView.ImageLoader;
 
 /**
  * TODO
@@ -37,6 +38,12 @@ class MoovitEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	public JPanel getETimetableGraphic(ETimetable timetable) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setLoader(ImageLoader newLoader) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

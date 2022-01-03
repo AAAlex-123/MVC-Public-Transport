@@ -18,10 +18,12 @@ import entity.ETown;
  * @author Dimitris Tsirmpas
  */
 public interface IView {
-
+	
 	void start();
 
 	void registerController(IController controler);
+	
+	void updateViewWithHomepage();
 
 	void updateViewWithTowns(List<ETown> towns);
 

@@ -2,6 +2,8 @@ package view;
 
 import java.util.List;
 
+import javax.swing.JPanel;
+
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
@@ -21,7 +23,7 @@ public class MoovitView extends AbstractView {
 	 * @param factory
 	 */
 	public MoovitView(AbstractEntityGraphicFactory factory) {
-		super(factory);
+		super(new JPanel(), factory);
 	}
 
 	@Override
@@ -52,6 +54,12 @@ public class MoovitView extends AbstractView {
 	public void updateViewWithError(Exception e) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void updateViewWithHomepage() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

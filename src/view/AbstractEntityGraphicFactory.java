@@ -14,6 +14,8 @@ import entity.ETown;
  * @author Dimitris Tsirmpas
  */
 interface AbstractEntityGraphicFactory {
+	
+	void setLoader(AbstractView.ImageLoader newLoader);
 
 	/**
 	 * Returns a Graphic for a {@link ETown}.

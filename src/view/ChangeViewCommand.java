@@ -31,12 +31,12 @@ class ChangeViewCommand implements Undoable {
 
 	@Override
 	public void execute() {
-		gotoPanel(prevPanel, nextPanel);
+		gotoPanel(nextPanel, prevPanel);
 	}
 
 	@Override
 	public void unexecute() {
-		gotoPanel(nextPanel, prevPanel);
+		gotoPanel(prevPanel, nextPanel);
 	}
 
 	/**
@@ -49,7 +49,7 @@ class ChangeViewCommand implements Undoable {
 	 */
 	private void gotoPanel(JPanel newPanel, JPanel oldPanel) {
 		final Container contentPane = view.getContentPane();
-
+		
 		contentPane.remove(oldPanel);
 		contentPane.add(newPanel);
 
