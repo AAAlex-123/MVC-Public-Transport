@@ -2,18 +2,20 @@ package entity;
 
 
 /**
- * Describes a time stamp composed of pair of HOUR::MINUTES integers.
+ * Describes a time stamp composed of pair of HOUR:MINUTES integers.
  *
  * @author Dimitris Tsirmpas
  */
+@SuppressWarnings("nls")
 public class ETimetable extends AbstractEntity {
 
-	private final int HOURS;
-	private final int MINUTES;
+	private final int hours;
+	private final int minutes;
 
 	/**
-	 * Checks the validity of and creates a hour::minute time stamp.
-	 * @param hours   the timestamp's hour
+	 * Checks the validity of and creates a hour:minute time stamp.
+	 *
+	 * @param hours   the timestamp's hours
 	 * @param minutes the timestamp's minutes
 	 *
 	 * @throws IllegalArgumentException if the hours or minutes are out of range
@@ -28,28 +30,30 @@ public class ETimetable extends AbstractEntity {
 		if((minutes < 0) || (minutes >= 60))
 			throw new IllegalArgumentException("Invalid minute parameter value :" + minutes);
 
-		HOURS = hours;
-		MINUTES = minutes;
+		this.hours = hours;
+		this.minutes = minutes;
 	}
 
 	/**
-	 * Get the time stamp's hour.
-	 * @return the time stamp's hour
+	 * Returns the time stamp's hours.
+	 *
+	 * @return the time stamp's hours
 	 */
-	public int getHour() {
-		return HOURS;
+	public int getHours() {
+		return hours;
 	}
 
 	/**
-	 * Get the time stamp's minutes.
+	 * Returns the time stamp's minutes.
+	 *
 	 * @return the time stamp's minutes
 	 */
 	public int getMinutes() {
-		return MINUTES;
+		return minutes;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%d:%d", HOURS, MINUTES);
+		return String.format("%s: %d:%d", super.toString(), getHours(), getMinutes());
   }
 }

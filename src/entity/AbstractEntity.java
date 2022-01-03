@@ -27,4 +27,9 @@ abstract class AbstractEntity {
 	public int getId() {
 		return id;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("%d", getId()); //$NON-NLS-1$
+	}
 }

@@ -54,4 +54,10 @@ public class EStation extends AbstractEntity {
 	public ETown getTown() {
 		return town;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("%s: %s at %s in town %s", super.toString(), getName(), getPosition(),
+		        getTown());
+	}
 }

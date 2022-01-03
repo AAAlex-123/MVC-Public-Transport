@@ -89,7 +89,7 @@ public class Controller implements IController {
 
 	@Override
 	public void getTimetablesByLine(ELine line) {
-		List<ETimetable> timetables = line.getTimeTables();
+		List<ETimetable> timetables = line.getTimetables();
 		view.updateViewWithTimetables(timetables);
 	}
 

@@ -62,4 +62,9 @@ public class Position {
 	public double getY() {
 		return y;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("(%f, %f)", getX(), getY()); //$NON-NLS-1$
+	}
 }

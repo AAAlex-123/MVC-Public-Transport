@@ -85,7 +85,15 @@ public class ELine extends AbstractEntity {
 	 *
 	 * @return an immutable list containing the departure times for this Line.
 	 */
-	public List<ETimetable> getTimeTables() {
+	public List<ETimetable> getTimetables() {
 		return startTimes;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s: %s-%s, %s. Stations: %s, Departure times: %s", super.toString(),
+		        getLineNumber(),
+		        getType(),
+		        getName(), getStations(), getTimetables());
 	}
 }
