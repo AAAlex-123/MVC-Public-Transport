@@ -1,5 +1,7 @@
 package entity;
 
+import java.util.Objects;
+
 /**
  * A class containing information about a Town.
  *
@@ -32,5 +34,15 @@ public class ETown extends AbstractEntity {
 	@Override
 	public String toString() {
 		return String.format("%s: %s", super.toString(), getName()); //$NON-NLS-1$
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof ETown))
+			return false;
+		ETown other = (ETown) obj;
+		return Objects.equals(name, other.name);
 	}
 }

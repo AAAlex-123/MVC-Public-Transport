@@ -1,9 +1,13 @@
 package view;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import controller.IController;
+import entity.ETown;
 
 /**
  * An implementation of the {@link IView} interface.
@@ -63,6 +67,7 @@ abstract class AbstractView extends JFrame implements IView {
 	Example AbstractAction that will be called by the concrete view and the graphics inside of it
 
 	@foff
+	*/
 	protected final class StationsByTownListener extends AbstractAction {
 
 		// the entity associated with that graphic
@@ -79,6 +84,7 @@ abstract class AbstractView extends JFrame implements IView {
 			controller.getStationsByTown(this.town);
 		}
 	}
+	/*
 	@fon
 	*/
 }
