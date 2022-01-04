@@ -32,10 +32,6 @@ import entity.Position;
 @SuppressWarnings("nls")
 public class Model implements IModel {
 
-	private static final String URL  = "jdbc:mysql://localhost/oasaripoff";
-	private static final String USER = "***";
-	private static final String PASS = "***";
-
 	@FunctionalInterface
 	private interface ExecutableWithStatement<S extends Statement> {
 		void execute(S statement) throws SQLException;
@@ -56,9 +52,9 @@ public class Model implements IModel {
 	 *
 	 * @throws SQLException if the executable throws an SQLException
 	 */
-	private static void doWithStatement(ExecutableWithStatement<Statement> executable)
+	private void doWithStatement(ExecutableWithStatement<Statement> executable)
 	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS);
+		try (Connection conn = DriverManager.getConnection(url, user, password);
 		        Statement stmt = conn.createStatement();) {
 			executable.execute(stmt);
 		}
@@ -74,20 +70,38 @@ public class Model implements IModel {
 	 *
 	 * @throws SQLException if the executable throws an SQLException
 	 */
-	private static void doWithConnection(ExecutableWithConnection<Connection> executable)
+	private void doWithConnection(ExecutableWithConnection<Connection> executable)
 	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS)) {
+		try (Connection conn = DriverManager.getConnection(url, user, password)) {
 			executable.execute(conn);
 		}
 	}
 
+	private final String url, user, password;
+
 	private final HashMap<LineType, BufferedImage> spriteCache;
 
 	/**
-	 * Constructs a Model that communicates with the underlying database to retrieve
-	 * data and return them using Entity objects from the {@link entity} package.
+	 * Constructs a Model that communicates with the live underlying database to
+	 * retrieve and return data using objects from the {@link entity} package.
 	 */
 	public Model() {
+		this("jdbc:mysql://localhost/oasaripoff", "root", "localhostMVCMy$QL");
+	}
+
+	/**
+	 * Constructs a Model that communicates with a database to retrieve and return
+	 * data using objects from the {@link entity} package.
+	 *
+	 * @param url      a database url of the form jdbc:subprotocol:subname
+	 * @param user     the database user on whose behalf the connection is being
+	 *                 made
+	 * @param password the user's password
+	 */
+	public Model(String url, String user, String password) {
+		this.url = url;
+		this.user = user;
+		this.password = password;
 		spriteCache = new HashMap<>();
 	}
 
@@ -98,15 +112,15 @@ public class Model implements IModel {
 		        + "JOIN Station AS S ON S.city_id = C.id "
 		        + "JOIN LineStation AS LS ON LS.station_id = S.id "
 		        + "JOIN Line AS L ON L.id = LS.line_id "
-		        + "WHERE L.name = @1 AND L.type = @2";
+		        + "WHERE L.id=@1";
 
 		final String qFinalisedQuery;
 		if (line == null) {
-			qFinalisedQuery = qSelectAllTowns;
+			qFinalisedQuery = qSelectAllTowns + " ORDER BY C.name;";
 		} else {
-			final String name = line.getLineNumber();
-			final String type = line.getType().getName();
-			qFinalisedQuery = qSelectTownsByLine.replaceAll("@1", name).replace("@2", type);
+			final int id = line.getId();
+			qFinalisedQuery = qSelectTownsByLine.replaceAll("@1", String.valueOf(id))
+			        + " ORDER BY C.name;";
 		}
 
 		List<ETown> towns = new LinkedList<>();
