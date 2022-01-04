@@ -67,4 +67,17 @@ public class Position {
 	public String toString() {
 		return String.format("(%f, %f)", getX(), getY()); //$NON-NLS-1$
 	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Position))
+			return false;
+		Position other = (Position) obj;
+		return (Double.doubleToLongBits(x) == Double.doubleToLongBits(other.x))
+		        && (Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y));
+	}
 }

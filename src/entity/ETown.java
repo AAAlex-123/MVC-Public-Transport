@@ -40,6 +40,8 @@ public class ETown extends AbstractEntity {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
+		if (!super.equals(obj))
+			return false;
 		if (!(obj instanceof ETown))
 			return false;
 		ETown other = (ETown) obj;
