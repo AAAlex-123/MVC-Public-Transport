@@ -3,6 +3,8 @@ package view;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.Box;
@@ -15,7 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-import controller.IController;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
@@ -36,12 +37,9 @@ public class OASAView extends AbstractView {
 	/**
 	 * TODO
 	 */
-	public OASAView(IController c) {
-		super(new JPanel(), new OASAEntityGraphicFactory(new ImageLoader(c)));
-	}
-	
 	public OASAView() {
-		this(null);
+		super(new OASAEntityGraphicFactory());
+		super.factory.initializeView(this);
 	}
 	
 	@Override
@@ -63,20 +61,17 @@ public class OASAView extends AbstractView {
 
 	@Override
 	public void updateViewWithLines(List<ELine> lines) {
-		JPanel mainPanel = new JPanel();
-		
-		//add optional graphic for station?
-		
+		JPanel mainPanel = new JPanel();		
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		
+		for(var line : lines)
+			mainPanel.add(factory.getELineGraphic(line));
 		
 		JLabel text = new JLabel("Available Lines:");
 		text.setFont(textFont);
 		mainPanel.add(text);		
-		
-		JScrollPane scrollPanel = getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3));
-		for(var line : lines)
-			scrollPanel.add(factory.getELineGraphic(line));
-		mainPanel.add(scrollPanel);
+
+		mainPanel.add(getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3)));
 		
 		super.updatePanel(mainPanel);
 	}
@@ -84,36 +79,33 @@ public class OASAView extends AbstractView {
 	@Override
 	public void updateViewWithStations(List<EStation> stations) {
 		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 		
-		//add optional graphic for line?
+		for(var station : stations)
+			mainPanel.add(factory.getEStationGraphic(station));
 		
 		JLabel text = new JLabel("Available Stations:");
 		text.setFont(textFont);
 		mainPanel.add(text);
-		
-		JScrollPane scrollPanel = getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3));
-		for(var station : stations)
-			scrollPanel.add(factory.getEStationGraphic(station));
-		mainPanel.add(scrollPanel);
+
+		mainPanel.add(getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3)));
 		
 		super.updatePanel(mainPanel);
 	}
 
 	@Override
 	public void updateViewWithTimetables(List<ETimetable> timetables) {
-		JPanel mainPanel = new JPanel();
-		
-		//add optional graphic for line/station?
-		
+		JPanel mainPanel = new JPanel();	
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		
+		for(var timetable : timetables)
+			mainPanel.add(factory.getETimetableGraphic(timetable));
+		
 		JLabel text = new JLabel("TimeTables to Arrival:");
 		text.setFont(textFont);
 		mainPanel.add(text);
-		
-		JScrollPane scrollPanel = getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3));
-		for(var timetable : timetables)
-			scrollPanel.add(factory.getETimetableGraphic(timetable));
-		mainPanel.add(scrollPanel);
+
+		mainPanel.add(getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3)));
 		
 		super.updatePanel(mainPanel);
 	}
@@ -150,6 +142,35 @@ public class OASAView extends AbstractView {
 		button3.setSize(buttonDimensions);
 		buttonPanel.add(button3);
 		
+		button1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				OASAView.this.getAllLines();
+			}
+			
+		});
+		
+		button2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				OASAView.this.getAllTowns();
+			}
+			
+		});
+		
+		button3.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//TODO: list requirement graphic for line type?
+				OASAView.this.getAllLines();
+			}
+			
+		});
+		
+		
 		buttonWrapperPanel.add(buttonPanel);
 		
 		home.add(buttonWrapperPanel);
@@ -157,6 +178,8 @@ public class OASAView extends AbstractView {
 		
 		super.updatePanel(home);
 	}
+	
+	
 	
 	private static JScrollPane getScrolledPanel(Dimension size) {
 		JPanel mainPanel = new JPanel();

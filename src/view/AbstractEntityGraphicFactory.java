@@ -15,8 +15,13 @@ import entity.ETown;
  */
 interface AbstractEntityGraphicFactory {
 	
-	void setLoader(AbstractView.ImageLoader newLoader);
-
+	/**
+	 * Set the view of the factory, if not already set.
+	 * 
+	 * @param view the new view of the factory
+	 */
+	void initializeView(AbstractView view);
+	
 	/**
 	 * Returns a Graphic for a {@link ETown}.
 	 *

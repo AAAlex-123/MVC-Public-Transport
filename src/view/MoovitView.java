@@ -23,7 +23,7 @@ public class MoovitView extends AbstractView {
 	 * @param factory
 	 */
 	public MoovitView(AbstractEntityGraphicFactory factory) {
-		super(new JPanel(), factory);
+		super(factory);
 	}
 
 	@Override

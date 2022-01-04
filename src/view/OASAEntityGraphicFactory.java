@@ -3,22 +3,25 @@ package view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import controller.IController;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
 
 /**
- * TODO
+ * A Factory producing self-describing graphics which open pop-up windows to 
+ * select operations.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
@@ -32,21 +35,32 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	private static final Color backgroundColor = Color.WHITE;
 	private static final int ICON_SIZE = 54;
 	
-	private AbstractView.ImageLoader loader;
+	private static final String FIND_TOWNS = "Find towns";
+	private static final String FIND_LINES = "Find lines";
+	private static final String FIND_TIMES = "Find arrival times";
+	private static final String FIND_STATIONS = "Find stations";
 	
-	public OASAEntityGraphicFactory(AbstractView.ImageLoader loader) {
-		this.loader = loader;
+	private AbstractView view;	
+	
+	public OASAEntityGraphicFactory(AbstractView view) {
+		this.view = view;
 	}
 	
-	public void setLoader(AbstractView.ImageLoader newLoader) {
-		loader = newLoader;
+	public OASAEntityGraphicFactory() {
+		this.view = null;
 	}
-		
+	
+	@Override
+	public void initializeView(AbstractView view) {
+		if(this.view == null)
+			this.view = view;
+	}
+			
 	@Override
 	public JPanel getETownGraphic(ETown town) {
 		JPanel graphic = prepareGraphic();
 		
-		graphic.add(new JLabel(new ImageIcon(loader.loadImage("town.png", ICON_SIZE, ICON_SIZE))));
+		graphic.add(new JLabel(new ImageIcon(view.loadImage("town.png", ICON_SIZE, ICON_SIZE))));
 		graphic.add(Box.createHorizontalBox());
 		
 		JLabel nameLabel = new JLabel(town.getName());
@@ -55,6 +69,28 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 		nameLabel.setBackground(backgroundColor);
 		
 		graphic.add(nameLabel);
+		
+		graphic.addMouseListener(new MouseAdapter() {
+		
+			@Override
+			public void mouseClicked(MouseEvent e) {
+                String   res     = (String) JOptionPane.showInputDialog(view.getContentPane(), 
+                		"What do you wish to look for in the town of " + town.getName() + "?", "Town Options", 
+                		JOptionPane.QUESTION_MESSAGE,
+                		new ImageIcon(view.loadImage("town.png", ICON_SIZE, ICON_SIZE)), 
+                		new String[]{ FIND_LINES, FIND_STATIONS}, FIND_LINES);
+                
+                switch (res) {
+                case FIND_LINES:
+                    view.getLinesByTown(town);
+                    break;
+                case FIND_STATIONS:
+                    view.getStationsByTown(town);
+                    break;
+                }
+			}
+		});
+		
 		return graphic;
 	}
 
@@ -62,7 +98,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	public JPanel getELineGraphic(ELine line) {
 		JPanel graphic = prepareGraphic();
 		
-		graphic.add(new JLabel(new ImageIcon(loader.loadImage(line.getType().getSpriteName(), ICON_SIZE, ICON_SIZE))));
+		graphic.add(new JLabel(new ImageIcon(view.loadImage(line.getType().getSpriteName(), ICON_SIZE, ICON_SIZE))));
 		graphic.add(Box.createHorizontalBox());
 		
 		JPanel namePanel = new JPanel();
@@ -82,6 +118,30 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 		
 		graphic.add(namePanel);
 		
+		graphic.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+                String   res     = (String) JOptionPane.showInputDialog(view.getContentPane(), 
+                		"What do you wish to look for in the line" + line.getName() + "?", "Line Options", 
+                		JOptionPane.QUESTION_MESSAGE,
+                		new ImageIcon(view.loadImage("trolley.png", ICON_SIZE, ICON_SIZE)), 
+                		new String[]{ FIND_TIMES, FIND_STATIONS, FIND_TOWNS}, FIND_TIMES);
+                
+                switch (res) {
+                case FIND_TIMES:
+                    view.getTimetablesByLine(line);
+                    break;
+                case FIND_STATIONS:
+                    view.getStationsByLine(line);
+                    break;
+                case FIND_TOWNS:
+                	view.getTownsByLine(line);
+                	break;
+                }
+			}
+		});
+		
 		return graphic;
 	}
 
@@ -89,7 +149,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	public JPanel getEStationGraphic(EStation station) {
 		JPanel graphic = prepareGraphic();
 		
-		graphic.add(new JLabel(new ImageIcon(loader.loadImage("station.png", ICON_SIZE, ICON_SIZE))));
+		graphic.add(new JLabel(new ImageIcon(view.loadImage("station.png", ICON_SIZE, ICON_SIZE))));
 		graphic.add(Box.createHorizontalBox());
 		
 		JPanel namePanel = new JPanel();
@@ -108,6 +168,18 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 		namePanel.add(descrLabel);
 		
 		graphic.add(namePanel);
+		
+		graphic.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+               int answer = JOptionPane.showConfirmDialog(view.getContentPane(), 
+            		   "Would you like to view the lines servicing the station " + station.getName() + "?");
+               
+               if(answer == JOptionPane.OK_OPTION)
+            	   view.getLinesByStation(station);
+			}
+		});
 		
 		return graphic;
 	}
@@ -134,4 +206,5 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 		graphic.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 		return graphic;
 	}
+
 }

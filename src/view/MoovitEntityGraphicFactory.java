@@ -6,7 +6,6 @@ import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
-import view.AbstractView.ImageLoader;
 
 /**
  * TODO
@@ -41,7 +40,7 @@ class MoovitEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	}
 
 	@Override
-	public void setLoader(ImageLoader newLoader) {
+	public void initializeView(AbstractView view) {
 		// TODO Auto-generated method stub
 		
 	}
