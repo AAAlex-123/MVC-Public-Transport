@@ -259,9 +259,10 @@ public class Model implements IModel {
 
 		final String stationsByTown = "SELECT S.* FROM Station AS S "
 		        + "JOIN City AS C ON S.city_id = C.id "
-		        + "WHERE C.name=@1";
+		        + "WHERE C.id=@1 "
+		        + "ORDER BY S.name";
 
-		final String query = stationsByTown.replaceAll("@1", town.getName());
+		final String query = stationsByTown.replaceAll("@1", String.valueOf(town.getId()));
 
 		List<EStation> stations = new LinkedList<>();
 
