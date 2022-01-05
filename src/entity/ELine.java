@@ -36,8 +36,9 @@ public class ELine extends AbstractEntity {
 		this.lineNo = lineNo;
 		this.type = type;
 		this.name = name;
-		this.stations = Collections.unmodifiableList(stations);
-		this.startTimes = Collections.unmodifiableList(startTimes);
+		this.stations = (stations == null) ? List.of() : Collections.unmodifiableList(stations);
+		this.startTimes = (startTimes == null) ? List.of()
+		        : Collections.unmodifiableList(startTimes);
 	}
 
 	/**
@@ -97,8 +98,6 @@ public class ELine extends AbstractEntity {
 		        getType(),
 		        getName(), getStations(), getTimetables());
 	}
-
-
 
 	@Override
 	public boolean equals(Object obj) {
