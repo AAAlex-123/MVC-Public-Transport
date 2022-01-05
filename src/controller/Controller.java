@@ -189,8 +189,17 @@ public class Controller implements IController {
 			img = new BufferedImage(54, 54, BufferedImage.TYPE_INT_RGB); //create empty image
 		}
 
-		if((img.getHeight() > maxHeight) || (img.getWidth() > maxWidth))
-			return img.getScaledInstance(maxWidth, maxHeight,  java.awt.Image.SCALE_SMOOTH);
+		final int height = img.getHeight();
+		final int width  = img.getWidth();
+
+		if ((height > maxHeight) && (width > maxWidth))
+			return img.getScaledInstance(maxWidth, maxHeight, java.awt.Image.SCALE_SMOOTH);
+
+		else if (height > maxHeight)
+			return img.getScaledInstance(width, maxHeight, java.awt.Image.SCALE_SMOOTH);
+
+		else if (width > maxWidth)
+			return img.getScaledInstance(maxWidth, height, java.awt.Image.SCALE_SMOOTH);
 
 		return img;
 	}
