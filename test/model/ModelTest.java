@@ -9,7 +9,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -20,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import entity.ELine;
 import entity.EStation;
+import entity.ETimetable;
 import entity.ETown;
 import entity.LineType;
 import entity.Position;
@@ -38,6 +38,53 @@ class ModelTest {
 	private static final String pass = "localhostMVCMy$QL";
 
 	private final IModel model = new Model(url, user, pass);
+
+	private static final ETown            tSpata, tAgia_paraskevi, tNea_filadelfia, tMetamorfwsh,
+	        tAthina;
+	private static final EStation         sFournos, sAgia_paraskevi, sNomismatokopeio, sNea_ionia,
+	        sPlateia, sPapandreou, sSyntagma, sAerodromio, sMonasthraki;
+	private static final ELine            l305, l421, lB9, l3;
+	private static final List<EStation>   sl305, sl421, slB9, sl3;
+	private static final List<ETimetable> tl305, tl421, tlB9, tl3;
+
+	static {
+		tSpata = new ETown(1, "spata");
+		tAgia_paraskevi = new ETown(2, "agia paraskevi");
+		tNea_filadelfia = new ETown(3, "nea filadelfia");
+		tMetamorfwsh = new ETown(4, "metamorfwsh");
+		tAthina = new ETown(5, "athina");
+
+		sFournos = new EStation(1, "fournos", new Position(18, 5), tSpata);
+		sAgia_paraskevi = new EStation(2, "agia paraskevi", new Position(14, 5), tAgia_paraskevi);
+		sNomismatokopeio = new EStation(3, "nomismatokopeio", new Position(12, 6), tAgia_paraskevi);
+		sNea_ionia = new EStation(4, "nea ionia", new Position(13, 17), tNea_filadelfia);
+		sPlateia = new EStation(5, "plateia", new Position(14, 19), tNea_filadelfia);
+		sPapandreou = new EStation(6, "papandreou", new Position(17, 25), tMetamorfwsh);
+		sSyntagma = new EStation(7, "syntagma", new Position(3, 10), tAthina);
+		sAerodromio = new EStation(8, "aerodromio", new Position(20, 3), tSpata);
+		sMonasthraki = new EStation(9, "monasthraki", new Position(0, 12), tAthina);
+
+		sl305 = List.of(sFournos, sAgia_paraskevi, sNomismatokopeio);
+		sl421 = List.of(sAgia_paraskevi, sNea_ionia, sPlateia);
+		slB9 = List.of(sPapandreou, sPlateia, sSyntagma);
+		sl3 = List.of(sAerodromio, sAgia_paraskevi, sNomismatokopeio, sSyntagma, sMonasthraki);
+
+		tl305 = List.of(new ETimetable(12, 00), new ETimetable(13, 00), new ETimetable(14, 00),
+		        new ETimetable(15, 00), new ETimetable(16, 00), new ETimetable(17, 00),
+		        new ETimetable(18, 00));
+		tl421 = List.of();
+		tlB9 = List.of(new ETimetable(17, 00), new ETimetable(18, 00), new ETimetable(19, 00),
+		        new ETimetable(20, 00), new ETimetable(21, 00), new ETimetable(22, 00),
+		        new ETimetable(23, 00));
+		tl3 = List.of(new ETimetable(5, 00), new ETimetable(8, 00), new ETimetable(11, 00),
+		        new ETimetable(14, 00), new ETimetable(17, 00), new ETimetable(20, 00),
+		        new ETimetable(23, 00));
+
+		l305 = new ELine(1, "305", LineType.BUS, "spata-nomismatokopeio", sl305, tl305);
+		l421 = new ELine(2, "421", LineType.BUS, "agia paraskevi-nea filadelfia", sl421, tl421);
+		lB9 = new ELine(3, "B9", LineType.BUS, "metamorfwsi-athina", slB9, tlB9);
+		l3 = new ELine(4, "3", LineType.SUBWAY, "aerodromio-syntagma", sl3, tl3);
+	}
 
 	/**
 	 * TODO
@@ -201,10 +248,10 @@ class ModelTest {
 		                + "('monasthraki', 0, 12, 5);",
 
 		        "INSERT INTO Line (lineNo, description, type) VALUES "
-		                + "('305', 'spata-nomismatokopeio', 'bus'),"
-		                + "('421', 'agia paraskevi-nea filadelfia', 'bus'),"
-		                + "('B9', 'metamorfwsi-athina', 'bus'),"
-		                + "('3', 'aerodromio-syntagma', 'subway');",
+		                + "('305', 'spata-nomismatokopeio', 'BUS'),"
+		                + "('421', 'agia paraskevi-nea filadelfia', 'BUS'),"
+		                + "('B9', 'metamorfwsi-athina', 'BUS'),"
+		                + "('3', 'aerodromio-syntagma', 'SUBWAY');",
 
 		        "INSERT INTO LineStation (line_id, station_id, station_index) VALUES "
 		                + "(1, 1, 0),"
@@ -278,29 +325,18 @@ class ModelTest {
 	 */
 	@Test
 	final void testGetTowns() {
-		ETown spata          = new ETown(1, "spata");
-		ETown agia_paraskevi = new ETown(2, "agia paraskevi");
-		ETown nea_filadelfia = new ETown(3, "nea filadelfia");
-		ETown metamorfwsh    = new ETown(4, "metamorfwsh");
-		ETown athina         = new ETown(5, "athina");
 
-		List<ETown> eAllTowns = List.of(agia_paraskevi, athina, metamorfwsh, nea_filadelfia, spata);
+		List<ETown> eAllTowns = List.of(tAgia_paraskevi, tAthina, tMetamorfwsh, tNea_filadelfia,
+		        tSpata);
 		List<ETown> aAllTowns = assertDoesNotThrow(() -> {
 		    return model.getTowns(null);
 		});
 
 		assertIterableEquals(eAllTowns, aAllTowns);
 
-		EStation sSpata          = new EStation(-1, null, null, spata);
-		EStation sAgia_paraskevi = new EStation(-1, null, null, agia_paraskevi);
-		EStation sAthina         = new EStation(-1, null, null, athina);
-		ELine    line            = new ELine(4, "null", null, "null",
-		        List.of(sSpata, sAgia_paraskevi, sAthina),
-		        new LinkedList<>());
-
-		List<ETown> eTownsByLine = List.of(agia_paraskevi, athina, spata);
+		List<ETown> eTownsByLine = List.of(tAgia_paraskevi, tAthina, tSpata);
 		List<ETown> aTownsByLine = assertDoesNotThrow(() -> {
-		    return model.getTowns(line);
+		    return model.getTowns(l3);
 		});
 
 		assertIterableEquals(eTownsByLine, aTownsByLine);
@@ -311,7 +347,21 @@ class ModelTest {
 	 */
 	@Test
 	final void testGetLines() {
-		fail("Not yet implemented"); // TODO
+		assertThrows(IllegalArgumentException.class, () -> {
+		    model.getLines(new ETown(-1, null), new EStation(-1, null, null, null));
+		});
+
+		List<ELine> eLinesFromAthina = List.of(lB9, l3);
+		List<ELine> aLinesFromAthina = assertDoesNotThrow(
+		        () -> { return model.getLines(tAthina, null); });
+
+		assertIterableEquals(eLinesFromAthina, aLinesFromAthina);
+
+		List<ELine> eLinesFromNomismatokopeio = List.of(l305, l3);
+		List<ELine> aLinesFromNomismatokopeio = assertDoesNotThrow(
+		        () -> { return model.getLines(null, sNomismatokopeio); });
+
+		assertIterableEquals(eLinesFromNomismatokopeio, aLinesFromNomismatokopeio);
 	}
 
 	/**
@@ -322,16 +372,6 @@ class ModelTest {
 		assertThrows(IllegalArgumentException.class, () -> {
 		    model.getStations(null);
 		});
-
-		ETown tAgia_paraskevi = new ETown(2, null);
-		ETown tAthina         = new ETown(5, null);
-
-		EStation sAgia_paraskevi  = new EStation(2, "agia paraskevi", new Position(14, 5),
-		        tAgia_paraskevi);
-		EStation sNomismatokopeio = new EStation(3, "nomismatokopeio", new Position(12, 6),
-		        tAgia_paraskevi);
-		EStation sSyntagma        = new EStation(7, "syntagma", new Position(3, 10), tAthina);
-		EStation sMonasthraki     = new EStation(9, "monasthraki", new Position(0, 12), tAthina);
 
 		List<EStation> eStationsByAgiaParaskevi = List.of(sAgia_paraskevi, sNomismatokopeio);
 		List<EStation> aStationsByAgiaParaskevi = assertDoesNotThrow(() -> {
@@ -384,39 +424,29 @@ class ModelTest {
 		    model.insertTown(null);
 		});
 
-		ETown spata          = new ETown(1, "spata");
-		ETown agia_paraskevi = new ETown(2, "agia paraskevi");
-		ETown nea_filadelfia = new ETown(3, "nea filadelfia");
-		ETown metamorfwsh    = new ETown(4, "metamorfwsh");
-		ETown athina         = new ETown(5, "athina");
-
 		List<ETown> eTowns = new ArrayList<>(
-		        List.of(agia_paraskevi, athina, metamorfwsh, nea_filadelfia, spata));
+		        List.of(tAgia_paraskevi, tAthina, tMetamorfwsh, tNea_filadelfia, tSpata));
 		List<ETown> aTowns = assertDoesNotThrow(() -> {
 		    return model.getTowns(null);
 		});
 
 		assertIterableEquals(eTowns, aTowns);
 
+
 		ETown peiraias = new ETown(6, "peiraias");
-		assertDoesNotThrow(() -> {
-		    model.insertTown(peiraias);
-		});
+		assertDoesNotThrow(() -> { model.insertTown(peiraias); });
+
 		eTowns.add(4, peiraias);
-		aTowns = assertDoesNotThrow(() -> {
-		    return model.getTowns(null);
-		});
+		aTowns = assertDoesNotThrow(() -> { return model.getTowns(null); });
 
 		assertIterableEquals(eTowns, aTowns);
 
+
 		ETown ellhniko = new ETown(7, "ellhniko");
-		assertDoesNotThrow(() -> {
-		    model.insertTown(ellhniko);
-		});
+		assertDoesNotThrow(() -> { model.insertTown(ellhniko); });
+
 		eTowns.add(2, ellhniko);
-		aTowns = assertDoesNotThrow(() -> {
-		    return model.getTowns(null);
-		});
+		aTowns = assertDoesNotThrow(() -> { return model.getTowns(null); });
 
 		assertIterableEquals(eTowns, aTowns);
 	}
@@ -430,22 +460,13 @@ class ModelTest {
 		    model.insertStation(null);
 		});
 
-		ETown tAgia_paraskevi = new ETown(2, "agia paraskevi");
-		ETown tAthina         = new ETown(5, "athina");
-
-		EStation sAgia_paraskevi  = new EStation(2, "agia paraskevi", new Position(14, 5),
-		        tAgia_paraskevi);
-		EStation sNomismatokopeio = new EStation(3, "nomismatokopeio", new Position(12, 6),
-		        tAgia_paraskevi);
-		EStation sSyntagma        = new EStation(7, "syntagma", new Position(3, 10), tAthina);
-		EStation sMonasthraki     = new EStation(9, "monasthraki", new Position(0, 12), tAthina);
-
 		List<EStation> eStationsByAthina = new ArrayList<>(List.of(sMonasthraki, sSyntagma));
 		List<EStation> aStationsByAthina = assertDoesNotThrow(() -> {
 		    return model.getStations(tAthina);
 		});
 
 		assertIterableEquals(eStationsByAthina, aStationsByAthina);
+
 
 		EStation sEvangelismos = new EStation(10, "evangelismos", new Position(5, 9), tAthina);
 		EStation sAmpelokhpoi  = new EStation(11, "amplokhpoi", new Position(7, 12), tAthina);
@@ -460,6 +481,7 @@ class ModelTest {
 		});
 
 		assertIterableEquals(eStationsByAthina, aStationsByAthina);
+
 
 		List<EStation> eStationsByAgiaParaskevi = new ArrayList<>(
 		        List.of(sAgia_paraskevi, sNomismatokopeio));
