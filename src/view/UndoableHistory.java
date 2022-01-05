@@ -96,7 +96,7 @@ class UndoableHistory<T extends Undoable> {
 	 *
 	 * @return a List with the previously executed Undoables
 	 */
-	public List<Undoable> getPast() {
+	public List<T> getPast() {
 		return new Vector<>(past);
 	}
 
@@ -108,7 +108,7 @@ class UndoableHistory<T extends Undoable> {
 	 *
 	 * @return a List with the previously un-executed Undoables
 	 */
-	public List<Undoable> getFuture() {
+	public List<T> getFuture() {
 		return new Vector<>(future);
 	}
 }
