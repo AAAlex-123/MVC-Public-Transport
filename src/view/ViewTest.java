@@ -20,10 +20,22 @@ import entity.LineType;
 import entity.Position;
 import requirement.util.Requirements;
 
-public class ViewTest {
-	protected static final int WINDOW_HEIGHT = 750;
-	protected static final int WINDOW_WIDTH = 1000;
+/**
+ * TODO: delet this class
+ * <p>
+ * Defines a TestController that doesn't call the Model's methods. Instead, it
+ * creates and returns hard-coded entities and lists thereof.
+ *
+ * @author Alex Mandelias
+ * @author Dimitris Tsirmpas
+ */
+class ViewTest {
 
+	/**
+	 * Creates and runs a View with that TestController.
+	 *
+	 * @param args command-line arguments (not used)
+	 */
 	public static void main(String[] args) {
 		IView       view       = new OASAView();
 		IController controller = new TestController(view);
@@ -31,7 +43,6 @@ public class ViewTest {
 
 		view.start();
 	}
-
 
 	private static class TestController implements IController {
 
@@ -51,11 +62,19 @@ public class ViewTest {
 				img = new BufferedImage(54, 54, BufferedImage.TYPE_INT_RGB); //create empty image
 			}
 
-			if((img.getHeight() > maxHeight) || (img.getWidth() > maxWidth))
-				return img.getScaledInstance(maxWidth, maxHeight,  java.awt.Image.SCALE_SMOOTH);
-			else
-				return img;
+			final int height = img.getHeight();
+			final int width  = img.getWidth();
 
+			if ((height > maxHeight) && (width > maxWidth))
+				return img.getScaledInstance(maxWidth, maxHeight, java.awt.Image.SCALE_SMOOTH);
+
+			else if (height > maxHeight)
+				return img.getScaledInstance(width, maxHeight, java.awt.Image.SCALE_SMOOTH);
+
+			else if (width > maxWidth)
+				return img.getScaledInstance(maxWidth, height, java.awt.Image.SCALE_SMOOTH);
+
+			return img;
 		}
 
 		@Override
