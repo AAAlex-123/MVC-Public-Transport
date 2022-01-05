@@ -146,15 +146,18 @@ public class Model implements IModel {
 			qSelectAllLines = "SELECT DISTINCT L.* FROM Line AS L "
 			        + "JOIN LineStation AS LS ON L.id = LS.line_id "
 			        + "JOIN Station AS S ON LS.station_id = S.id "
-			        + "JOIN City AS C ON Station.city_id = C.id "
-			        + "WHERE C.id = " + town.getId();
+			        + "JOIN City AS C ON S.city_id = C.id "
+			        + "WHERE C.id = " + town.getId() + " "
+			        + "ORDER BY L.type, L.lineNo;";
 		} else if (station != null) {
 			qSelectAllLines = "SELECT DISTINCT L.* FROM Line AS L "
 			        + "JOIN LineStation AS LS ON L.id = LS.line_id "
 			        + "JOIN Station AS S ON LS.station_id = S.id "
-			        + "WHERE S.id = " + station.getId();
+			        + "WHERE S.id = " + station.getId() + " "
+			        + "ORDER BY L.type, L.lineNo;";
 		} else {
-			qSelectAllLines = "SELECT L.* FROM Line AS L ";
+			qSelectAllLines = "SELECT L.* FROM Line AS L "
+			        + "ORDER BY L.type, L.lineNo;";
 		}
 
 		final List<ELine>                    linesFromDatabase      = new LinkedList<>();
@@ -169,15 +172,17 @@ public class Model implements IModel {
 					final LineType type        = LineType.valueOf(rs.getString("L.type"));
 					final String   description = rs.getString("L.description");
 
-					linesFromDatabase.add(new ELine(id, lineNo, type, description, null, null));
+					linesFromDatabase
+					        .add(new ELine(id, lineNo, type, description, List.of(), List.of()));
 				}
 			}
 		});
 
 		final String qSelectStationsForLine = "SELECT S.*, C.* FROM Station AS S "
 		        + "JOIN LineStation AS LS ON S.id = LS.station_id "
-		        + "JOIN City AS C ON C.id = S.id "
-		        + "WHERE LS.line_id = @1";
+		        + "JOIN City AS C ON C.id = S.city_id "
+		        + "WHERE LS.line_id = @1 "
+		        + "ORDER BY LS.station_index;";
 
 		doWithConnection((Connection conn) -> {
 
@@ -207,8 +212,9 @@ public class Model implements IModel {
 			}
 		});
 
-		final String qSelectTimetablesForLine = "SELECLT LT.departure_time FROM LineTimetable AS LT"
-		        + "WHERE LT.line_id = @1";
+		final String qSelectTimetablesForLine = "SELECT LT.departure_time FROM LineTimetable AS LT "
+		        + "WHERE LT.line_id = @1 "
+		        + "ORDER BY LT.departure_time;";
 
 		doWithConnection((Connection conn) -> {
 
