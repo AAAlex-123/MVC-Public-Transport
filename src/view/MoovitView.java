@@ -2,7 +2,7 @@ package view;
 
 import java.util.List;
 
-import javax.swing.JPanel;
+import javax.swing.JMenuBar;
 
 import entity.ELine;
 import entity.EStation;
@@ -18,12 +18,23 @@ import entity.ETown;
 public class MoovitView extends AbstractView {
 
 	/**
-	 * TODO
-	 *
-	 * @param factory
+	 * Constructs a concrete MoovitView and provides an instance of
+	 * {@link MoovitEntityGraphicFactory} to the abstract super class.
 	 */
-	public MoovitView(AbstractEntityGraphicFactory factory) {
-		super(factory);
+	public MoovitView() {
+		super(new MoovitEntityGraphicFactory());
+	}
+
+	@Override
+	protected JMenuBar constructJMenuBar() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateViewWithHomepage() {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -55,11 +66,4 @@ public class MoovitView extends AbstractView {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void updateViewWithHomepage() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

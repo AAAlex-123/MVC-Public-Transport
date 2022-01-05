@@ -11,6 +11,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,6 +43,36 @@ public class OASAView extends AbstractView {
 	 */
 	public OASAView() {
 		super(new OASAEntityGraphicFactory());
+	}
+
+	@Override
+	protected JMenuBar constructJMenuBar() {
+		JMenuBar menuBar = new JMenuBar();
+
+		final JMenu     m_preferences;
+		final JMenuItem home, prev, next, p_settings, p_language;
+
+		home = new JMenuItem("<HOME_ICON>");
+		prev = new JMenuItem("<PREV_ICON>");
+		next = new JMenuItem("<NEXT_ICON>");
+
+		m_preferences = new JMenu("Preferences"); //$NON-NLS-1$
+		p_settings = new JMenuItem("Settings"); //$NON-NLS-1$
+		p_language = new JMenuItem("Language"); //$NON-NLS-1$
+		m_preferences.add(p_settings);
+		m_preferences.add(p_language);
+
+
+		menuBar.add(home);
+		menuBar.add(prev);
+		menuBar.add(next);
+		menuBar.add(m_preferences);
+
+		home.addActionListener((e) -> OASAView.this.changeToHomePanel());
+		prev.addActionListener((e) -> OASAView.this.changeToPreviousPanel());
+		next.addActionListener((e) -> OASAView.this.changeToNextPanel());
+
+		return menuBar;
 	}
 
 	@Override

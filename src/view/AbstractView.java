@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
@@ -59,6 +60,7 @@ abstract class AbstractView extends JFrame implements IView {
 		mainPanel.add(headerPanel, BorderLayout.NORTH);
 		mainPanel.add(contentPanel, BorderLayout.CENTER);
 		getContentPane().add(mainPanel);
+		setJMenuBar(constructJMenuBar());
 
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -76,6 +78,8 @@ abstract class AbstractView extends JFrame implements IView {
 	public final void registerController(IController newController) {
 		controller = newController;
 	}
+
+	protected abstract JMenuBar constructJMenuBar();
 
 	// ---------- Methods for the Concrete View classes ---------- //
 
