@@ -1,11 +1,14 @@
 package view;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Image;
+import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import controller.IController;
 import entity.ELine;
@@ -13,38 +16,57 @@ import entity.EStation;
 import entity.ETown;
 
 /**
- * An implementation of the {@link IView} interface.
+ * An abstract implementation of the {@link IView} interface which defines
+ * delegate methods to the View's registered {@link IController}, which the
+ * concrete implementations will call.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
 abstract class AbstractView extends JFrame implements IView {
-	protected static final int WINDOW_HEIGHT = 750;
-	protected static final int WINDOW_WIDTH = 500;
+	private static final int WINDOW_HEIGHT = 750;
+	private static final int WINDOW_WIDTH  = 500;
 
-	protected IController controller;
+	/** The factory that constructs graphics for the Entities this View displays */
 	protected final AbstractEntityGraphicFactory factory;
-	
-	private JPanel mainPanel = new JPanel();
-	private JPanel sourcePanel = new JPanel();
 
-	private UndoableHistory<Undoable> navigationHistory;
+	private IController                          controller;
 
+	private final UndoableHistory<Undoable> navigationHistory;
+
+	private final JPanel mainPanel;
+	private JPanel       headerPanel, contentPanel;
+
+	/**
+	 * Constructs the view initialising its UI and providing a factory with which to
+	 * construct its graphics. The factory can be changed to provide different
+	 * graphics while maintaining the same layout.
+	 *
+	 * @param factory the factory that will be used to construct its graphics
+	 */
 	public AbstractView(AbstractEntityGraphicFactory factory) {
 		super("Public Transport Prototype");
-		
 		this.factory = factory;
+		factory.initializeView(this);
 		navigationHistory = new UndoableHistory<>();
-		mainPanel.add(sourcePanel);
-		add(mainPanel);
-		
+		setLayout(new FlowLayout());
+
+		mainPanel = new JPanel();
+		headerPanel = new JPanel();
+		contentPanel = new JPanel();
+
+		mainPanel.setLayout(new BorderLayout());
+		mainPanel.add(headerPanel, BorderLayout.NORTH);
+		mainPanel.add(contentPanel, BorderLayout.CENTER);
+		getContentPane().add(mainPanel);
+
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		setSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 
 	@Override
-	public final void start() {		
+	public final void start() {
 		updateViewWithHomepage();
 		setVisible(true);
 	}
@@ -53,151 +75,169 @@ abstract class AbstractView extends JFrame implements IView {
 	public final void registerController(IController newController) {
 		controller = newController;
 	}
-	
-	/**
-	 * Update the panel above the main panel.
-	 * The new panel represents the previous panel which produced
-	 * the change in view.
-	 * 
-	 * For example if the view showed the stations, and a click on a station
-	 * changed the main panel to show the lines from that station, this method
-	 * should be updated with the clicked station.
-	 * 
-	 * @param newSourcePanel null to remove the main panel, a JPanel to 
-	 * update it with a new graphic
-	 */
-	private void updateSourcePanel(JPanel newSourcePanel) {
-		if (newSourcePanel == null)
-			sourcePanel = new JPanel();
-		else
-			sourcePanel = newSourcePanel;			
-	}
+
+	// ---------- Methods for the Concrete View classes ---------- //
 
 	/**
 	 * Replaces the panel inside this JFrame with a new one by executing the
-	 * appropriate {@code Command}.
-	 * <p>
-	 * To be called by Concrete View objects.
+	 * appropriate {@code Command}. This updates the history of panels.
 	 *
-	 * @param newPanel the new panel
+	 * @param newContentPanel the new panel
 	 */
-	protected final void updatePanel(JPanel newPanel) {
-		Undoable u = new ChangeViewCommand(this, mainPanel, newPanel);
+	protected final void updatePanel(JPanel newContentPanel) {
+		Undoable u = new ChangeViewCommand(this, contentPanel, newContentPanel);
 		u.execute();
+		this.contentPanel = newContentPanel;
 		navigationHistory.add(u);
 	}
 
-	private final void prevPanel() {
+	/**
+	 * A wrapper method for {@link IController#loadImage(String, int, int)}.
+	 *
+	 * @param name      the image's name
+	 * @param maxWidth  the maximum width of the image
+	 * @param maxHeight the maximum height of the image
+	 *
+	 * @return an {@code ImageIcon} for the image with the corresponding name
+	 */
+	protected final ImageIcon getImageIcon(String name, int maxWidth, int maxHeight) {
+		return new ImageIcon(controller.loadImage(name, maxWidth, maxHeight));
+	}
+
+	/**
+	 * Delegates to {@link #getImageIcon(String, int, int)}.
+	 *
+	 * @param name the image's name
+	 *
+	 * @return an {@code ImageIcon} for the image with the corresponding name, with
+	 *         a maximum width and height equal to that of this View
+	 */
+	protected final ImageIcon getImageIcon(String name) {
+		return getImageIcon(name, AbstractView.WINDOW_WIDTH, AbstractView.WINDOW_HEIGHT);
+	}
+
+	// ---------- AbstractView Commands ---------- //
+
+	protected final void changeToPreviousPanel() {
 		navigationHistory.undo();
 	}
 
-	private final void nextPanel() {
+	protected final void changeToNextPanel() {
 		navigationHistory.redo();
 	}
-	
+
 	/**
-	 * A wrapper method for {@link IController#getStationsByTown(ETown)}
-	 * that also updates the source panel of the view.
-	 * 
+	 * A wrapper method for {@link IController#getStationsByTown(ETown)} that also
+	 * updates the source panel of the view.
+	 *
 	 * @param town the town from which the stations will be selected
+	 *
 	 * @see #updateSourcePanel(JPanel)
 	 */
-	final void getStationsByTown(ETown town) {
-		updateSourcePanel(factory.getETownGraphic(town));
+	protected final void getStationsByTown(ETown town) {
 		controller.getStationsByTown(town);
+		updateSourcePanel(factory.getETownGraphic(town));
 	}
-	
+
 	/**
 	 * A wrapper method for {@link IController#getLinesByTown(ETown)}
 	 * that also updates the source panel of the view.
-	 * 
+	 *
 	 * @param town the town from which the lines will be selected
 	 * @see #updateSourcePanel(JPanel)
 	 */
-	final void getLinesByTown(ETown town) {
-		updateSourcePanel(factory.getETownGraphic(town));
+	protected final void getLinesByTown(ETown town) {
 		controller.getLinesByTown(town);
+		updateSourcePanel(factory.getETownGraphic(town));
 	}
-	
+
 	/**
 	 * A wrapper method for {@link IController#getStationsByLine(ELine)}
 	 * that also updates the source panel of the view.
-	 * 
+	 *
 	 * @param line the line from which the stations will be selected
 	 * @see #updateSourcePanel(JPanel)
 	 */
-	final void getStationsByLine(ELine line) {
-		updateSourcePanel(factory.getELineGraphic(line));
+	protected final void getStationsByLine(ELine line) {
 		controller.getStationsByLine(line);
+		updateSourcePanel(factory.getELineGraphic(line));
 	}
-	
+
 	/**
 	 * A wrapper method for {@link IController#getTimetablesByLine(ELine)}
 	 * that also updates the source panel of the view.
-	 * 
+	 *
 	 * @param line the line from which the timetables will be selected
 	 * @see #updateSourcePanel(JPanel)
 	 */
-	final void getTimetablesByLine(ELine line) {
-		updateSourcePanel(factory.getELineGraphic(line));
+	protected final void getTimetablesByLine(ELine line) {
 		controller.getTimetablesByLine(line);
+		updateSourcePanel(factory.getELineGraphic(line));
 	}
-	
+
 	/**
 	 * A wrapper method for {@link IController#getTownsByLine(ELine)}
 	 * that also updates the source panel of the view.
-	 * 
+	 *
 	 * @param line the line from which the timetables will be selected
 	 * @see #updateSourcePanel(JPanel)
 	 */
-	final void getTownsByLine(ELine line) {
-		updateSourcePanel(factory.getELineGraphic(line));
+	protected final void getTownsByLine(ELine line) {
 		controller.getTownsByLine(line);
+		updateSourcePanel(factory.getELineGraphic(line));
 	}
-	
+
 	/**
 	 * A wrapper method for {@link IController#getLinesByStation(EStation)}
 	 * that also updates the source panel of the view.
-	 * 
+	 *
 	 * @param station the station from which the timetables will be selected
 	 * @see #updateSourcePanel(JPanel)
 	 */
-	final void getLinesByStation(EStation station) {
-		updateSourcePanel(factory.getEStationGraphic(station));
+	protected final void getLinesByStation(EStation station) {
 		controller.getLinesByStation(station);
+		updateSourcePanel(factory.getEStationGraphic(station));
 	}
-	
+
 	/**
 	 * A wrapper method for {@link IController#getAllTowns()}
 	 * that also resets the source panel of the view.
-	 * 
+	 *
 	 * @see #updateSourcePanel(JPanel)
 	 */
-	final void getAllTowns() {
-		updateSourcePanel(null);
+	protected final void getAllTowns() {
 		controller.getAllTowns();
+		updateSourcePanel(null);
 	}
-	
+
 	/**
 	 * A wrapper method for {@link IController#getAllLines()}
 	 * that also resets the source panel of the view.
-	 * 
+	 *
 	 * @see #updateSourcePanel(JPanel)
 	 */
-	final void getAllLines() {
-		updateSourcePanel(null);
+	protected final void getAllLines() {
 		controller.getAllLines();
+		updateSourcePanel(null);
 	}
-	
+
 	/**
-	 * A wrapper method for {@link IController#loadImage(String, int, int)}
-	 * @param name the image's name
-	 * @param maxWidth the maximum width of the image
-	 * @param maxHeight the maximum height of the image
-	 * @return The image with the corresponding name
+	 * Update the panel above the main panel. The new panel represents the previous
+	 * panel which produced the change in view.
+	 * <p>
+	 * For example if the view showed the stations, and a click on a station changed
+	 * the main panel to show the lines from that station, this method should be
+	 * updated with the clicked station.
+	 *
+	 * @param newSourcePanel null to remove the main panel, a JPanel to update it
+	 *                       with a new graphic
 	 */
-	final Image loadImage(String name, int maxWidth, int maxHeight) {
-		return controller.loadImage(name, maxWidth, maxHeight);
+	private void updateSourcePanel(JPanel newSourcePanel) {
+		if (headerPanel != null)
+			mainPanel.remove(headerPanel);
+		headerPanel = newSourcePanel;
+		if (headerPanel != null)
+			mainPanel.add(headerPanel, BorderLayout.NORTH);
+		revalidate();
 	}
-	
 }

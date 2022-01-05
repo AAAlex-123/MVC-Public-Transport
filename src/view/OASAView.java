@@ -1,21 +1,21 @@
 package view;
 
-import java.awt.Dimension;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
 import entity.ELine;
 import entity.EStation;
@@ -23,91 +23,107 @@ import entity.ETimetable;
 import entity.ETown;
 
 /**
- * One Concrete View that extends the {@link AbstractView}. More Concrete Views
- * can be constructed to illustrate different ways to use the {@link IView}
- * interface.
+ * A concrete implementation of the {@link IView} interface that extends the
+ * {@link AbstractView}. More Concrete Views can be implemented to illustrate
+ * different ways to use the {@link IView} interface.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
 public class OASAView extends AbstractView {
-	
+
 	private static final Font textFont = new Font(Font.SANS_SERIF, Font.BOLD, 18);
 
 	/**
-	 * TODO
+	 * Constructs a concrete OASAView and provides an instance of
+	 * {@link OASAEntityGraphicFactory} to the abstract super class.
 	 */
 	public OASAView() {
 		super(new OASAEntityGraphicFactory());
-		super.factory.initializeView(this);
 	}
-	
+
+	@Override
+	public void updateViewWithHomepage() {
+		JPanel home = new JPanel();
+		home.setLayout(new BoxLayout(home, BoxLayout.Y_AXIS));
+
+		JPanel imagePanel = new JPanel();
+		imagePanel.add(new JLabel(super.getImageIcon("oasa_home.jpg")));
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 30, 30, 30));
+
+		JButton button1 = new JButton("Search for Lines");
+		JButton button2 = new JButton("Search for Towns");
+
+		button1.addActionListener((e) -> OASAView.super.getAllLines());
+		button2.addActionListener((e) -> OASAView.super.getAllTowns());
+
+		buttonPanel.add(button1);
+		buttonPanel.add(button2);
+
+		home.add(imagePanel);
+		home.add(Box.createVerticalStrut(15));
+		home.add(buttonPanel);
+
+		super.updatePanel(home);
+	}
+
 	@Override
 	public void updateViewWithTowns(List<ETown> towns) {
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		
-		JLabel text = new JLabel("Showing all towns:");
-		text.setFont(textFont);
-		mainPanel.add(text);
-		
-		JScrollPane scrollPanel = getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3));
-		for(var town : towns)
-			scrollPanel.add(factory.getETownGraphic(town));
-		mainPanel.add(scrollPanel);
-		
-		super.updatePanel(mainPanel);
+		JPanel contentPanel = getContentPanel();
+
+		JPanel townPanel = getDisplayPanel();
+		for (ETown town : towns)
+			townPanel.add(factory.getETownGraphic(town));
+
+		contentPanel.add(getCenteredLabel("Towns"), BorderLayout.NORTH);
+		contentPanel.add(getJSPForPanel(townPanel), BorderLayout.CENTER);
+
+		super.updatePanel(contentPanel);
 	}
 
 	@Override
 	public void updateViewWithLines(List<ELine> lines) {
-		JPanel mainPanel = new JPanel();		
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		
-		for(var line : lines)
-			mainPanel.add(factory.getELineGraphic(line));
-		
-		JLabel text = new JLabel("Available Lines:");
-		text.setFont(textFont);
-		mainPanel.add(text);		
+		JPanel contentPanel = getContentPanel();
 
-		mainPanel.add(getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3)));
-		
-		super.updatePanel(mainPanel);
+		JPanel linePanel = getDisplayPanel();
+		for (ELine line : lines)
+			linePanel.add(factory.getELineGraphic(line));
+
+		contentPanel.add(getCenteredLabel("Lines"), BorderLayout.NORTH);
+		contentPanel.add(getJSPForPanel(linePanel), BorderLayout.CENTER);
+
+		super.updatePanel(contentPanel);
 	}
 
 	@Override
 	public void updateViewWithStations(List<EStation> stations) {
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		
-		for(var station : stations)
-			mainPanel.add(factory.getEStationGraphic(station));
-		
-		JLabel text = new JLabel("Available Stations:");
-		text.setFont(textFont);
-		mainPanel.add(text);
+		JPanel contentPanel = getContentPanel();
 
-		mainPanel.add(getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3)));
-		
-		super.updatePanel(mainPanel);
+		JPanel stationPanel = getDisplayPanel();
+		for (EStation station : stations)
+			stationPanel.add(factory.getEStationGraphic(station));
+
+		contentPanel.add(getCenteredLabel("Stations"), BorderLayout.NORTH);
+		contentPanel.add(getJSPForPanel(stationPanel), BorderLayout.CENTER);
+
+		super.updatePanel(contentPanel);
 	}
 
 	@Override
 	public void updateViewWithTimetables(List<ETimetable> timetables) {
-		JPanel mainPanel = new JPanel();	
-		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		
-		for(var timetable : timetables)
-			mainPanel.add(factory.getETimetableGraphic(timetable));
-		
-		JLabel text = new JLabel("TimeTables to Arrival:");
-		text.setFont(textFont);
-		mainPanel.add(text);
+		JPanel contentPanel = getContentPanel();
 
-		mainPanel.add(getScrolledPanel(new Dimension(WINDOW_WIDTH *4/5, WINDOW_HEIGHT/3)));
-		
-		super.updatePanel(mainPanel);
+		JPanel timetablePanel = getDisplayPanel();
+		for (ETimetable timetable : timetables)
+			timetablePanel.add(factory.getETimetableGraphic(timetable));
+
+		contentPanel.add(getCenteredLabel("Departures"), BorderLayout.NORTH);
+		contentPanel.add(getJSPForPanel(timetablePanel), BorderLayout.CENTER);
+
+		super.updatePanel(contentPanel);
 	}
 
 	@Override
@@ -115,79 +131,32 @@ public class OASAView extends AbstractView {
 		JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	}
 
-	@Override
-	public void updateViewWithHomepage() {
-		JPanel home = new JPanel();
-		home.setLayout(new BoxLayout(home, BoxLayout.Y_AXIS));
-		
-		JPanel imagePanel = new JPanel();
-		imagePanel.add(new JLabel(new ImageIcon(controller.loadImage("oasa_home.jpg", WINDOW_HEIGHT, WINDOW_WIDTH))));
-		home.add(imagePanel);
-		home.add(Box.createVerticalStrut(15));
-		
-		JPanel buttonWrapperPanel = new JPanel();
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(3,1));
-		
-		Dimension buttonDimensions = new Dimension(WINDOW_WIDTH*4/5, 100);
-		buttonPanel.setPreferredSize(buttonDimensions);
-		
-		JButton button1 = new JButton("Find Routes and Lines");
-		button1.setSize(buttonDimensions);
-		buttonPanel.add(button1);
-		JButton button2 = new JButton("Search Towns and Stations");
-		button2.setSize(buttonDimensions);
-		buttonPanel.add(button2);
-		JButton button3 = new JButton("Find Lines by Vehicle Type");
-		button3.setSize(buttonDimensions);
-		buttonPanel.add(button3);
-		
-		button1.addActionListener(new ActionListener() {
+	// ---------- static factory methods ----------
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				OASAView.this.getAllLines();
-			}
-			
-		});
-		
-		button2.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				OASAView.this.getAllTowns();
-			}
-			
-		});
-		
-		button3.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//TODO: list requirement graphic for line type?
-				OASAView.this.getAllLines();
-			}
-			
-		});
-		
-		
-		buttonWrapperPanel.add(buttonPanel);
-		
-		home.add(buttonWrapperPanel);
-		home.add(Box.createVerticalStrut(15));
-		
-		super.updatePanel(home);
+	private static JPanel getContentPanel() {
+		return new JPanel(new BorderLayout());
 	}
-	
-	
-	
-	private static JScrollPane getScrolledPanel(Dimension size) {
-		JPanel mainPanel = new JPanel();
-		JScrollPane scrollPane = new JScrollPane(mainPanel,   ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, 
-				 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setPreferredSize(size);
-		
-		return scrollPane;
-		
+
+	private static JPanel getDisplayPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		return panel;
+	}
+
+	private static JLabel getCenteredLabel(String text) {
+		JLabel label = new JLabel(text, SwingConstants.CENTER);
+		label.setFont(textFont);
+		label.setAlignmentX(Component.CENTER_ALIGNMENT);
+		return label;
+	}
+
+	private static JScrollPane getJSPForPanel(JPanel panel) {
+		JScrollPane jsp = new JScrollPane(panel);
+		jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		jsp.setBorder(BorderFactory.createEmptyBorder());
+		jsp.setWheelScrollingEnabled(true);
+
+		return jsp;
 	}
 }
