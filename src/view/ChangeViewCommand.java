@@ -1,12 +1,13 @@
 package view;
 
-import java.awt.Container;
+import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
 /**
- * TODO
- *
+ * Encapsulates the information necessary to change the main panel of an
+ * {@link AbstractView} to a new one. This process can be undone to display the
+ * previous panel.
  *
  * @author Alex Mandelias
  */
@@ -15,13 +16,17 @@ class ChangeViewCommand implements Undoable {
 	private final AbstractView view;
 	private final JPanel       prevPanel, nextPanel;
 
-
 	/**
-	 * TODO
+	 * Constructs a Command that, when executed, will remove a panel from an
+	 * {@code AbstractView} and add another one in the {@code BorderLayout.CENTER}
+	 * position.
+	 * <p>
+	 * When un-executing this command, the reverse will happen, meaning that the
+	 * removed panel will be added and the added will be removed.
 	 *
-	 * @param view
-	 * @param prevPanel
-	 * @param nextPanel
+	 * @param view      the {@code AbstractView} instance whose panel will change
+	 * @param prevPanel the panel which will be removed
+	 * @param nextPanel the panel which will be added
 	 */
 	public ChangeViewCommand(AbstractView view, JPanel prevPanel, JPanel nextPanel) {
 		this.view = view;
@@ -31,28 +36,23 @@ class ChangeViewCommand implements Undoable {
 
 	@Override
 	public void execute() {
-		gotoPanel(nextPanel, prevPanel);
+		gotoPanel(prevPanel, nextPanel);
 	}
 
 	@Override
 	public void unexecute() {
-		gotoPanel(prevPanel, nextPanel);
+		gotoPanel(nextPanel, prevPanel);
 	}
 
 	/**
 	 * Replaces the panel inside this JFrame with a new one.
-	 * <p>
-	 * To be called by {@code ChangeViewCommand#execute}.
 	 *
-	 * @param newPanel the new panel
 	 * @param oldPanel the old panel
+	 * @param newPanel the new panel
 	 */
-	private void gotoPanel(JPanel newPanel, JPanel oldPanel) {
-		final Container contentPane = view.getContentPane();
-		contentPane.remove(oldPanel);
-		contentPane.add(newPanel);
-
-		view.invalidate();
-		view.repaint();
+	private void gotoPanel(JPanel oldPanel, JPanel newPanel) {
+		view.getContentPane().remove(oldPanel);
+		view.getContentPane().add(newPanel, BorderLayout.CENTER);
+		view.revalidate();
 	}
 }
