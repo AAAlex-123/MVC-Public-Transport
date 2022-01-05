@@ -30,8 +30,6 @@ public class ViewTest {
 		view.registerController(controller);
 
 		view.start();
-
-		controller.getAllLines();
 	}
 
 
