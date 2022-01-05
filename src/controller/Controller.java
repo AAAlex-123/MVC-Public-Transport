@@ -179,8 +179,8 @@ public class Controller implements IController {
 			view.updateViewWithError(e);
 		}
 	}
-	
-	@Override 
+
+	@Override
 	public Image loadImage(String name, int maxWidth, int maxHeight) {
 		BufferedImage img;
 		try {
@@ -188,11 +188,10 @@ public class Controller implements IController {
 		} catch(IOException ioe) {
 			img = new BufferedImage(54, 54, BufferedImage.TYPE_INT_RGB); //create empty image
 		}
-		
-		if(img.getHeight() > maxHeight || img.getWidth() > maxWidth)
+
+		if((img.getHeight() > maxHeight) || (img.getWidth() > maxWidth))
 			return img.getScaledInstance(maxWidth, maxHeight,  java.awt.Image.SCALE_SMOOTH);
-		else
-			return img;
-			
+
+		return img;
 	}
 }

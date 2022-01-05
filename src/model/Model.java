@@ -3,6 +3,8 @@ package model;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -363,7 +365,7 @@ public class Model implements IModel {
 			        .replace("@2", timetable.toString()));
 		});
 	}
-	
+
 	@Override
 	public BufferedImage loadImage(String name) throws IOException {
 		BufferedImage loadedSprite = null;
@@ -372,7 +374,7 @@ public class Model implements IModel {
 		loadedSprite = ImageIO.read(file);
 		return loadedSprite;
 	}
-	
+
 	private static File getResourcePath(String spriteName) {
 		Path path = Paths.get(System.getProperty("user.dir"));
 		String resource_dir = path.toString() + File.separator + "other_resources" + File.separator + "resources";

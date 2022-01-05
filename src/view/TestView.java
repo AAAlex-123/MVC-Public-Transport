@@ -43,4 +43,9 @@ public class TestView extends AbstractView {
 	public void updateViewWithError(Exception e) {
 		System.out.println(e);
 	}
+
+	@Override
+	public void updateViewWithHomepage() {
+		System.out.println("homepage");
+	}
 }

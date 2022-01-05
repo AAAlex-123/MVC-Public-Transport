@@ -1,8 +1,11 @@
 package controller;
 
+import java.awt.Image;
+
 import entity.ELine;
 import entity.EStation;
 import entity.ETown;
+import model.IModel;
 import requirement.util.Requirements;
 
 /**
@@ -42,7 +45,7 @@ public interface IController {
 	void insertStationToLine(Requirements reqs);
 
 	void insertTimetableToLine(Requirements reqs);
-	
+
 	/**
 	 * Loads an image from the {@link IModel} and resizes it if necessary.
 	 * @param name the image's name

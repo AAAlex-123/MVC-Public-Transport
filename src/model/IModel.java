@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -119,12 +120,12 @@ public interface IModel {
 	 * @throws SQLException if the database couldn't be updated
 	 */
 	void insertTimetableToLine(ELine line, ETimetable timetable) throws SQLException;
-	
+
 	/**
 	 * Load an image from a source.
-	 * 
+	 *
 	 * @param name the image's name
-	 * @return a {@link BufferedImage} 
+	 * @return a {@link BufferedImage}
 	 * @throws IOException if the image couldn't be loaded
 	 */
 	BufferedImage loadImage(String name) throws IOException;
