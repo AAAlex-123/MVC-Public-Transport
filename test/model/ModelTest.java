@@ -25,8 +25,7 @@ import entity.LineType;
 import entity.Position;
 
 /**
- * TODO
- *
+ * Unit tests for the {@link Model} class.
  *
  * @author Alex Mandelias
  */
@@ -87,9 +86,9 @@ class ModelTest {
 	}
 
 	/**
-	 * TODO
+	 * Executes queries to create the tables in the 'test' database.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception if an SQLException occurs
 	 */
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -129,10 +128,11 @@ class ModelTest {
 		}
 	}
 
+
 	/**
-	 * TODO
+	 * Executes queries to drop all tables in the 'test' database.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception if an SQLException occurs
 	 */
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
@@ -218,10 +218,11 @@ class ModelTest {
 		}
 	}
 
+
 	/**
-	 * TODO
+	 * Executes queries to insert data in the 'test' database.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception if an SQLException occurs
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
@@ -289,11 +290,13 @@ class ModelTest {
 		}
 	}
 
+
 	/**
-	 * TODO
+	 * Executes queries to delete all data in the 'test' database.
 	 *
-	 * @throws java.lang.Exception
+	 * @throws java.lang.Exception if an SQLException occurs
 	 */
+
 	@AfterEach
 	void tearDown() throws Exception {
 		final String[] qDeleteFromTables = {
@@ -318,6 +321,7 @@ class ModelTest {
 		}
 	}
 
+	// TODO: remove
 	private static boolean keepAlive = false;
 
 	/**
