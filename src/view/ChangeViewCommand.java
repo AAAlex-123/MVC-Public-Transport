@@ -14,7 +14,12 @@ import javax.swing.JPanel;
 class ChangeViewCommand implements Undoable {
 
 	private final AbstractView view;
-	private final JPanel       prevPanel, nextPanel;
+
+	/** The current panel that will be removed on execution */
+	final JPanel prevPanel;
+
+	/** The new panel that will be added on execution */
+	final JPanel nextPanel;
 
 	/**
 	 * Constructs a Command that, when executed, will remove a panel from an
@@ -54,5 +59,6 @@ class ChangeViewCommand implements Undoable {
 		view.getContentPane().remove(oldPanel);
 		view.getContentPane().add(newPanel, BorderLayout.CENTER);
 		view.revalidate();
+		view.repaint();
 	}
 }

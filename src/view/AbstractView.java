@@ -3,6 +3,7 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -32,10 +33,9 @@ abstract class AbstractView extends JFrame implements IView {
 
 	private IController                          controller;
 
-	private final UndoableHistory<Undoable> navigationHistory;
+	private final UndoableHistory<ChangeViewCommand> navigationHistory;
 
-	private final JPanel mainPanel;
-	private JPanel       headerPanel, contentPanel;
+	private JPanel mainPanel, headerPanel, contentPanel;
 
 	/**
 	 * Constructs the view initialising its UI and providing a factory with which to
@@ -67,7 +67,8 @@ abstract class AbstractView extends JFrame implements IView {
 
 	@Override
 	public final void start() {
-		updateViewWithHomepage();
+		changeToHomePanel();
+		navigationHistory.clear();
 		setVisible(true);
 	}
 
@@ -85,9 +86,13 @@ abstract class AbstractView extends JFrame implements IView {
 	 * @param newContentPanel the new panel
 	 */
 	protected final void updatePanel(JPanel newContentPanel) {
-		Undoable u = new ChangeViewCommand(this, contentPanel, newContentPanel);
+		JPanel newMainPanel = new JPanel(new BorderLayout());
+		newMainPanel.add(headerPanel, BorderLayout.NORTH);
+		newMainPanel.add(newContentPanel, BorderLayout.CENTER);
+
+		ChangeViewCommand u = new ChangeViewCommand(this, mainPanel, newMainPanel);
 		u.execute();
-		this.contentPanel = newContentPanel;
+		this.mainPanel = newMainPanel;
 		navigationHistory.add(u);
 	}
 
@@ -118,12 +123,27 @@ abstract class AbstractView extends JFrame implements IView {
 
 	// ---------- AbstractView Commands ---------- //
 
+	protected final void changeToHomePanel() {
+		updateHeaderPanel(null);
+		updateViewWithHomepage();
+	}
+
 	protected final void changeToPreviousPanel() {
-		navigationHistory.undo();
+		if (navigationHistory.canUndo()) {
+			navigationHistory.undo();
+			// top of stack is last in the list
+			List<ChangeViewCommand> future = navigationHistory.getFuture();
+			this.mainPanel = future.get(future.size() - 1).prevPanel;
+		}
 	}
 
 	protected final void changeToNextPanel() {
-		navigationHistory.redo();
+		if (navigationHistory.canRedo()) {
+			navigationHistory.redo();
+			// top of stack is last in the list
+			List<ChangeViewCommand> past = navigationHistory.getPast();
+			this.mainPanel = past.get(past.size() - 1).prevPanel;
+		}
 	}
 
 	/**
@@ -132,11 +152,11 @@ abstract class AbstractView extends JFrame implements IView {
 	 *
 	 * @param town the town from which the stations will be selected
 	 *
-	 * @see #updateSourcePanel(JPanel)
+	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getStationsByTown(ETown town) {
+		updateHeaderPanel(factory.getETownGraphic(town));
 		controller.getStationsByTown(town);
-		updateSourcePanel(factory.getETownGraphic(town));
 	}
 
 	/**
@@ -144,11 +164,11 @@ abstract class AbstractView extends JFrame implements IView {
 	 * that also updates the source panel of the view.
 	 *
 	 * @param town the town from which the lines will be selected
-	 * @see #updateSourcePanel(JPanel)
+	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getLinesByTown(ETown town) {
+		updateHeaderPanel(factory.getETownGraphic(town));
 		controller.getLinesByTown(town);
-		updateSourcePanel(factory.getETownGraphic(town));
 	}
 
 	/**
@@ -156,11 +176,11 @@ abstract class AbstractView extends JFrame implements IView {
 	 * that also updates the source panel of the view.
 	 *
 	 * @param line the line from which the stations will be selected
-	 * @see #updateSourcePanel(JPanel)
+	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getStationsByLine(ELine line) {
+		updateHeaderPanel(factory.getELineGraphic(line));
 		controller.getStationsByLine(line);
-		updateSourcePanel(factory.getELineGraphic(line));
 	}
 
 	/**
@@ -168,11 +188,11 @@ abstract class AbstractView extends JFrame implements IView {
 	 * that also updates the source panel of the view.
 	 *
 	 * @param line the line from which the timetables will be selected
-	 * @see #updateSourcePanel(JPanel)
+	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getTimetablesByLine(ELine line) {
+		updateHeaderPanel(factory.getELineGraphic(line));
 		controller.getTimetablesByLine(line);
-		updateSourcePanel(factory.getELineGraphic(line));
 	}
 
 	/**
@@ -180,11 +200,11 @@ abstract class AbstractView extends JFrame implements IView {
 	 * that also updates the source panel of the view.
 	 *
 	 * @param line the line from which the timetables will be selected
-	 * @see #updateSourcePanel(JPanel)
+	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getTownsByLine(ELine line) {
+		updateHeaderPanel(factory.getELineGraphic(line));
 		controller.getTownsByLine(line);
-		updateSourcePanel(factory.getELineGraphic(line));
 	}
 
 	/**
@@ -192,36 +212,40 @@ abstract class AbstractView extends JFrame implements IView {
 	 * that also updates the source panel of the view.
 	 *
 	 * @param station the station from which the timetables will be selected
-	 * @see #updateSourcePanel(JPanel)
+	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getLinesByStation(EStation station) {
+		updateHeaderPanel(factory.getEStationGraphic(station));
 		controller.getLinesByStation(station);
-		updateSourcePanel(factory.getEStationGraphic(station));
 	}
 
 	/**
 	 * A wrapper method for {@link IController#getAllTowns()}
 	 * that also resets the source panel of the view.
 	 *
-	 * @see #updateSourcePanel(JPanel)
+	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getAllTowns() {
+		updateHeaderPanel(null);
 		controller.getAllTowns();
-		updateSourcePanel(null);
 	}
 
 	/**
 	 * A wrapper method for {@link IController#getAllLines()}
 	 * that also resets the source panel of the view.
 	 *
-	 * @see #updateSourcePanel(JPanel)
+	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getAllLines() {
+		updateHeaderPanel(null);
 		controller.getAllLines();
-		updateSourcePanel(null);
 	}
 
 	/**
+	 * <b>TODO: FIX DOCUMENTATION! THIS METHOD ONLY CHANGES THE HEADER_PANEL. IT
+	 * DOESN'T UPDATE THE MAIN PANEL WITH THE NEW HEADER PANEL. LOOK AT SOURCE OF
+	 * {@link #updatePanel(JPanel)} FOR MORE INFO. </b>
+	 * <p>
 	 * Update the panel above the main panel. The new panel represents the previous
 	 * panel which produced the change in view.
 	 * <p>
@@ -232,12 +256,9 @@ abstract class AbstractView extends JFrame implements IView {
 	 * @param newSourcePanel null to remove the main panel, a JPanel to update it
 	 *                       with a new graphic
 	 */
-	private void updateSourcePanel(JPanel newSourcePanel) {
-		if (headerPanel != null)
-			mainPanel.remove(headerPanel);
+	private void updateHeaderPanel(JPanel newSourcePanel) {
 		headerPanel = newSourcePanel;
-		if (headerPanel != null)
-			mainPanel.add(headerPanel, BorderLayout.NORTH);
-		revalidate();
+		if (headerPanel == null)
+			headerPanel = new JPanel();
 	}
 }
