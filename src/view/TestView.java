@@ -2,6 +2,7 @@ package view;
 
 import java.util.List;
 
+import controller.IController;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
@@ -13,11 +14,10 @@ import entity.ETown;
  *
  * @author Alex Mandelias
  */
-public class TestView extends AbstractView {
+@SuppressWarnings("nls")
+public class TestView implements IView {
 
-	public TestView() {
-		super(null);
-	}
+	public TestView() {}
 
 	@Override
 	public void updateViewWithTowns(List<ETown> towns) {
@@ -47,5 +47,15 @@ public class TestView extends AbstractView {
 	@Override
 	public void updateViewWithHomepage() {
 		System.out.println("homepage");
+	}
+
+	@Override
+	public void start() {
+		System.out.println("starting");
+	}
+
+	@Override
+	public void registerController(IController controller) {
+		System.out.println("registering controller: " + controller);
 	}
 }
