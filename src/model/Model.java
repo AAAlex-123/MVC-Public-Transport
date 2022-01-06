@@ -381,7 +381,7 @@ public class Model implements IModel {
 
 		doWithStatement((Statement stmt) -> {
 			stmt.execute(insertToLineTimetable.replace("@1", String.valueOf(line.getId()))
-			        .replace("@2", timetable.toString()));
+			        .replace("@2", timetable.getFormattedTime()));
 		});
 	}
 }
