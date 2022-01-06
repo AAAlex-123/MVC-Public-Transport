@@ -333,16 +333,12 @@ class ModelTest {
 
 		List<ETown> eAllTowns = List.of(tAgia_paraskevi, tAthina, tMetamorfwsh, tNea_filadelfia,
 		        tSpata);
-		List<ETown> aAllTowns = assertDoesNotThrow(() -> {
-		    return model.getTowns(null);
-		});
+		List<ETown> aAllTowns = assertDoesNotThrow(() -> model.getTowns(null));
 
 		assertIterableEquals(eAllTowns, aAllTowns);
 
 		List<ETown> eTownsByLine = List.of(tAgia_paraskevi, tAthina, tSpata);
-		List<ETown> aTownsByLine = assertDoesNotThrow(() -> {
-		    return model.getTowns(l3);
-		});
+		List<ETown> aTownsByLine = assertDoesNotThrow(() -> model.getTowns(l3));
 
 		assertIterableEquals(eTownsByLine, aTownsByLine);
 	}
@@ -357,14 +353,14 @@ class ModelTest {
 		});
 
 		List<ELine> eLinesFromAthina = List.of(lB9, l3);
-		List<ELine> aLinesFromAthina = assertDoesNotThrow(
-		        () -> { return model.getLines(tAthina, null); });
+		List<ELine> aLinesFromAthina = assertDoesNotThrow(() -> model.getLines(tAthina, null));
 
 		assertIterableEquals(eLinesFromAthina, aLinesFromAthina);
 
 		List<ELine> eLinesFromNomismatokopeio = List.of(l305, l3);
-		List<ELine> aLinesFromNomismatokopeio = assertDoesNotThrow(
-		        () -> { return model.getLines(null, sNomismatokopeio); });
+		List<ELine> aLinesFromNomismatokopeio = assertDoesNotThrow(() -> {
+		    return model.getLines(null, sNomismatokopeio);
+		});
 
 		assertIterableEquals(eLinesFromNomismatokopeio, aLinesFromNomismatokopeio);
 	}
@@ -374,9 +370,7 @@ class ModelTest {
 	 */
 	@Test
 	final void testGetStations() {
-		assertThrows(IllegalArgumentException.class, () -> {
-		    model.getStations(null);
-		});
+		assertThrows(IllegalArgumentException.class, () -> model.getStations(null));
 
 		List<EStation> eStationsByAgiaParaskevi = List.of(sAgia_paraskevi, sNomismatokopeio);
 		List<EStation> aStationsByAgiaParaskevi = assertDoesNotThrow(() -> {
@@ -398,18 +392,12 @@ class ModelTest {
 	 */
 	@Test
 	final void testGetVehicleSprite() {
-		assertThrows(IllegalArgumentException.class, () -> {
-		    model.getVehicleSprite(null);
-		});
+		assertThrows(IllegalArgumentException.class, () -> model.getVehicleSprite(null));
 
-		for (LineType type : LineType.values()) {
-			assertDoesNotThrow(() -> {
-			    model.getVehicleSprite(type);
-			});
-		}
-		assertDoesNotThrow(() -> {
-		    model.getVehicleSprite(LineType.BUS);
-		});
+		for (LineType type : LineType.values())
+			assertDoesNotThrow(() -> model.getVehicleSprite(type));
+
+		assertDoesNotThrow(() -> model.getVehicleSprite(LineType.BUS));
 	}
 
 	/**
@@ -425,33 +413,29 @@ class ModelTest {
 	 */
 	@Test
 	final void testInsertTown() {
-		assertThrows(IllegalArgumentException.class, () -> {
-		    model.insertTown(null);
-		});
+		assertThrows(IllegalArgumentException.class, () -> model.insertTown(null));
 
 		List<ETown> eTowns = new ArrayList<>(
 		        List.of(tAgia_paraskevi, tAthina, tMetamorfwsh, tNea_filadelfia, tSpata));
-		List<ETown> aTowns = assertDoesNotThrow(() -> {
-		    return model.getTowns(null);
-		});
+		List<ETown> aTowns = assertDoesNotThrow(() -> model.getTowns(null));
 
 		assertIterableEquals(eTowns, aTowns);
 
 
 		ETown peiraias = new ETown(6, "peiraias");
-		assertDoesNotThrow(() -> { model.insertTown(peiraias); });
+		assertDoesNotThrow(() -> model.insertTown(peiraias));
 
 		eTowns.add(4, peiraias);
-		aTowns = assertDoesNotThrow(() -> { return model.getTowns(null); });
+		aTowns = assertDoesNotThrow(() -> model.getTowns(null));
 
 		assertIterableEquals(eTowns, aTowns);
 
 
 		ETown ellhniko = new ETown(7, "ellhniko");
-		assertDoesNotThrow(() -> { model.insertTown(ellhniko); });
+		assertDoesNotThrow(() -> model.insertTown(ellhniko));
 
 		eTowns.add(2, ellhniko);
-		aTowns = assertDoesNotThrow(() -> { return model.getTowns(null); });
+		aTowns = assertDoesNotThrow(() -> model.getTowns(null));
 
 		assertIterableEquals(eTowns, aTowns);
 	}
@@ -461,9 +445,7 @@ class ModelTest {
 	 */
 	@Test
 	final void testInsertStation() {
-		assertThrows(IllegalArgumentException.class, () -> {
-		    model.insertStation(null);
-		});
+		assertThrows(IllegalArgumentException.class, () -> model.insertStation(null));
 
 		List<EStation> eStationsByAthina = new ArrayList<>(List.of(sMonasthraki, sSyntagma));
 		List<EStation> aStationsByAthina = assertDoesNotThrow(() -> {
