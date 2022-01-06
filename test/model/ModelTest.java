@@ -1,6 +1,7 @@
 package model;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -521,7 +522,29 @@ class ModelTest {
 	 */
 	@Test
 	final void testInsertTimetableToLine() {
-		fail("Not yet implemented"); // TODO
-	}
+		assertThrows(IllegalArgumentException.class, () -> {
+		    model.insertTimetableToLine(null, new ETimetable(0, 0));
+		});
 
+		assertThrows(IllegalArgumentException.class, () -> {
+		    model.insertTimetableToLine(new ELine(-1, null, null, null, null, null), null);
+		});
+
+		ELine el305 = l305;
+		ELine al305 = assertDoesNotThrow(() -> model.getLines(tSpata, null)).get(0);
+
+		assertEquals(el305, al305);
+
+
+		ETimetable newTimetable = new ETimetable(0, 30);
+		assertDoesNotThrow(() -> model.insertTimetableToLine(l305, newTimetable));
+
+		List<ETimetable> timetables = new ArrayList<>(l305.getTimetables());
+		timetables.add(0, newTimetable);
+		el305 = new ELine(l305.getId(), l305.getLineNumber(), l305.getType(),
+		        l305.getName(), l305.getStations(), timetables);
+		al305 = assertDoesNotThrow(() -> model.getLines(tSpata, null)).get(0);
+
+		assertEquals(el305, al305);
+	}
 }
