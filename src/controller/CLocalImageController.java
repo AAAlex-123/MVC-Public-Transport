@@ -3,7 +3,10 @@ package controller;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import entity.LineType;
 import model.IImageModel;
 
 /**
@@ -16,6 +19,8 @@ public class CLocalImageController implements IImageController {
 
 	private final IImageModel model;
 
+	private final Map<String, Image> imageCache;
+
 	/**
 	 * Constructs an ImageLoader Controller that communicates with an ImageModel to
 	 * load the requested images.
@@ -24,10 +29,15 @@ public class CLocalImageController implements IImageController {
 	 */
 	public CLocalImageController(IImageModel model) {
 		this.model = model;
+		imageCache = new HashMap<>();
 	}
 
 	@Override
 	public Image loadImage(String name, int maxWidth, int maxHeight) {
+		Image cachedSprite = imageCache.get(name);
+		if (cachedSprite != null)
+			return cachedSprite;
+
 		BufferedImage img;
 		try {
 			img = model.loadImage(name);
@@ -38,15 +48,26 @@ public class CLocalImageController implements IImageController {
 		final int currHeight = img.getHeight();
 		final int currWidth  = img.getWidth();
 
+		Image loadedImage = img;
+
 		if ((currHeight > maxHeight) && (currWidth > maxWidth))
-			return img.getScaledInstance(maxWidth, maxHeight, java.awt.Image.SCALE_SMOOTH);
+			loadedImage = img.getScaledInstance(maxWidth, maxHeight, java.awt.Image.SCALE_SMOOTH);
 
 		else if (currHeight > maxHeight)
-			return img.getScaledInstance(currWidth, maxHeight, java.awt.Image.SCALE_SMOOTH);
+			loadedImage = img.getScaledInstance(currWidth, maxHeight, java.awt.Image.SCALE_SMOOTH);
 
 		else if (currWidth > maxWidth)
-			return img.getScaledInstance(maxWidth, currHeight, java.awt.Image.SCALE_SMOOTH);
+			loadedImage = img.getScaledInstance(maxWidth, currHeight, java.awt.Image.SCALE_SMOOTH);
 
-		return img;
+		imageCache.put(name, loadedImage);
+		return loadedImage;
+	}
+
+	@Override
+	public Image getVehicleSprite(LineType type) {
+		if (type == null)
+			throw new IllegalArgumentException("type can't be null"); //$NON-NLS-1$
+
+		return loadImage(type.getSpriteName(), Integer.MAX_VALUE, Integer.MAX_VALUE);
 	}
 }

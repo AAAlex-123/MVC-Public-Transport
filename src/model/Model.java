@@ -1,8 +1,5 @@
 package model;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -15,14 +12,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
 import entity.LineType;
-import entity.MissingSpriteException;
 import entity.Position;
 
 /**
@@ -80,8 +74,6 @@ public class Model implements IModel {
 
 	private final String url, user, password;
 
-	private final HashMap<LineType, BufferedImage> spriteCache;
-
 	/**
 	 * Constructs a Model that communicates with the live underlying database to
 	 * retrieve and return data using objects from the {@link entity} package.
@@ -103,7 +95,6 @@ public class Model implements IModel {
 		this.url = url;
 		this.user = user;
 		this.password = password;
-		spriteCache = new HashMap<>();
 	}
 
 	@Override
@@ -284,30 +275,6 @@ public class Model implements IModel {
 		return stations;
 	}
 
-	@Override
-	public BufferedImage getVehicleSprite(LineType type) throws MissingSpriteException {
-		if (type == null)
-			throw new IllegalArgumentException("type can't be null");
-
-		BufferedImage cachedSprite = spriteCache.get(type);
-		if (cachedSprite != null)
-			return cachedSprite;
-
-		BufferedImage loadedSprite = null;
-		File          file         = null;
-
-		try {
-			file = new File(type.getName());
-			loadedSprite = ImageIO.read(file);
-		} catch (final IOException e) {
-			// should this simply consume the exception and not load anything?
-			throw new MissingSpriteException(file);
-		}
-
-		spriteCache.put(type, loadedSprite);
-
-		return loadedSprite;
-	}
 
 	@Override
 	public void insertLine(ELine line) throws SQLException {

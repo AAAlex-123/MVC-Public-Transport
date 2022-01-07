@@ -1,7 +1,10 @@
 package controller;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
+import entity.LineType;
+import entity.MissingSpriteException;
 import model.IImageModel;
 
 /**
@@ -24,4 +27,15 @@ public interface IImageController {
 	 * @return a possibly resized, loaded Image
 	 */
 	Image loadImage(String name, int maxWidth, int maxHeight);
+
+	/**
+	 * Get the image for the specified public transport vehicle.
+	 *
+	 * @param type the vehicle type
+	 *
+	 * @throws MissingSpriteException if the image couldn't be loaded
+	 *
+	 * @return a {@link BufferedImage} representing the vehicle
+	 */
+	Image getVehicleSprite(LineType type) throws MissingSpriteException;
 }

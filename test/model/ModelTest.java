@@ -387,19 +387,6 @@ class ModelTest {
 	}
 
 	/**
-	 * Test method for {@link model.Model#getVehicleSprite(entity.LineType)}.
-	 */
-	@Test
-	final void testGetVehicleSprite() {
-		assertThrows(IllegalArgumentException.class, () -> model.getVehicleSprite(null));
-
-		for (LineType type : LineType.values())
-			assertDoesNotThrow(() -> model.getVehicleSprite(type));
-
-		assertDoesNotThrow(() -> model.getVehicleSprite(LineType.BUS));
-	}
-
-	/**
 	 * Test method for {@link model.Model#insertLine(entity.ELine)}.
 	 */
 	@Test

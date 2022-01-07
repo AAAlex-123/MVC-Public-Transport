@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 @SuppressWarnings("nls")
 public class MLocalImageModel implements IImageModel {
 
-	private final String resourceDirectory;
+	final String resourceDirectory;
 
 	/**
 	 * Constructs a Model that loads images from a given directory.

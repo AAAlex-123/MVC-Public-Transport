@@ -1,6 +1,5 @@
 package model;
 
-import java.awt.image.BufferedImage;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -8,8 +7,6 @@ import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
-import entity.LineType;
-import entity.MissingSpriteException;
 
 /**
  * An interface for the {@code Model} of the {@code MVC architecture}. The Model
@@ -61,16 +58,6 @@ public interface IModel {
 	 */
 	List<EStation> getStations(ETown town) throws SQLException;
 
-	/**
-	 * Get the image for the specified public transport vehicle.
-	 *
-	 * @param type the vehicle type
-	 *
-	 * @throws MissingSpriteException if the image couldn't be loaded
-	 *
-	 * @return a {@link BufferedImage} representing the vehicle
-	 */
-	BufferedImage getVehicleSprite(LineType type) throws MissingSpriteException;
 
 	/**
 	 * Insert a new {@link ELine} in the database.
