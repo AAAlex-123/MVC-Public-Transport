@@ -19,6 +19,14 @@ public class MLocalImageModel implements IImageModel {
 	final String resourceDirectory;
 
 	/**
+	 * Constructs a Model that loads images from the
+	 * {@code other_resources\resources} directory.
+	 */
+	public MLocalImageModel() {
+		this("other_resources", "resources");
+	}
+
+	/**
 	 * Constructs a Model that loads images from a given directory.
 	 *
 	 * @param subdirectories the sub-directories, starting from the user directory,
