@@ -314,12 +314,12 @@ public class Model implements IModel {
 		if (line == null)
 			throw new IllegalArgumentException("line can't be null");
 
-		final String insertToLine = "INSERT INTO Line VALUES ('@2', '@3', '@4')";
+		final String insertToLine = "INSERT INTO Line (lineNo, description, type) VALUES ('@2', '@3', '@4')";
 
 		doWithStatement((Statement stmt) -> {
 			stmt.execute(insertToLine.replace("@2", line.getLineNumber())
-				        .replace("@3", line.getName())
-				        .replace("@4", line.getType().getName()));
+			        .replace("@3", line.getName())
+			        .replace("@4", line.getType().toString()));
 		});
 	}
 
@@ -366,9 +366,11 @@ public class Model implements IModel {
 		        + "WHERE LS.line_id = @1";
 		final String insertToLineStation = "INSERT INTO LineStation VALUES (@1, @2, @3)";
 
+		final String lineID = String.valueOf(line.getId());
+
 		doWithStatement((Statement stmt) -> {
 		    stmt.execute(
-		            deleteExistingStationsFromLine.replace("@1", String.valueOf(line.getId())));
+		            deleteExistingStationsFromLine.replace("@1", lineID));
 		});
 
 		List<EStation> allStations = new ArrayList<>(line.getStations());
@@ -377,7 +379,7 @@ public class Model implements IModel {
 		doWithConnection((Connection conn) -> {
 			for (int i = 0; i < allStations.size(); i++) {
 				try (Statement stmt = conn.createStatement()) {
-					stmt.execute(insertToLineStation.replace("@1", String.valueOf(line.getId()))
+					stmt.execute(insertToLineStation.replace("@1", lineID)
 					        .replace("@2", String.valueOf(allStations.get(i).getId()))
 					        .replace("@3", String.valueOf(i)));
 				}

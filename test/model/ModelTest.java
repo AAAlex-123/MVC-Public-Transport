@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -405,7 +404,42 @@ class ModelTest {
 	 */
 	@Test
 	final void testInsertLine() {
-		fail("Not yet implemented"); // TODO
+		assertThrows(IllegalArgumentException.class, () -> model.insertLine(null));
+
+		List<ELine> eLinesFromSpata = new ArrayList<>(List.of(l305, l3));
+		List<ELine> aLinesFromSpata = assertDoesNotThrow(() -> model.getLines(tSpata, null));
+
+		assertIterableEquals(eLinesFromSpata, aLinesFromSpata);
+
+		final ELine lExpress = new ELine(5, "X95", LineType.BUS,
+		        "athina-aerodromio express", null, null);
+
+		assertDoesNotThrow(() -> model.insertLine(lExpress));
+
+		final List<EStation> toAddStations = List.of(sSyntagma, sSpata, sAerodromio);
+		final List<EStation> addedStations = new ArrayList<>();
+
+		for (int i = 0; i < toAddStations.size(); i++) {
+			final int j = i; // must be final to use inside lambda expression
+
+			final ELine lUpdatedLine = new ELine(lExpress.getId(), lExpress.getLineNumber(),
+			        lExpress.getType(), lExpress.getName(), addedStations, null);
+
+			final EStation sStationToAdd = toAddStations.get(j);
+
+			assertDoesNotThrow(() -> model.insertStationToLine(lUpdatedLine, sStationToAdd, j));
+
+			addedStations.add(sStationToAdd);
+		}
+
+		ELine lExpressWithStations = new ELine(lExpress.getId(), lExpress.getLineNumber(),
+		        lExpress.getType(), lExpress.getName(), toAddStations, null);
+
+		eLinesFromSpata.add(1, lExpressWithStations);
+		aLinesFromSpata = assertDoesNotThrow(() -> model.getLines(tSpata, null));
+		System.out.println(aLinesFromSpata);
+
+		assertIterableEquals(eLinesFromSpata, aLinesFromSpata);
 	}
 
 	/**
