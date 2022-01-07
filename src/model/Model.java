@@ -107,24 +107,24 @@ public class Model implements IModel {
 		        + "WHERE L.id=@1";
 
 		final String qFinalisedQuery;
-		if (line == null) {
+		if (line == null)
 			qFinalisedQuery = qSelectAllTowns + " ORDER BY C.name;";
-		} else {
+		else {
 			final int id = line.getId();
 			qFinalisedQuery = qSelectTownsByLine.replaceAll("@1", String.valueOf(id))
 			        + " ORDER BY C.name;";
 		}
 
-		List<ETown> towns = new LinkedList<>();
+		final List<ETown> townsFromDatabase = new LinkedList<>();
 
 		doWithStatement((Statement stmt) -> {
 			try (ResultSet rs = stmt.executeQuery(qFinalisedQuery)) {
 				while (rs.next())
-					towns.add(new ETown(rs.getInt("C.id"), rs.getString("C.name")));
+					townsFromDatabase.add(new ETown(rs.getInt("C.id"), rs.getString("C.name")));
 			}
 		});
 
-		return towns;
+		return townsFromDatabase;
 	}
 
 	@Override
@@ -134,23 +134,22 @@ public class Model implements IModel {
 
 		final String qSelectAllLines;
 
-		if (town != null) {
+		if (town != null)
 			qSelectAllLines = "SELECT DISTINCT L.* FROM Line AS L "
 			        + "JOIN LineStation AS LS ON L.id = LS.line_id "
 			        + "JOIN Station AS S ON LS.station_id = S.id "
 			        + "JOIN City AS C ON S.city_id = C.id "
 			        + "WHERE C.id = " + town.getId() + " "
 			        + "ORDER BY L.type, L.lineNo;";
-		} else if (station != null) {
+		else if (station != null)
 			qSelectAllLines = "SELECT DISTINCT L.* FROM Line AS L "
 			        + "JOIN LineStation AS LS ON L.id = LS.line_id "
 			        + "JOIN Station AS S ON LS.station_id = S.id "
 			        + "WHERE S.id = " + station.getId() + " "
 			        + "ORDER BY L.type, L.lineNo;";
-		} else {
+		else
 			qSelectAllLines = "SELECT L.* FROM Line AS L "
 			        + "ORDER BY L.type, L.lineNo;";
-		}
 
 		final List<ELine>                    linesFromDatabase      = new LinkedList<>();
 		final Map<Integer, List<EStation>>   stationsFromDatabase   = new HashMap<>();
@@ -178,9 +177,9 @@ public class Model implements IModel {
 
 		doWithConnection((Connection conn) -> {
 
-			for (ELine line : linesFromDatabase) {
+			for (final ELine line : linesFromDatabase) {
 
-				List<EStation> newStations = new LinkedList<>();
+				final List<EStation> newStations = new LinkedList<>();
 
 				final String lineID = String.valueOf(line.getId());
 				final String query  = qSelectStationsForLine.replace("@1", lineID);
@@ -210,9 +209,9 @@ public class Model implements IModel {
 
 		doWithConnection((Connection conn) -> {
 
-			for (ELine line : linesFromDatabase) {
+			for (final ELine line : linesFromDatabase) {
 
-				List<ETimetable> newTimetables = new LinkedList<>();
+				final List<ETimetable> newTimetables = new LinkedList<>();
 
 				final String lineID = String.valueOf(line.getId());
 				final String query  = qSelectTimetablesForLine.replace("@1", lineID);
@@ -234,9 +233,9 @@ public class Model implements IModel {
 			}
 		});
 
-		final List<ELine> finalLines = new LinkedList<>();
+		final List<ELine> completeLinesFromDatabase = new LinkedList<>();
 
-		for (ELine line : linesFromDatabase) {
+		for (final ELine line : linesFromDatabase) {
 			final int              lineId            = line.getId();
 			final List<EStation>   stationsForLine   = stationsFromDatabase.get(lineId);
 			final List<ETimetable> timetablesForLine = timetablesFromDatabase.get(lineId);
@@ -244,10 +243,10 @@ public class Model implements IModel {
 			final ELine newLine = new ELine(lineId, line.getLineNumber(), line.getType(),
 			        line.getName(), stationsForLine, timetablesForLine);
 
-			finalLines.add(newLine);
+			completeLinesFromDatabase.add(newLine);
 		}
 
-		return finalLines;
+		return completeLinesFromDatabase;
 	}
 
 	@Override
@@ -255,14 +254,14 @@ public class Model implements IModel {
 		if (town == null)
 			throw new IllegalArgumentException("town can't be null");
 
-		final String stationsByTown = "SELECT S.* FROM Station AS S "
+		final String qSelectStationsByTown = "SELECT S.* FROM Station AS S "
 		        + "JOIN City AS C ON S.city_id = C.id "
 		        + "WHERE C.id=@1 "
 		        + "ORDER BY S.name";
 
-		final String query = stationsByTown.replaceAll("@1", String.valueOf(town.getId()));
+		final String query = qSelectStationsByTown.replaceAll("@1", String.valueOf(town.getId()));
 
-		List<EStation> stations = new LinkedList<>();
+		final List<EStation> stations = new LinkedList<>();
 
 		doWithStatement((Statement stmt) -> {
 			try (ResultSet rs = stmt.executeQuery(query)) {
@@ -281,10 +280,10 @@ public class Model implements IModel {
 		if (line == null)
 			throw new IllegalArgumentException("line can't be null");
 
-		final String insertToLine = "INSERT INTO Line (lineNo, description, type) VALUES ('@2', '@3', '@4')";
+		final String qInsertToLine = "INSERT INTO Line (lineNo, description, type) VALUES ('@2', '@3', '@4')";
 
 		doWithStatement((Statement stmt) -> {
-			stmt.execute(insertToLine.replace("@2", line.getLineNumber())
+			stmt.execute(qInsertToLine.replace("@2", line.getLineNumber())
 			        .replace("@3", line.getName())
 			        .replace("@4", line.getType().toString()));
 		});
@@ -295,10 +294,10 @@ public class Model implements IModel {
 		if (town == null)
 			throw new IllegalArgumentException("town can't be null");
 
-		final String insertToCity = "INSERT INTO City(name) VALUES ('@2')";
+		final String qInsertToCity = "INSERT INTO City(name) VALUES ('@2')";
 
 		doWithStatement((Statement stmt) -> {
-		    stmt.execute(insertToCity.replace("@2", town.getName()));
+		    stmt.execute(qInsertToCity.replace("@2", town.getName()));
 		});
 	}
 
@@ -307,12 +306,12 @@ public class Model implements IModel {
 		if (station == null)
 			throw new IllegalArgumentException("station can't be null");
 
-		final String   insertToStation = "INSERT INTO Station(name, x_coord, y_coord, city_id) VALUES ('@2', @3, @4, @5)";
-		final Position position        = station.getPosition();
+		final String   qInsertToStation = "INSERT INTO Station(name, x_coord, y_coord, city_id) VALUES ('@2', @3, @4, @5)";
+		final Position position         = station.getPosition();
 
 		doWithStatement((Statement stmt) -> {
 			stmt.execute(
-			        insertToStation.replace("@2", station.getName())
+			        qInsertToStation.replace("@2", station.getName())
 			                .replace("@3", String.valueOf(position.getX()))
 			                .replace("@4", String.valueOf(position.getY()))
 			                .replace("@5", String.valueOf(station.getTown().getId())));
@@ -329,28 +328,27 @@ public class Model implements IModel {
 			throw new IllegalArgumentException(
 			        "index must be between 0 and the number of the line's stations");
 
-		final String deleteExistingStationsFromLine = "DELETE FROM LineStation AS LS "
+		final String qDeleteExistingStationsFromLine = "DELETE FROM LineStation AS LS "
 		        + "WHERE LS.line_id = @1";
-		final String insertToLineStation = "INSERT INTO LineStation VALUES (@1, @2, @3)";
-
-		final String lineID = String.valueOf(line.getId());
+		final String lineID                          = String.valueOf(line.getId());
 
 		doWithStatement((Statement stmt) -> {
 		    stmt.execute(
-		            deleteExistingStationsFromLine.replace("@1", lineID));
+		            qDeleteExistingStationsFromLine.replace("@1", lineID));
 		});
 
-		List<EStation> allStations = new ArrayList<>(line.getStations());
-		allStations.add(index, station);
+		final String qInsertToLineStation = "INSERT INTO LineStation VALUES (@1, @2, @3)";
+
+		final List<EStation> stationsToAdd = new ArrayList<>(line.getStations());
+		stationsToAdd.add(index, station);
 
 		doWithConnection((Connection conn) -> {
-			for (int i = 0; i < allStations.size(); i++) {
+			for (int i = 0; i < stationsToAdd.size(); i++)
 				try (Statement stmt = conn.createStatement()) {
-					stmt.execute(insertToLineStation.replace("@1", lineID)
-					        .replace("@2", String.valueOf(allStations.get(i).getId()))
+					stmt.execute(qInsertToLineStation.replace("@1", lineID)
+					        .replace("@2", String.valueOf(stationsToAdd.get(i).getId()))
 					        .replace("@3", String.valueOf(i)));
 				}
-			}
 		});
 	}
 
@@ -361,10 +359,10 @@ public class Model implements IModel {
 		if (timetable == null)
 			throw new IllegalArgumentException("timetable can't be null");
 
-		final String insertToLineTimetable = "INSERT INTO LineTimetable VALUES (@1, '@2')";
+		final String qInsertToLineTimetable = "INSERT INTO LineTimetable VALUES (@1, '@2')";
 
 		doWithStatement((Statement stmt) -> {
-			stmt.execute(insertToLineTimetable.replace("@1", String.valueOf(line.getId()))
+			stmt.execute(qInsertToLineTimetable.replace("@1", String.valueOf(line.getId()))
 			        .replace("@2", timetable.getFormattedTime()));
 		});
 	}
