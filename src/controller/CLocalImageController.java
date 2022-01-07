@@ -15,6 +15,7 @@ import model.IImageModel;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
+@SuppressWarnings("nls")
 public class CLocalImageController implements IImageController {
 
 	private final IImageModel model;
@@ -34,6 +35,21 @@ public class CLocalImageController implements IImageController {
 
 	@Override
 	public Image loadImage(String name, int maxWidth, int maxHeight) {
+		if (name == null)
+			throw new IllegalArgumentException("name can't be null");
+
+		if (name.isEmpty())
+			throw new IllegalArgumentException("name can't be empty");
+
+		if ((maxWidth <= 0) && (maxHeight <= 0))
+			throw new IllegalArgumentException("maxWidth and maxHeight must be positive");
+
+		if (maxWidth <= 0)
+			throw new IllegalArgumentException("maxWidth must be positive");
+
+		if (maxHeight <= 0)
+			throw new IllegalArgumentException("maxHeight must be positive");
+
 		final Image cachedSprite = imageCache.get(name);
 		if (cachedSprite != null)
 			return cachedSprite;
