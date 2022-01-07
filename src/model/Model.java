@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -361,12 +362,26 @@ public class Model implements IModel {
 			throw new IllegalArgumentException(
 			        "index must be between 0 and the number of the line's stations");
 
+		final String deleteExistingStationsFromLine = "DELETE FROM LineStation AS LS "
+		        + "WHERE LS.line_id = @1";
 		final String insertToLineStation = "INSERT INTO LineStation VALUES (@1, @2, @3)";
 
 		doWithStatement((Statement stmt) -> {
-			stmt.execute(insertToLineStation.replace("@1", String.valueOf(line.getId()))
-			        .replace("@2", String.valueOf(station.getId()))
-			        .replace("@3", String.valueOf(index)));
+		    stmt.execute(
+		            deleteExistingStationsFromLine.replace("@1", String.valueOf(line.getId())));
+		});
+
+		List<EStation> allStations = new ArrayList<>(line.getStations());
+		allStations.add(index, station);
+
+		doWithConnection((Connection conn) -> {
+			for (int i = 0; i < allStations.size(); i++) {
+				try (Statement stmt = conn.createStatement()) {
+					stmt.execute(insertToLineStation.replace("@1", String.valueOf(line.getId()))
+					        .replace("@2", String.valueOf(allStations.get(i).getId()))
+					        .replace("@3", String.valueOf(i)));
+				}
+			}
 		});
 	}
 

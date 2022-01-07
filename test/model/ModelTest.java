@@ -41,7 +41,7 @@ class ModelTest {
 
 	private static final ETown            tSpata, tAgia_paraskevi, tNea_filadelfia, tMetamorfwsh,
 	        tAthina;
-	private static final EStation         sFournos, sAgia_paraskevi, sNomismatokopeio, sNea_ionia,
+	private static final EStation         sSpata, sAgia_paraskevi, sNomismatokopeio, sNea_ionia,
 	        sPlateia, sPapandreou, sSyntagma, sAerodromio, sMonasthraki;
 	private static final ELine            l305, l421, lB9, l3;
 	private static final List<EStation>   sl305, sl421, slB9, sl3;
@@ -54,7 +54,7 @@ class ModelTest {
 		tMetamorfwsh = new ETown(4, "metamorfwsh");
 		tAthina = new ETown(5, "athina");
 
-		sFournos = new EStation(1, "fournos", new Position(18, 5), tSpata);
+		sSpata = new EStation(1, "spata", new Position(18, 5), tSpata);
 		sAgia_paraskevi = new EStation(2, "agia paraskevi", new Position(14, 5), tAgia_paraskevi);
 		sNomismatokopeio = new EStation(3, "nomismatokopeio", new Position(12, 6), tAgia_paraskevi);
 		sNea_ionia = new EStation(4, "nea ionia", new Position(13, 17), tNea_filadelfia);
@@ -64,7 +64,7 @@ class ModelTest {
 		sAerodromio = new EStation(8, "aerodromio", new Position(20, 3), tSpata);
 		sMonasthraki = new EStation(9, "monasthraki", new Position(0, 12), tAthina);
 
-		sl305 = List.of(sFournos, sAgia_paraskevi, sNomismatokopeio);
+		sl305 = List.of(sSpata, sAgia_paraskevi, sNomismatokopeio);
 		sl421 = List.of(sAgia_paraskevi, sNea_ionia, sPlateia);
 		slB9 = List.of(sPapandreou, sPlateia, sSyntagma);
 		sl3 = List.of(sAerodromio, sAgia_paraskevi, sNomismatokopeio, sSyntagma, sMonasthraki);
@@ -142,7 +142,7 @@ class ModelTest {
 			        "INSERT INTO City (name) VALUES ('spata'), ('agia paraskevi'), ('nea filadelfia'), ('metamorfwsh'), ('athina')",
 
 			        "INSERT INTO Station (name, x_coord, y_coord, city_id) VALUES "
-			                + "('fournos', 18, 5, 1),"
+			                + "('spata', 18, 5, 1),"
 			                + "('agia paraskevi', 14, 5, 2),"
 			                + "('nomismatokopeio', 12, 6, 2),"
 
@@ -231,7 +231,7 @@ class ModelTest {
 		        "INSERT INTO City (name) VALUES ('spata'), ('agia paraskevi'), ('nea filadelfia'), ('metamorfwsh'), ('athina');",
 
 		        "INSERT INTO Station (name, x_coord, y_coord, city_id) VALUES "
-		                + "('fournos', 18, 5, 1),"
+		                + "('spata', 18, 5, 1),"
 		                + "('agia paraskevi', 14, 5, 2),"
 		                + "('nomismatokopeio', 12, 6, 2),"
 
@@ -496,7 +496,45 @@ class ModelTest {
 	 */
 	@Test
 	final void testInsertStationToLine() {
-		fail("Not yet implemented"); // TODO
+		assertThrows(IllegalArgumentException.class, () -> {
+		    model.insertStationToLine(null, sAerodromio, 0);
+		});
+
+		assertThrows(IllegalArgumentException.class, () -> {
+		    model.insertStationToLine(l305, null, 0);
+		});
+
+		assertThrows(IllegalArgumentException.class, () -> {
+		    model.insertStationToLine(l305, sAerodromio, -1);
+		});
+
+		assertThrows(IllegalArgumentException.class, () -> {
+		    model.insertStationToLine(l305, sAerodromio, 4);
+		});
+
+		ELine el305 = l305;
+		ELine al305 = assertDoesNotThrow(() -> model.getLines(tSpata, null)).get(0);
+
+		assertEquals(el305, al305);
+
+		assertDoesNotThrow(() -> model.insertStationToLine(l305, sAerodromio, 0));
+
+		List<EStation> stations = new ArrayList<>(l305.getStations());
+		stations.add(0, sAerodromio);
+		el305 = new ELine(l305.getId(), l305.getLineNumber(), l305.getType(),
+		        l305.getName(), stations, l305.getTimetables());
+		al305 = assertDoesNotThrow(() -> model.getLines(tSpata, null)).get(0);
+
+		assertEquals(el305, al305);
+
+		final ELine newl305 = al305;
+		assertDoesNotThrow(() -> model.insertStationToLine(newl305, sSyntagma, 4));
+		stations.add(4, sSyntagma);
+		el305 = new ELine(newl305.getId(), newl305.getLineNumber(), newl305.getType(),
+		        newl305.getName(), stations, newl305.getTimetables());
+		al305 = assertDoesNotThrow(() -> model.getLines(tSpata, null)).get(0);
+
+		assertEquals(el305, al305);
 	}
 
 	/**
