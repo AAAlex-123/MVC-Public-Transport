@@ -71,7 +71,9 @@ class ModelTest {
 		tl305 = List.of(new ETimetable(12, 00), new ETimetable(13, 00), new ETimetable(14, 00),
 		        new ETimetable(15, 00), new ETimetable(16, 00), new ETimetable(17, 00),
 		        new ETimetable(18, 00));
-		tl421 = List.of();
+		tl421 = List.of(new ETimetable(9, 00), new ETimetable(9, 30), new ETimetable(10, 00),
+		        new ETimetable(10, 30), new ETimetable(11, 00), new ETimetable(11, 30),
+		        new ETimetable(12, 00));
 		tlB9 = List.of(new ETimetable(17, 00), new ETimetable(18, 00), new ETimetable(19, 00),
 		        new ETimetable(20, 00), new ETimetable(21, 00), new ETimetable(22, 00),
 		        new ETimetable(23, 00));
@@ -92,24 +94,6 @@ class ModelTest {
 	 */
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-
-		if (keepAlive) {
-			final String[] qDropTables = {
-			        "DROP TABLE LineTimetable",
-			        "DROP TABLE LineStation",
-			        "DROP TABLE Line",
-			        "DROP TABLE Station",
-			        "DROP TABLE City",
-			};
-
-			try (Connection conn = DriverManager.getConnection(url, user, pass)) {
-				for (String qDropTable : qDropTables) {
-					try (Statement stmt = conn.createStatement()) {
-						stmt.executeUpdate(qDropTable);
-					}
-				}
-			}
-		}
 
 		final String[] qCreateTables = {
 		        "CREATE TABLE IF NOT EXISTS City ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(31));",
@@ -136,70 +120,7 @@ class ModelTest {
 	 */
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
-		if (keepAlive) {
-			final String[] qInsertIntoTables = {
-			        "INSERT INTO City (name) VALUES ('spata'), ('agia paraskevi'), ('nea filadelfia'), ('metamorfwsh'), ('athina')",
 
-			        "INSERT INTO Station (name, x_coord, y_coord, city_id) VALUES "
-			                + "('spata', 18, 5, 1),"
-			                + "('agia paraskevi', 14, 5, 2),"
-			                + "('nomismatokopeio', 12, 6, 2),"
-
-							// agia paraskevi
-			                + "('nea ionia', 13, 17, 3),"
-			                + "('plateia', 14, 19, 3),"
-
-			                + "('papandreou', 17, 25, 4),"
-							// plateia
-			                + "('syntagma', 3, 10, 5),"
-
-			                + "('aerodromio', 20, 3, 1),"
-							// agia paraskevi
-							// nomismatokopeio
-							// syntagma
-			                + "('monasthraki', 0, 12, 5);",
-
-			        "INSERT INTO Line (lineNo, description, type) VALUES "
-			                + "('305', 'spata-nomismatokopeio', 'bus'),"
-			                + "('421', 'agia paraskevi-nea filadelfia', 'bus'),"
-			                + "('B9', 'metamorfwsi-athina', 'bus'),"
-			                + "('3', 'aerodromio-syntagma', 'subway');",
-
-			        "INSERT INTO LineStation (line_id, station_id, station_index) VALUES "
-			                + "(1, 1, 0),"
-			                + "(1, 2, 1),"
-			                + "(1, 3, 2),"
-
-			                + "(2, 2, 0),"
-			                + "(2, 4, 1),"
-			                + "(2, 5, 2),"
-
-			                + "(3, 6, 0),"
-			                + "(3, 5, 1),"
-			                + "(3, 7, 2),"
-
-			                + "(4, 8, 0),"
-			                + "(4, 2, 1),"
-			                + "(4, 3, 2),"
-			                + "(4, 7, 3),"
-			                + "(4, 9, 4);",
-
-			        "INSERT INTO LineTimetable (line_id, departure_time) VALUES "
-			                + "(1, '12:00'), (1, '13:00'), (1, '14:00'), (1, '15:00'), (1, '16:00'), (1, '17:00'), (1, '18:00'),"
-			                + "(2, '9:00'), (2, '9:30'), (2, '10:00'), (2, '10:30'), (2, '11:00'), (2, '11:30'), (2, '12:00'),"
-			                + "(3, '17:00'), (3, '18:00'), (3, '19:00'), (3, '20:00'), (3, '21:00'), (3, '22:00'), (3, '23:00'),"
-			                + "(4, '5:00'), (4, '8:00'), (4, '11:00'), (4, '14:00'), (4, '17:00'), (4, '20:00'), (4, '23:00');",
-
-			};
-
-			try (Connection conn = DriverManager.getConnection(url, user, pass)) {
-				for (String qInsertIntoTable : qInsertIntoTables) {
-					try (Statement stmt = conn.createStatement()) {
-						stmt.executeUpdate(qInsertIntoTable);
-					}
-				}
-			}
-		} else {
 			final String[] qDropTables = {
 			        "DROP TABLE LineTimetable",
 			        "DROP TABLE LineStation",
@@ -214,7 +135,6 @@ class ModelTest {
 						stmt.executeUpdate(qDropTable);
 					}
 				}
-			}
 		}
 	}
 
@@ -320,9 +240,6 @@ class ModelTest {
 			}
 		}
 	}
-
-	// TODO: remove
-	private static boolean keepAlive = false;
 
 	/**
 	 * Test method for {@link model.Model#getTowns(entity.ELine)}.
@@ -571,21 +488,21 @@ class ModelTest {
 		    model.insertTimetableToLine(new ELine(-1, null, null, null, null, null), null);
 		});
 
-		ELine el305 = l305;
-		ELine al305 = assertDoesNotThrow(() -> model.getLines(tSpata, null)).get(0);
+		ELine el421 = l421;
+		ELine al421 = assertDoesNotThrow(() -> model.getLines(null, sNea_ionia)).get(0);
 
-		assertEquals(el305, al305);
+		assertEquals(el421, al421);
 
 
 		ETimetable newTimetable = new ETimetable(0, 30);
-		assertDoesNotThrow(() -> model.insertTimetableToLine(l305, newTimetable));
+		assertDoesNotThrow(() -> model.insertTimetableToLine(l421, newTimetable));
 
-		List<ETimetable> timetables = new ArrayList<>(l305.getTimetables());
+		List<ETimetable> timetables = new ArrayList<>(l421.getTimetables());
 		timetables.add(0, newTimetable);
-		el305 = new ELine(l305.getId(), l305.getLineNumber(), l305.getType(),
-		        l305.getName(), l305.getStations(), timetables);
-		al305 = assertDoesNotThrow(() -> model.getLines(tSpata, null)).get(0);
+		el421 = new ELine(l421.getId(), l421.getLineNumber(), l421.getType(),
+		        l421.getName(), l421.getStations(), timetables);
+		al421 = assertDoesNotThrow(() -> model.getLines(null, sNea_ionia)).get(0);
 
-		assertEquals(el305, al305);
+		assertEquals(el421, al421);
 	}
 }
