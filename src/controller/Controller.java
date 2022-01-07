@@ -40,18 +40,18 @@ public class Controller implements IController {
 
 	private void getTowns(ELine line) {
 		try {
-			List<ETown> towns = model.getTowns(line);
+			final List<ETown> towns = model.getTowns(line);
 			view.updateViewWithTowns(towns);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
 	}
 
 	private void getLines(ETown town, EStation station) {
 		try {
-			List<ELine> lines = model.getLines(town, station);
+			final List<ELine> lines = model.getLines(town, station);
 			view.updateViewWithLines(lines);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
 	}
@@ -69,9 +69,9 @@ public class Controller implements IController {
 	@Override
 	public void getStationsByTown(ETown town) {
 		try {
-			List<EStation> stations = model.getStations(town);
+			final List<EStation> stations = model.getStations(town);
 			view.updateViewWithStations(stations);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
 	}
@@ -83,13 +83,13 @@ public class Controller implements IController {
 
 	@Override
 	public void getStationsByLine(ELine line) {
-		List<EStation> stations = line.getStations();
+		final List<EStation> stations = line.getStations();
 		view.updateViewWithStations(stations);
 	}
 
 	@Override
 	public void getTimetablesByLine(ELine line) {
-		List<ETimetable> timetables = line.getTimetables();
+		final List<ETimetable> timetables = line.getTimetables();
 		view.updateViewWithTimetables(timetables);
 	}
 
@@ -105,10 +105,10 @@ public class Controller implements IController {
 
 	@Override
 	public void insertTown(Requirements reqs) {
-		ETown newTown = new ETown(-1, reqs.getValue("name", String.class));
+		final ETown newTown = new ETown(-1, reqs.getValue("name", String.class));
 		try {
 			model.insertTown(newTown);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
 	}
@@ -122,7 +122,7 @@ public class Controller implements IController {
 		final ELine newLine = new ELine(-1, lineNo, type, description, null, null);
 		try {
 			model.insertLine(newLine);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
 	}
@@ -135,13 +135,13 @@ public class Controller implements IController {
 		final double   y_coord  = dtoi.apply(reqs.getValue("y coord", String.class));
 		final Position position = new Position(x_coord, y_coord);
 
-		EStation newStation = new EStation(-1,
+		final EStation newStation = new EStation(-1,
 		        reqs.getValue("name", String.class),
 		        position,
 		        reqs.getValue("city id", ETown.class));
 		try {
 			model.insertStation(newStation);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
 	}
@@ -156,7 +156,7 @@ public class Controller implements IController {
 
 		try {
 			model.insertStationToLine(line, station, index);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
 	}
@@ -172,7 +172,7 @@ public class Controller implements IController {
 
 		try {
 			model.insertTimetableToLine(line, timetable);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
 	}

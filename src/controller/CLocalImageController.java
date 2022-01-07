@@ -34,15 +34,16 @@ public class CLocalImageController implements IImageController {
 
 	@Override
 	public Image loadImage(String name, int maxWidth, int maxHeight) {
-		Image cachedSprite = imageCache.get(name);
+		final Image cachedSprite = imageCache.get(name);
 		if (cachedSprite != null)
 			return cachedSprite;
 
 		BufferedImage img;
 		try {
 			img = model.loadImage(name);
-		} catch (IOException ioe) {
-			img = new BufferedImage(54, 54, BufferedImage.TYPE_INT_RGB); //create empty image
+		} catch (final IOException ioe) {
+			// create empty image
+			img = new BufferedImage(54, 54, BufferedImage.TYPE_INT_RGB);
 		}
 
 		final int currHeight = img.getHeight();
