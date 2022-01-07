@@ -97,10 +97,10 @@ class ModelTest {
 
 		final String[] qCreateTables = {
 		        "CREATE TABLE IF NOT EXISTS City ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(31));",
-				"CREATE TABLE IF NOT EXISTS Station ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(63), x_coord DOUBLE, y_coord DOUBLE, city_id INT, FOREIGN KEY (city_id) REFERENCES City (id));",
-				"CREATE TABLE IF NOT EXISTS Line ( id INT AUTO_INCREMENT PRIMARY KEY, lineNo VARCHAR(7), description VARCHAR(255), type VARCHAR(15));",
-				"CREATE TABLE IF NOT EXISTS LineStation ( line_id INT, station_id INT, station_index INT, PRIMARY KEY (line_id, station_id), FOREIGN KEY (line_id) REFERENCES Line(id), FOREIGN KEY (station_id) REFERENCES Station(id));",
-				"CREATE TABLE IF NOT EXISTS LineTimetable ( line_id INT, departure_time TIME, PRIMARY KEY (line_id, departure_time), FOREIGN KEY (line_id) REFERENCES Line(id));",
+		        "CREATE TABLE IF NOT EXISTS Station ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(63), x_coord DOUBLE, y_coord DOUBLE, city_id INT, FOREIGN KEY (city_id) REFERENCES City (id));",
+		        "CREATE TABLE IF NOT EXISTS Line ( id INT AUTO_INCREMENT PRIMARY KEY, lineNo VARCHAR(7), description VARCHAR(255), type VARCHAR(15));",
+		        "CREATE TABLE IF NOT EXISTS LineStation ( line_id INT, station_id INT, station_index INT, PRIMARY KEY (line_id, station_id), FOREIGN KEY (line_id) REFERENCES Line(id), FOREIGN KEY (station_id) REFERENCES Station(id));",
+		        "CREATE TABLE IF NOT EXISTS LineTimetable ( line_id INT, departure_time TIME, PRIMARY KEY (line_id, departure_time), FOREIGN KEY (line_id) REFERENCES Line(id));",
 		};
 
 		try (Connection conn = DriverManager.getConnection(url, user, pass)) {
@@ -112,7 +112,6 @@ class ModelTest {
 		}
 	}
 
-
 	/**
 	 * Executes queries to drop all tables in the 'test' database.
 	 *
@@ -121,23 +120,22 @@ class ModelTest {
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
 
-			final String[] qDropTables = {
-			        "DROP TABLE LineTimetable",
-			        "DROP TABLE LineStation",
-			        "DROP TABLE Line",
-			        "DROP TABLE Station",
-			        "DROP TABLE City",
-			};
+		final String[] qDropTables = {
+		        "DROP TABLE LineTimetable",
+		        "DROP TABLE LineStation",
+		        "DROP TABLE Line",
+		        "DROP TABLE Station",
+		        "DROP TABLE City",
+		};
 
-			try (Connection conn = DriverManager.getConnection(url, user, pass)) {
-				for (String qDropTable : qDropTables) {
-					try (Statement stmt = conn.createStatement()) {
-						stmt.executeUpdate(qDropTable);
-					}
+		try (Connection conn = DriverManager.getConnection(url, user, pass)) {
+			for (String qDropTable : qDropTables) {
+				try (Statement stmt = conn.createStatement()) {
+					stmt.executeUpdate(qDropTable);
 				}
+			}
 		}
 	}
-
 
 	/**
 	 * Executes queries to insert data in the 'test' database.
@@ -146,6 +144,7 @@ class ModelTest {
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
+
 		final String[] qInsertIntoTables = {
 		        "INSERT INTO City (name) VALUES ('spata'), ('agia paraskevi'), ('nea filadelfia'), ('metamorfwsh'), ('athina');",
 
@@ -210,15 +209,14 @@ class ModelTest {
 		}
 	}
 
-
 	/**
 	 * Executes queries to delete all data in the 'test' database.
 	 *
 	 * @throws java.lang.Exception if an SQLException occurs
 	 */
-
 	@AfterEach
 	void tearDown() throws Exception {
+
 		final String[] qDeleteFromTables = {
 		        "DELETE FROM LineTimetable;",
 		        "DELETE FROM LineStation;",
@@ -430,7 +428,8 @@ class ModelTest {
 	}
 
 	/**
-	 * Test method for {@link model.Model#insertStationToLine(entity.ELine, entity.EStation, int)}.
+	 * Test method for
+	 * {@link model.Model#insertStationToLine(entity.ELine, entity.EStation, int)}.
 	 */
 	@Test
 	final void testInsertStationToLine() {
@@ -476,7 +475,8 @@ class ModelTest {
 	}
 
 	/**
-	 * Test method for {@link model.Model#insertTimetableToLine(entity.ELine, entity.ETimetable)}.
+	 * Test method for
+	 * {@link model.Model#insertTimetableToLine(entity.ELine, entity.ETimetable)}.
 	 */
 	@Test
 	final void testInsertTimetableToLine() {

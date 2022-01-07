@@ -15,15 +15,14 @@ import org.junit.jupiter.api.Test;
 @SuppressWarnings("nls")
 class MLocalImageModelTest {
 
-	private final MLocalImageModel model = new MLocalImageModel("other_resources", "resources");
+	private final IImageModel model = new MLocalImageModel("other_resources", "resources");
 
 	/**
 	 * Test method for {@link model.MLocalImageModel#loadImage(java.lang.String)}.
 	 */
 	@Test
 	final void testLoadImage() {
-		Stream.of(new File(model.resourceDirectory).listFiles()).forEach((f) -> {
-		    assertDoesNotThrow(() -> model.loadImage(f.getName()));
-		});
+		Stream.of(new File(((MLocalImageModel) model).resourceDirectory).listFiles())
+		        .forEach((f) -> assertDoesNotThrow(() -> model.loadImage(f.getName())));
 	}
 }
