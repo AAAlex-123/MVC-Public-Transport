@@ -23,9 +23,9 @@ public enum LineType {
 	/** Constant for Tram */
 	TRAM(Languages.getString("LineType.6"), 16, "tram"); //$NON-NLS-1$ //$NON-NLS-2$
 
-	private final String        name;
+	private final String name;
 	private final String spriteName;
-	private final double        averageSpeed;
+	private final double averageSpeed;
 
 	LineType(String name, double averageSpeed, String spriteName) {
 		this.name = name;

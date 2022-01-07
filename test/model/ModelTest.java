@@ -263,7 +263,7 @@ class ModelTest {
 	@Test
 	final void testGetLines() {
 		assertThrows(IllegalArgumentException.class, () -> {
-		    model.getLines(new ETown(-1, null), new EStation(-1, null, null, null));
+		    model.getLines(tSpata, sSpata);
 		});
 
 		List<ELine> eLinesFromAthina = List.of(lB9, l3);
@@ -277,6 +277,20 @@ class ModelTest {
 		});
 
 		assertIterableEquals(eLinesFromNomismatokopeio, aLinesFromNomismatokopeio);
+
+		List<ELine> eLinesFromAgiaParaskevi = List.of(l305, l421, l3);
+		List<ELine> aLinesFromAgiaParaskevi = assertDoesNotThrow(() -> {
+		    return model.getLines(tAgia_paraskevi, null);
+		});
+
+		assertIterableEquals(eLinesFromAgiaParaskevi, aLinesFromAgiaParaskevi);
+
+		List<ELine> eAllLines = List.of(l305, l421, lB9, l3);
+		List<ELine> aAllLines = assertDoesNotThrow(() -> {
+		    return model.getLines(null, null);
+		});
+
+		assertIterableEquals(eAllLines, aAllLines);
 	}
 
 	/**
@@ -339,7 +353,6 @@ class ModelTest {
 
 		eLinesFromSpata.add(1, lExpressWithStations);
 		aLinesFromSpata = assertDoesNotThrow(() -> model.getLines(tSpata, null));
-		System.out.println(aLinesFromSpata);
 
 		assertIterableEquals(eLinesFromSpata, aLinesFromSpata);
 	}

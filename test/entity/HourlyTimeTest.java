@@ -62,10 +62,10 @@ class HourlyTimeTest {
 	}
 
 	/**
-	 * Test method for {@link entity.ETimetable#toString()}.
+	 * Test method for {@link entity.ETimetable#getFormattedTime()}.
 	 */
 	@Test
-	final void testToString() {
-		assertEquals("18:45", defaultTime.toString()); //$NON-NLS-1$
+	final void testgetFormattedTime() {
+		assertEquals("18:45", defaultTime.getFormattedTime()); //$NON-NLS-1$
 	}
 }

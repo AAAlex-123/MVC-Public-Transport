@@ -43,5 +43,7 @@ class CLocalImageControllerTest {
 
 		for (final LineType type : LineType.values())
 			assertDoesNotThrow(() -> controller.getVehicleSprite(type));
+
+		assertDoesNotThrow(() -> controller.getVehicleSprite(LineType.BUS));
 	}
 }
