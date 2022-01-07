@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 @SuppressWarnings("nls")
 public class MLocalImageModel implements IImageModel {
 
+	/** The directory inside which all image files are located */
 	final String resourceDirectory;
 
 	/**
