@@ -5,28 +5,36 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
 
-import controller.IController;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
+import requirement.util.Requirements;
 
+/**
+ * A concrete implementation of the {@link IView} interface that extends the
+ * {@link ConsoleView}. It provides the users with a Console Interface with
+ * which to use the application.
+ *
+ * @author Alex Mandelias
+ * @author Dimitris Tsirmpas
+ */
 public class ConsoleView extends AbstractView<String> {
-	private final PrintStream out;
-	private final PrintStream err;
-	private final Scanner in;
-	
+
+	private final Scanner     in;
+	private final PrintStream out, err;
+
 	private String sourceEntityDescription = "";
 
-	public ConsoleView(IController controller, PrintStream out, PrintStream err, InputStream in) {
-		super(new StringEntityGraphicFactory(), controller);
-		this.out = new PrintStream(out);
-		this.in = new Scanner(in);
-		this.err = new PrintStream(err);
+	public ConsoleView() {
+		this(System.in, System.out, System.err);
 	}
-	
-	public ConsoleView(IController controller) {
-		this(controller, System.out, System.err, System.in);
+
+	public ConsoleView(InputStream in, PrintStream out, PrintStream err) {
+		super(new StringEntityRepresentationFactory());
+		this.in = new Scanner(in);
+		this.out = new PrintStream(out);
+		this.err = new PrintStream(err);
 	}
 
 	@Override
@@ -38,12 +46,12 @@ public class ConsoleView extends AbstractView<String> {
 	@Override
 	public void updateViewWithHomepage() {
 		sourceEntityDescription = "";
-		
+
 		out.println("1. Show all Lines");
 		out.println("2. Show all Towns");
 		out.println("3. Exit");
 
-		switch(getAnswer(1,3)) {
+		switch (getAnswer(1, 3)) {
 		case 1:
 			super.getAllLines();
 			break;
@@ -53,34 +61,31 @@ public class ConsoleView extends AbstractView<String> {
 		case 3:
 			System.exit(0);
 		}
-
 	}
 
 	@Override
 	public void updateViewWithTowns(List<ETown> towns) {
 		StringBuffer townString = new StringBuffer("Please select a town: \n");
-		
+
 		int count = 1;
-		for(var town : towns) {
-			townString.append(count);
-			townString.append(": ");
-			townString.append(factory.getETownGraphic(town));
-			townString.append('\n');
+		for (ETown town : towns) {
+			final String graphic = factory.getETownGraphic(town);
+			townString.append(String.format("%d: %s%n", count, graphic));
 			count++;
 		}
-		
+
 		out.println(townString);
-		
+
 		ETown selected = towns.get(getAnswer(1, towns.size()) - 1);
-		
+
 		sourceEntityDescription = factory.getETownGraphic(selected);
-		
-		out.println("Select what you want to access from the town "+ selected.getName() +":");
+
+		out.printf("Select what you want to access from the town: %s%n", selected.getName());
 		out.println("1. Show all lines going through this town");
 		out.println("2. Show all stations in this town");
 		out.println("3. Return to homepage");
 
-		switch(getAnswer(1,3)) {
+		switch (getAnswer(1, 3)) {
 		case 1:
 			super.getLinesByTown(selected);
 			break;
@@ -97,29 +102,27 @@ public class ConsoleView extends AbstractView<String> {
 	public void updateViewWithLines(List<ELine> lines) {
 		printSource();
 		StringBuffer lineString = new StringBuffer("Please select a line: \n");
-		
+
 		int count = 1;
-		for(var line : lines) {
-			lineString.append(count);
-			lineString.append(": ");
-			lineString.append(factory.getELineGraphic(line));
-			lineString.append('\n');
+		for (ELine line : lines) {
+			final String graphic = factory.getELineGraphic(line);
+			lineString.append(String.format("%d: %s%n", count, graphic));
 			count++;
 		}
-		
+
 		out.println(lineString);
-		
+
 		ELine selected = lines.get(getAnswer(1, lines.size()) - 1);
-		
+
 		sourceEntityDescription = factory.getELineGraphic(selected);
-		
-		out.println("Select what you want to access from the line "+ selected.getLineNumber() +":");
+
+		out.printf("Select what you want to access from the line %s:%n", selected.getName());
 		out.println("1. Show all towns serviced by this line");
 		out.println("2. Show all stations serviced by this line");
 		out.println("3. Show all arrival times for this line");
 		out.println("4. Return to homepage");
 
-		switch(getAnswer(1,4)) {
+		switch (getAnswer(1, 4)) {
 		case 1:
 			super.getTownsByLine(selected);
 			break;
@@ -139,20 +142,18 @@ public class ConsoleView extends AbstractView<String> {
 	public void updateViewWithStations(List<EStation> stations) {
 		printSource();
 		StringBuffer stationString = new StringBuffer("Please select a station: \n");
-		
+
 		int count = 1;
-		for(var station : stations) {
-			stationString.append(count);
-			stationString.append(": ");
-			stationString.append(factory.getEStationGraphic(station));
-			stationString.append('\n');
+		for (EStation station : stations) {
+			final String graphic = factory.getEStationGraphic(station);
+			stationString.append(String.format("%d: %s%n", count, graphic));
 			count++;
 		}
-		
+
 		out.println(stationString);
-		
-		EStation selected = stations.get(getAnswer(1, stations.size())-1);
-		
+
+		EStation selected = stations.get(getAnswer(1, stations.size()) - 1);
+
 		sourceEntityDescription = factory.getEStationGraphic(selected);
 		super.getLinesByStation(selected);
 	}
@@ -160,20 +161,18 @@ public class ConsoleView extends AbstractView<String> {
 	@Override
 	public void updateViewWithTimetables(List<ETimetable> timetables) {
 		printSource();
-		StringBuffer timeString = new StringBuffer("Please select a station: \n");
-		
+		StringBuffer timetableString = new StringBuffer("Please select a station: \n");
+
 		int count = 1;
-		for(var time : timetables) {
-			timeString.append(count);
-			timeString.append(": ");
-			timeString.append(factory.getETimetableGraphic(time));
-			timeString.append('\n');
+		for (ETimetable timetable : timetables) {
+			final String graphic = factory.getETimetableGraphic(timetable);
+			timetableString.append(String.format("%d: %s%n", count, graphic));
 			count++;
 		}
-		
-		out.println(timeString);
+
+		out.println(timetableString);
 		sourceEntityDescription = "";
-		
+
 		updateViewWithHomepage();
 	}
 
@@ -181,29 +180,33 @@ public class ConsoleView extends AbstractView<String> {
 	public void updateViewWithError(Exception e) {
 		err.println(e.getLocalizedMessage());
 	}
-	
+
 	private int getAnswer(int bottomRange, int upperRange) {
-		int answer = Integer.MIN_VALUE;
-		do {
-			
+		while (true) {
+			int answer;
 			try {
 				answer = Integer.parseInt(in.nextLine());
-			} catch(NumberFormatException ne) {
-				answer = Integer.MIN_VALUE;
+			} catch (NumberFormatException ne) {
+				answer = bottomRange - 1;
 			}
-			
-			if(!(answer >= bottomRange && answer <= upperRange))
-				updateViewWithError(new RuntimeException(
-						String.format("Please provide a valid answer between %d and %d.", bottomRange, upperRange)));
-			
-		} while(!(answer >= bottomRange && answer <= upperRange));
-		
-		return answer;
+
+			if ((bottomRange <= answer) && (answer <= upperRange))
+				return answer;
+
+			updateViewWithError(new RuntimeException(
+			        String.format("Please provide a valid answer between %d and %d%n",
+			                bottomRange, upperRange)));
+		}
 	}
-	
+
+	@Override
+	protected void fulfilRequirements(Requirements reqs, String prompt) {
+		// TODO Auto-generated method stub
+
+	}
+
 	private void printSource() {
-		if(sourceEntityDescription != "")
-			out.println("From " + sourceEntityDescription + ":\n");
+		if (sourceEntityDescription.isEmpty())
+			out.printf("From %s:%n%n", sourceEntityDescription);
 	}
-	
 }
