@@ -15,7 +15,6 @@ import model.IImageModel;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-@SuppressWarnings("nls")
 public class CLocalImageController implements IImageController {
 
 	private final IImageModel model;

@@ -22,7 +22,6 @@ import view.IView;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-@SuppressWarnings("nls")
 public class Controller implements IController {
 
 	private final IModel model;
