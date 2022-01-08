@@ -91,6 +91,8 @@ abstract class AbstractView extends JFrame implements IView {
 
 	protected abstract JMenuBar constructJMenuBar();
 
+	protected abstract void changeLanguage();
+
 	// ---------- Methods for the Concrete View classes ---------- //
 
 	/**

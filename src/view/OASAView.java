@@ -3,7 +3,9 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GridLayout;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -94,8 +96,24 @@ public class OASAView extends AbstractView {
 		i_station_to_line.addActionListener(e -> OASAView.this.insertStationToLine());
 		i_timetable_to_line.addActionListener(e -> OASAView.this.insertTimetableToLine());
 
+		p_language.addActionListener(e -> OASAView.this.changeLanguage());
+
 
 		return menuBar;
+	}
+
+	@Override
+	protected void changeLanguage() {
+		final Frame  frame = this;
+		final String file  = Languages.FILE;
+
+		try {
+			final boolean languageChanged = Languages.editAndWriteToFile(frame);
+			if (languageChanged)
+				OASAView.message(frame, file, null);
+		} catch (final IOException e) {
+			OASAView.message(frame, file, e);
+		}
 	}
 
 	@Override
@@ -115,8 +133,8 @@ public class OASAView extends AbstractView {
 		buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 30, 30, 30));
 
-		final JButton button1 = new JButton(Languages.getString("OASAView.12")); //$NON-NLS-1$
-		final JButton button2 = new JButton(Languages.getString("OASAView.13")); //$NON-NLS-1$
+		final JButton button1 = new JButton(Languages.getString("OASAView.13")); //$NON-NLS-1$
+		final JButton button2 = new JButton(Languages.getString("OASAView.14")); //$NON-NLS-1$
 
 		button1.addActionListener(e -> OASAView.super.getAllLines());
 		button2.addActionListener(e -> OASAView.super.getAllTowns());
@@ -139,7 +157,8 @@ public class OASAView extends AbstractView {
 		for (final ETown town : towns)
 			townPanel.add(factory.getETownGraphic(town));
 
-		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.14")), BorderLayout.NORTH); //$NON-NLS-1$
+		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.15")), //$NON-NLS-1$
+		        BorderLayout.NORTH);
 		contentPanel.add(OASAView.getJSPForPanel(townPanel), BorderLayout.CENTER);
 
 		super.updatePanel(contentPanel);
@@ -153,7 +172,8 @@ public class OASAView extends AbstractView {
 		for (final ELine line : lines)
 			linePanel.add(factory.getELineGraphic(line));
 
-		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.15")), BorderLayout.NORTH); //$NON-NLS-1$
+		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.16")), //$NON-NLS-1$
+		        BorderLayout.NORTH);
 		contentPanel.add(OASAView.getJSPForPanel(linePanel), BorderLayout.CENTER);
 
 		super.updatePanel(contentPanel);
@@ -167,7 +187,8 @@ public class OASAView extends AbstractView {
 		for (final EStation station : stations)
 			stationPanel.add(factory.getEStationGraphic(station));
 
-		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.16")), BorderLayout.NORTH); //$NON-NLS-1$
+		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.17")), //$NON-NLS-1$
+		        BorderLayout.NORTH);
 		contentPanel.add(OASAView.getJSPForPanel(stationPanel), BorderLayout.CENTER);
 
 		super.updatePanel(contentPanel);
@@ -181,7 +202,8 @@ public class OASAView extends AbstractView {
 		for (final ETimetable timetable : timetables)
 			timetablePanel.add(factory.getETimetableGraphic(timetable));
 
-		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.17")), BorderLayout.NORTH); //$NON-NLS-1$
+		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.18")), //$NON-NLS-1$
+		        BorderLayout.NORTH);
 		contentPanel.add(OASAView.getJSPForPanel(timetablePanel), BorderLayout.CENTER);
 
 		super.updatePanel(contentPanel);
@@ -189,7 +211,8 @@ public class OASAView extends AbstractView {
 
 	@Override
 	public void updateViewWithError(Exception e) {
-		JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), Languages.getString("OASAView.18"), //$NON-NLS-1$
+		JOptionPane.showMessageDialog(this, e.getLocalizedMessage(),
+		        Languages.getString("OASAView.19"), //$NON-NLS-1$
 		        JOptionPane.ERROR_MESSAGE);
 	}
 
@@ -220,5 +243,24 @@ public class OASAView extends AbstractView {
 		jsp.setWheelScrollingEnabled(true);
 
 		return jsp;
+	}
+
+	private static void message(Frame frame, String file, Exception e) {
+		final String messageString, titleString;
+		final int    messageType;
+
+		if (e == null) {
+			messageString = Languages.getString("OASAView.20"); //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.21"); //$NON-NLS-1$
+			messageType = JOptionPane.INFORMATION_MESSAGE;
+
+		} else {
+			messageString = Languages.getString("OASAView.22"); //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.23"); //$NON-NLS-1$
+			messageType = JOptionPane.ERROR_MESSAGE;
+		}
+
+		JOptionPane.showMessageDialog(frame, String.format(messageString, file),
+		        titleString, messageType);
 	}
 }
