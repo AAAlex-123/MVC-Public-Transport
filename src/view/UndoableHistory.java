@@ -40,7 +40,7 @@ class UndoableHistory<T extends Undoable> {
 	 */
 	public void undo() {
 		if (canUndo()) {
-			T last = past.pop();
+			final T last = past.pop();
 			last.unexecute();
 			future.push(last);
 		}
@@ -52,12 +52,12 @@ class UndoableHistory<T extends Undoable> {
 	 */
 	public void redo() {
 		if (canRedo()) {
-			T first = future.pop();
+			final T first = future.pop();
 
 			// this Undoable has executed successfully before; this statement can't throw
 			try {
 				first.execute();
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				throw new RuntimeException(e);
 			}
 			past.push(first);

@@ -14,14 +14,14 @@ import entity.ETown;
  * @author Dimitris Tsirmpas
  */
 interface AbstractEntityGraphicFactory {
-	
+
 	/**
 	 * Set the view of the factory, if not already set.
-	 * 
+	 *
 	 * @param view the new view of the factory
 	 */
 	void initializeView(AbstractView view);
-	
+
 	/**
 	 * Returns a Graphic for a {@link ETown}.
 	 *

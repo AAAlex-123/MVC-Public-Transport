@@ -47,7 +47,7 @@ public class OASAView extends AbstractView {
 
 	@Override
 	protected JMenuBar constructJMenuBar() {
-		JMenuBar menuBar = new JMenuBar();
+		final JMenuBar menuBar = new JMenuBar();
 
 		final JMenu     m_preferences;
 		final JMenuItem home, prev, next, p_settings, p_language;
@@ -68,30 +68,30 @@ public class OASAView extends AbstractView {
 		menuBar.add(next);
 		menuBar.add(m_preferences);
 
-		home.addActionListener((e) -> OASAView.this.changeToHomePanel());
-		prev.addActionListener((e) -> OASAView.this.changeToPreviousPanel());
-		next.addActionListener((e) -> OASAView.this.changeToNextPanel());
+		home.addActionListener(e -> OASAView.this.changeToHomePanel());
+		prev.addActionListener(e -> OASAView.this.changeToPreviousPanel());
+		next.addActionListener(e -> OASAView.this.changeToNextPanel());
 
 		return menuBar;
 	}
 
 	@Override
 	public void updateViewWithHomepage() {
-		JPanel home = new JPanel();
+		final JPanel home = new JPanel();
 		home.setLayout(new BoxLayout(home, BoxLayout.Y_AXIS));
 
-		JPanel imagePanel = new JPanel();
+		final JPanel imagePanel = new JPanel();
 		imagePanel.add(new JLabel(super.getImageIcon("oasa_home.jpg")));
 
-		JPanel buttonPanel = new JPanel();
+		final JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 30, 30, 30));
 
-		JButton button1 = new JButton("Search for Lines");
-		JButton button2 = new JButton("Search for Towns");
+		final JButton button1 = new JButton("Search for Lines");
+		final JButton button2 = new JButton("Search for Towns");
 
-		button1.addActionListener((e) -> OASAView.super.getAllLines());
-		button2.addActionListener((e) -> OASAView.super.getAllTowns());
+		button1.addActionListener(e -> OASAView.super.getAllLines());
+		button2.addActionListener(e -> OASAView.super.getAllTowns());
 
 		buttonPanel.add(button1);
 		buttonPanel.add(button2);
@@ -105,63 +105,64 @@ public class OASAView extends AbstractView {
 
 	@Override
 	public void updateViewWithTowns(List<ETown> towns) {
-		JPanel contentPanel = getContentPanel();
+		final JPanel contentPanel = OASAView.getContentPanel();
 
-		JPanel townPanel = getDisplayPanel();
-		for (ETown town : towns)
+		final JPanel townPanel = OASAView.getDisplayPanel();
+		for (final ETown town : towns)
 			townPanel.add(factory.getETownGraphic(town));
 
-		contentPanel.add(getCenteredLabel("Towns"), BorderLayout.NORTH);
-		contentPanel.add(getJSPForPanel(townPanel), BorderLayout.CENTER);
+		contentPanel.add(OASAView.getCenteredLabel("Towns"), BorderLayout.NORTH);
+		contentPanel.add(OASAView.getJSPForPanel(townPanel), BorderLayout.CENTER);
 
 		super.updatePanel(contentPanel);
 	}
 
 	@Override
 	public void updateViewWithLines(List<ELine> lines) {
-		JPanel contentPanel = getContentPanel();
+		final JPanel contentPanel = OASAView.getContentPanel();
 
-		JPanel linePanel = getDisplayPanel();
-		for (ELine line : lines)
+		final JPanel linePanel = OASAView.getDisplayPanel();
+		for (final ELine line : lines)
 			linePanel.add(factory.getELineGraphic(line));
 
-		contentPanel.add(getCenteredLabel("Lines"), BorderLayout.NORTH);
-		contentPanel.add(getJSPForPanel(linePanel), BorderLayout.CENTER);
+		contentPanel.add(OASAView.getCenteredLabel("Lines"), BorderLayout.NORTH);
+		contentPanel.add(OASAView.getJSPForPanel(linePanel), BorderLayout.CENTER);
 
 		super.updatePanel(contentPanel);
 	}
 
 	@Override
 	public void updateViewWithStations(List<EStation> stations) {
-		JPanel contentPanel = getContentPanel();
+		final JPanel contentPanel = OASAView.getContentPanel();
 
-		JPanel stationPanel = getDisplayPanel();
-		for (EStation station : stations)
+		final JPanel stationPanel = OASAView.getDisplayPanel();
+		for (final EStation station : stations)
 			stationPanel.add(factory.getEStationGraphic(station));
 
-		contentPanel.add(getCenteredLabel("Stations"), BorderLayout.NORTH);
-		contentPanel.add(getJSPForPanel(stationPanel), BorderLayout.CENTER);
+		contentPanel.add(OASAView.getCenteredLabel("Stations"), BorderLayout.NORTH);
+		contentPanel.add(OASAView.getJSPForPanel(stationPanel), BorderLayout.CENTER);
 
 		super.updatePanel(contentPanel);
 	}
 
 	@Override
 	public void updateViewWithTimetables(List<ETimetable> timetables) {
-		JPanel contentPanel = getContentPanel();
+		final JPanel contentPanel = OASAView.getContentPanel();
 
-		JPanel timetablePanel = getDisplayPanel();
-		for (ETimetable timetable : timetables)
+		final JPanel timetablePanel = OASAView.getDisplayPanel();
+		for (final ETimetable timetable : timetables)
 			timetablePanel.add(factory.getETimetableGraphic(timetable));
 
-		contentPanel.add(getCenteredLabel("Departures"), BorderLayout.NORTH);
-		contentPanel.add(getJSPForPanel(timetablePanel), BorderLayout.CENTER);
+		contentPanel.add(OASAView.getCenteredLabel("Departures"), BorderLayout.NORTH);
+		contentPanel.add(OASAView.getJSPForPanel(timetablePanel), BorderLayout.CENTER);
 
 		super.updatePanel(contentPanel);
 	}
 
 	@Override
 	public void updateViewWithError(Exception e) {
-		JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error",
+		        JOptionPane.ERROR_MESSAGE);
 	}
 
 	// ---------- static factory methods ----------
@@ -171,20 +172,20 @@ public class OASAView extends AbstractView {
 	}
 
 	private static JPanel getDisplayPanel() {
-		JPanel panel = new JPanel();
+		final JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		return panel;
 	}
 
 	private static JLabel getCenteredLabel(String text) {
-		JLabel label = new JLabel(text, SwingConstants.CENTER);
-		label.setFont(textFont);
+		final JLabel label = new JLabel(text, SwingConstants.CENTER);
+		label.setFont(OASAView.textFont);
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		return label;
 	}
 
 	private static JScrollPane getJSPForPanel(JPanel panel) {
-		JScrollPane jsp = new JScrollPane(panel);
+		final JScrollPane jsp = new JScrollPane(panel);
 		jsp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jsp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		jsp.setBorder(BorderFactory.createEmptyBorder());

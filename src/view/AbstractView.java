@@ -38,7 +38,8 @@ abstract class AbstractView extends JFrame implements IView {
 
 	private final UndoableHistory<ChangeViewCommand> navigationHistory;
 
-	private JPanel mainPanel, headerPanel, contentPanel;
+	private JPanel       mainPanel, headerPanel;
+	private final JPanel contentPanel;
 
 	/**
 	 * Constructs the view initialising its UI and providing a factory with which to
@@ -65,7 +66,7 @@ abstract class AbstractView extends JFrame implements IView {
 		setJMenuBar(constructJMenuBar());
 
 		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-		setSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+		setSize(new Dimension(AbstractView.WINDOW_WIDTH, AbstractView.WINDOW_HEIGHT));
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 
@@ -97,13 +98,13 @@ abstract class AbstractView extends JFrame implements IView {
 	 * @param newContentPanel the new panel
 	 */
 	protected final void updatePanel(JPanel newContentPanel) {
-		JPanel newMainPanel = new JPanel(new BorderLayout());
+		final JPanel newMainPanel = new JPanel(new BorderLayout());
 		newMainPanel.add(headerPanel, BorderLayout.NORTH);
 		newMainPanel.add(newContentPanel, BorderLayout.CENTER);
 
-		ChangeViewCommand u = new ChangeViewCommand(this, mainPanel, newMainPanel);
+		final ChangeViewCommand u = new ChangeViewCommand(this, mainPanel, newMainPanel);
 		u.execute();
-		this.mainPanel = newMainPanel;
+		mainPanel = newMainPanel;
 		navigationHistory.add(u);
 	}
 
@@ -143,8 +144,8 @@ abstract class AbstractView extends JFrame implements IView {
 		if (navigationHistory.canUndo()) {
 			navigationHistory.undo();
 			// top of stack is last in the list
-			List<ChangeViewCommand> future = navigationHistory.getFuture();
-			this.mainPanel = future.get(future.size() - 1).prevPanel;
+			final List<ChangeViewCommand> future = navigationHistory.getFuture();
+			mainPanel = future.get(future.size() - 1).prevPanel;
 		}
 	}
 
@@ -152,8 +153,8 @@ abstract class AbstractView extends JFrame implements IView {
 		if (navigationHistory.canRedo()) {
 			navigationHistory.redo();
 			// top of stack is last in the list
-			List<ChangeViewCommand> past = navigationHistory.getPast();
-			this.mainPanel = past.get(past.size() - 1).prevPanel;
+			final List<ChangeViewCommand> past = navigationHistory.getPast();
+			mainPanel = past.get(past.size() - 1).prevPanel;
 		}
 	}
 
@@ -171,10 +172,11 @@ abstract class AbstractView extends JFrame implements IView {
 	}
 
 	/**
-	 * A wrapper method for {@link IController#getLinesByTown(ETown)}
-	 * that also updates the source panel of the view.
+	 * A wrapper method for {@link IController#getLinesByTown(ETown)} that also
+	 * updates the source panel of the view.
 	 *
 	 * @param town the town from which the lines will be selected
+	 *
 	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getLinesByTown(ETown town) {
@@ -183,10 +185,11 @@ abstract class AbstractView extends JFrame implements IView {
 	}
 
 	/**
-	 * A wrapper method for {@link IController#getStationsByLine(ELine)}
-	 * that also updates the source panel of the view.
+	 * A wrapper method for {@link IController#getStationsByLine(ELine)} that also
+	 * updates the source panel of the view.
 	 *
 	 * @param line the line from which the stations will be selected
+	 *
 	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getStationsByLine(ELine line) {
@@ -195,10 +198,11 @@ abstract class AbstractView extends JFrame implements IView {
 	}
 
 	/**
-	 * A wrapper method for {@link IController#getTimetablesByLine(ELine)}
-	 * that also updates the source panel of the view.
+	 * A wrapper method for {@link IController#getTimetablesByLine(ELine)} that also
+	 * updates the source panel of the view.
 	 *
 	 * @param line the line from which the timetables will be selected
+	 *
 	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getTimetablesByLine(ELine line) {
@@ -207,10 +211,11 @@ abstract class AbstractView extends JFrame implements IView {
 	}
 
 	/**
-	 * A wrapper method for {@link IController#getTownsByLine(ELine)}
-	 * that also updates the source panel of the view.
+	 * A wrapper method for {@link IController#getTownsByLine(ELine)} that also
+	 * updates the source panel of the view.
 	 *
 	 * @param line the line from which the timetables will be selected
+	 *
 	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getTownsByLine(ELine line) {
@@ -219,10 +224,11 @@ abstract class AbstractView extends JFrame implements IView {
 	}
 
 	/**
-	 * A wrapper method for {@link IController#getLinesByStation(EStation)}
-	 * that also updates the source panel of the view.
+	 * A wrapper method for {@link IController#getLinesByStation(EStation)} that
+	 * also updates the source panel of the view.
 	 *
 	 * @param station the station from which the timetables will be selected
+	 *
 	 * @see #updateHeaderPanel(JPanel)
 	 */
 	protected final void getLinesByStation(EStation station) {
@@ -231,8 +237,8 @@ abstract class AbstractView extends JFrame implements IView {
 	}
 
 	/**
-	 * A wrapper method for {@link IController#getAllTowns()}
-	 * that also resets the source panel of the view.
+	 * A wrapper method for {@link IController#getAllTowns()} that also resets the
+	 * source panel of the view.
 	 *
 	 * @see #updateHeaderPanel(JPanel)
 	 */
@@ -242,8 +248,8 @@ abstract class AbstractView extends JFrame implements IView {
 	}
 
 	/**
-	 * A wrapper method for {@link IController#getAllLines()}
-	 * that also resets the source panel of the view.
+	 * A wrapper method for {@link IController#getAllLines()} that also resets the
+	 * source panel of the view.
 	 *
 	 * @see #updateHeaderPanel(JPanel)
 	 */
