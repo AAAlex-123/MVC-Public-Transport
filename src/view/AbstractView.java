@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import controller.IController;
+import controller.IImageController;
 import entity.ELine;
 import entity.EStation;
 import entity.ETown;
@@ -32,7 +33,8 @@ abstract class AbstractView extends JFrame implements IView {
 	/** The factory that constructs graphics for the Entities this View displays */
 	protected final AbstractEntityGraphicFactory factory;
 
-	private IController                          controller;
+	private IController      controller;
+	private IImageController imageController;
 
 	private final UndoableHistory<ChangeViewCommand> navigationHistory;
 
@@ -79,6 +81,11 @@ abstract class AbstractView extends JFrame implements IView {
 		controller = newController;
 	}
 
+	@Override
+	public final void registerImageController(IImageController newImageController) {
+		imageController = newImageController;
+	}
+
 	protected abstract JMenuBar constructJMenuBar();
 
 	// ---------- Methods for the Concrete View classes ---------- //
@@ -101,7 +108,7 @@ abstract class AbstractView extends JFrame implements IView {
 	}
 
 	/**
-	 * A wrapper method for {@link IController#loadImage(String, int, int)}.
+	 * A wrapper method for {@link IImageController#loadImage(String, int, int)}.
 	 *
 	 * @param name      the image's name
 	 * @param maxWidth  the maximum width of the image
@@ -110,7 +117,7 @@ abstract class AbstractView extends JFrame implements IView {
 	 * @return an {@code ImageIcon} for the image with the corresponding name
 	 */
 	protected final ImageIcon getImageIcon(String name, int maxWidth, int maxHeight) {
-		return new ImageIcon(controller.loadImage(name, maxWidth, maxHeight));
+		return new ImageIcon(imageController.loadImage(name, maxWidth, maxHeight));
 	}
 
 	/**

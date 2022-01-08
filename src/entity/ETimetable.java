@@ -1,9 +1,9 @@
 package entity;
 
-
 /**
  * Describes a time stamp composed of pair of HOUR:MINUTES integers.
  *
+ * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
 @SuppressWarnings("nls")
@@ -52,8 +52,29 @@ public class ETimetable extends AbstractEntity {
 		return minutes;
 	}
 
+	/**
+	 * Returns the time in the HOURS::MINUTES format.
+	 *
+	 * @return the formatted time
+	 */
+	public String getFormattedTime() {
+		return String.format("%d:%d", getHours(), getMinutes());
+	}
+
 	@Override
 	public String toString() {
-		return String.format("%s: %d:%d", super.toString(), getHours(), getMinutes());
-  }
+		return String.format("%s: %s", super.toString(), getFormattedTime());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (!(obj instanceof ETimetable))
+			return false;
+		ETimetable other = (ETimetable) obj;
+		return (hours == other.hours) && (minutes == other.minutes);
+	}
 }

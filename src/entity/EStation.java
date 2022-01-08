@@ -1,5 +1,7 @@
 package entity;
 
+import java.util.Objects;
+
 /**
  * The EStation class contains information about any public transport Station.
  * Multiple {@link ELine lines} can use the same Station.
@@ -59,5 +61,20 @@ public class EStation extends AbstractEntity {
 	public String toString() {
 		return String.format("%s: %s at %s in town %s", super.toString(), getName(), getPosition(),
 		        getTown());
+	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (!(obj instanceof EStation))
+			return false;
+		EStation other = (EStation) obj;
+		return Objects.equals(name, other.name) && Objects.equals(position, other.position)
+		        && Objects.equals(town, other.town);
 	}
 }

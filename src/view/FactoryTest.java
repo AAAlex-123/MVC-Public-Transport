@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import controller.Controller;
 import controller.IController;
@@ -17,7 +18,7 @@ import entity.Position;
 import model.IModel;
 import model.Model;
 
-public class FactoryTest {
+class FactoryTest {
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame();
@@ -28,10 +29,11 @@ public class FactoryTest {
 
 		view.registerController(controller);
 
-		AbstractEntityGraphicFactory f = new OASAEntityGraphicFactory(view);
+		AbstractEntityGraphicFactory f = new OASAEntityGraphicFactory();
+		f.initializeView(view);
 		frame.setSize(new Dimension(500, 500));
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		frame.add(f.getELineGraphic(new ELine(45, "A8", LineType.BUS, "Marousi-Hrakleio-Polytechnio",  new LinkedList<EStation>(), new LinkedList<ETimetable>())));
 		frame.add(f.getETownGraphic(new ETown(56, "Dimos Spaton-Metamorphosis")));

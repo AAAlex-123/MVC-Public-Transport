@@ -32,4 +32,16 @@ abstract class AbstractEntity {
 	public String toString() {
 		return String.format("%d", getId()); //$NON-NLS-1$
 	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof AbstractEntity))
+			return false;
+		AbstractEntity other = (AbstractEntity) obj;
+		return id == other.id;
+	}
 }

@@ -2,6 +2,7 @@ package entity;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The ELine class represents a public transport Line. It contains details about
@@ -35,8 +36,9 @@ public class ELine extends AbstractEntity {
 		this.lineNo = lineNo;
 		this.type = type;
 		this.name = name;
-		this.stations = Collections.unmodifiableList(stations);
-		this.startTimes = Collections.unmodifiableList(startTimes);
+		this.stations = (stations == null) ? List.of() : Collections.unmodifiableList(stations);
+		this.startTimes = (startTimes == null) ? List.of()
+		        : Collections.unmodifiableList(startTimes);
 	}
 
 	/**
@@ -95,5 +97,19 @@ public class ELine extends AbstractEntity {
 		        getLineNumber(),
 		        getType(),
 		        getName(), getStations(), getTimetables());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (!(obj instanceof ELine))
+			return false;
+		ELine other = (ELine) obj;
+		return Objects.equals(lineNo, other.lineNo) && Objects.equals(name, other.name)
+		        && Objects.equals(startTimes, other.startTimes)
+		        && Objects.equals(stations, other.stations) && (type == other.type);
 	}
 }

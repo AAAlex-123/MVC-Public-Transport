@@ -3,6 +3,7 @@ package view;
 import java.util.List;
 
 import controller.IController;
+import controller.IImageController;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
@@ -22,6 +23,8 @@ public interface IView {
 	void start();
 
 	void registerController(IController controller);
+
+	void registerImageController(IImageController imageController);
 
 	void updateViewWithHomepage();
 

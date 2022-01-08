@@ -1,29 +1,22 @@
 package model;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
 
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
 import entity.LineType;
-import entity.MissingSpriteException;
 import entity.Position;
 
 /**
@@ -33,10 +26,6 @@ import entity.Position;
  */
 @SuppressWarnings("nls")
 public class Model implements IModel {
-
-	private static final String URL  = "jdbc:mysql://localhost/oasaripoff";
-	private static final String USER = "***";
-	private static final String PASS = "***";
 
 	@FunctionalInterface
 	private interface ExecutableWithStatement<S extends Statement> {
@@ -58,9 +47,9 @@ public class Model implements IModel {
 	 *
 	 * @throws SQLException if the executable throws an SQLException
 	 */
-	private static void doWithStatement(ExecutableWithStatement<Statement> executable)
+	private void doWithStatement(ExecutableWithStatement<Statement> executable)
 	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS);
+		try (Connection conn = DriverManager.getConnection(url, user, password);
 		        Statement stmt = conn.createStatement();) {
 			executable.execute(stmt);
 		}
@@ -76,21 +65,36 @@ public class Model implements IModel {
 	 *
 	 * @throws SQLException if the executable throws an SQLException
 	 */
-	private static void doWithConnection(ExecutableWithConnection<Connection> executable)
+	private void doWithConnection(ExecutableWithConnection<Connection> executable)
 	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(Model.URL, Model.USER, Model.PASS)) {
+		try (Connection conn = DriverManager.getConnection(url, user, password)) {
 			executable.execute(conn);
 		}
 	}
 
-	private final HashMap<LineType, BufferedImage> spriteCache;
+	private final String url, user, password;
 
 	/**
-	 * Constructs a Model that communicates with the underlying database to retrieve
-	 * data and return them using Entity objects from the {@link entity} package.
+	 * Constructs a Model that communicates with the live underlying database to
+	 * retrieve and return data using objects from the {@link entity} package.
 	 */
 	public Model() {
-		spriteCache = new HashMap<>();
+		this("jdbc:mysql://localhost/oasaripoff", "root", "localhostMVCMy$QL");
+	}
+
+	/**
+	 * Constructs a Model that communicates with a database to retrieve and return
+	 * data using objects from the {@link entity} package.
+	 *
+	 * @param url      a database url of the form jdbc:subprotocol:subname
+	 * @param user     the database user on whose behalf the connection is being
+	 *                 made
+	 * @param password the user's password
+	 */
+	public Model(String url, String user, String password) {
+		this.url = url;
+		this.user = user;
+		this.password = password;
 	}
 
 	@Override
@@ -100,27 +104,27 @@ public class Model implements IModel {
 		        + "JOIN Station AS S ON S.city_id = C.id "
 		        + "JOIN LineStation AS LS ON LS.station_id = S.id "
 		        + "JOIN Line AS L ON L.id = LS.line_id "
-		        + "WHERE L.name = @1 AND L.type = @2";
+		        + "WHERE L.id=@1";
 
 		final String qFinalisedQuery;
-		if (line == null) {
-			qFinalisedQuery = qSelectAllTowns;
-		} else {
-			final String name = line.getLineNumber();
-			final String type = line.getType().getName();
-			qFinalisedQuery = qSelectTownsByLine.replaceAll("@1", name).replace("@2", type);
+		if (line == null)
+			qFinalisedQuery = qSelectAllTowns + " ORDER BY C.name;";
+		else {
+			final int id = line.getId();
+			qFinalisedQuery = qSelectTownsByLine.replaceAll("@1", String.valueOf(id))
+			        + " ORDER BY C.name;";
 		}
 
-		List<ETown> towns = new LinkedList<>();
+		final List<ETown> townsFromDatabase = new LinkedList<>();
 
 		doWithStatement((Statement stmt) -> {
 			try (ResultSet rs = stmt.executeQuery(qFinalisedQuery)) {
 				while (rs.next())
-					towns.add(new ETown(rs.getInt("C.id"), rs.getString("C.name")));
+					townsFromDatabase.add(new ETown(rs.getInt("C.id"), rs.getString("C.name")));
 			}
 		});
 
-		return towns;
+		return townsFromDatabase;
 	}
 
 	@Override
@@ -130,20 +134,22 @@ public class Model implements IModel {
 
 		final String qSelectAllLines;
 
-		if (town != null) {
+		if (town != null)
 			qSelectAllLines = "SELECT DISTINCT L.* FROM Line AS L "
 			        + "JOIN LineStation AS LS ON L.id = LS.line_id "
 			        + "JOIN Station AS S ON LS.station_id = S.id "
-			        + "JOIN City AS C ON Station.city_id = C.id "
-			        + "WHERE C.id = " + town.getId();
-		} else if (station != null) {
+			        + "JOIN City AS C ON S.city_id = C.id "
+			        + "WHERE C.id = " + town.getId() + " "
+			        + "ORDER BY L.type, L.lineNo;";
+		else if (station != null)
 			qSelectAllLines = "SELECT DISTINCT L.* FROM Line AS L "
 			        + "JOIN LineStation AS LS ON L.id = LS.line_id "
 			        + "JOIN Station AS S ON LS.station_id = S.id "
-			        + "WHERE S.id = " + station.getId();
-		} else {
-			qSelectAllLines = "SELECT L.* FROM Line AS L ";
-		}
+			        + "WHERE S.id = " + station.getId() + " "
+			        + "ORDER BY L.type, L.lineNo;";
+		else
+			qSelectAllLines = "SELECT L.* FROM Line AS L "
+			        + "ORDER BY L.type, L.lineNo;";
 
 		final List<ELine>                    linesFromDatabase      = new LinkedList<>();
 		final Map<Integer, List<EStation>>   stationsFromDatabase   = new HashMap<>();
@@ -157,21 +163,23 @@ public class Model implements IModel {
 					final LineType type        = LineType.valueOf(rs.getString("L.type"));
 					final String   description = rs.getString("L.description");
 
-					linesFromDatabase.add(new ELine(id, lineNo, type, description, null, null));
+					linesFromDatabase
+					        .add(new ELine(id, lineNo, type, description, List.of(), List.of()));
 				}
 			}
 		});
 
 		final String qSelectStationsForLine = "SELECT S.*, C.* FROM Station AS S "
 		        + "JOIN LineStation AS LS ON S.id = LS.station_id "
-		        + "JOIN City AS C ON C.id = S.id "
-		        + "WHERE LS.line_id = @1";
+		        + "JOIN City AS C ON C.id = S.city_id "
+		        + "WHERE LS.line_id = @1 "
+		        + "ORDER BY LS.station_index;";
 
 		doWithConnection((Connection conn) -> {
 
-			for (ELine line : linesFromDatabase) {
+			for (final ELine line : linesFromDatabase) {
 
-				List<EStation> newStations = new LinkedList<>();
+				final List<EStation> newStations = new LinkedList<>();
 
 				final String lineID = String.valueOf(line.getId());
 				final String query  = qSelectStationsForLine.replace("@1", lineID);
@@ -195,14 +203,15 @@ public class Model implements IModel {
 			}
 		});
 
-		final String qSelectTimetablesForLine = "SELECLT LT.departure_time FROM LineTimetable AS LT"
-		        + "WHERE LT.line_id = @1";
+		final String qSelectTimetablesForLine = "SELECT LT.departure_time FROM LineTimetable AS LT "
+		        + "WHERE LT.line_id = @1 "
+		        + "ORDER BY LT.departure_time;";
 
 		doWithConnection((Connection conn) -> {
 
-			for (ELine line : linesFromDatabase) {
+			for (final ELine line : linesFromDatabase) {
 
-				List<ETimetable> newTimetables = new LinkedList<>();
+				final List<ETimetable> newTimetables = new LinkedList<>();
 
 				final String lineID = String.valueOf(line.getId());
 				final String query  = qSelectTimetablesForLine.replace("@1", lineID);
@@ -224,9 +233,9 @@ public class Model implements IModel {
 			}
 		});
 
-		final List<ELine> finalLines = new LinkedList<>();
+		final List<ELine> completeLinesFromDatabase = new LinkedList<>();
 
-		for (ELine line : linesFromDatabase) {
+		for (final ELine line : linesFromDatabase) {
 			final int              lineId            = line.getId();
 			final List<EStation>   stationsForLine   = stationsFromDatabase.get(lineId);
 			final List<ETimetable> timetablesForLine = timetablesFromDatabase.get(lineId);
@@ -234,10 +243,10 @@ public class Model implements IModel {
 			final ELine newLine = new ELine(lineId, line.getLineNumber(), line.getType(),
 			        line.getName(), stationsForLine, timetablesForLine);
 
-			finalLines.add(newLine);
+			completeLinesFromDatabase.add(newLine);
 		}
 
-		return finalLines;
+		return completeLinesFromDatabase;
 	}
 
 	@Override
@@ -245,13 +254,14 @@ public class Model implements IModel {
 		if (town == null)
 			throw new IllegalArgumentException("town can't be null");
 
-		final String stationsByTown = "SELECT S.* FROM Station AS S "
+		final String qSelectStationsByTown = "SELECT S.* FROM Station AS S "
 		        + "JOIN City AS C ON S.city_id = C.id "
-		        + "WHERE C.name=@1";
+		        + "WHERE C.id=@1 "
+		        + "ORDER BY S.name";
 
-		final String query = stationsByTown.replaceAll("@1", town.getName());
+		final String query = qSelectStationsByTown.replaceAll("@1", String.valueOf(town.getId()));
 
-		List<EStation> stations = new LinkedList<>();
+		final List<EStation> stations = new LinkedList<>();
 
 		doWithStatement((Statement stmt) -> {
 			try (ResultSet rs = stmt.executeQuery(query)) {
@@ -264,42 +274,18 @@ public class Model implements IModel {
 		return stations;
 	}
 
-	@Override
-	public BufferedImage getVehicleSprite(LineType type) throws MissingSpriteException {
-		if (type == null)
-			throw new IllegalArgumentException("type can't be null");
-
-		BufferedImage cachedSprite = spriteCache.get(type);
-		if (cachedSprite != null)
-			return cachedSprite;
-
-		BufferedImage loadedSprite = null;
-		File          file         = null;
-
-		try {
-			file = new File(type.getName());
-			loadedSprite = ImageIO.read(file);
-		} catch (final IOException e) {
-			// should this simply consume the exception and not load anything?
-			throw new MissingSpriteException(file);
-		}
-
-		spriteCache.put(type, loadedSprite);
-
-		return loadedSprite;
-	}
 
 	@Override
 	public void insertLine(ELine line) throws SQLException {
 		if (line == null)
 			throw new IllegalArgumentException("line can't be null");
 
-		final String insertToLine = "INSERT INTO Line VALUES ('@2', '@3', '@4')";
+		final String qInsertToLine = "INSERT INTO Line (lineNo, description, type) VALUES ('@2', '@3', '@4')";
 
 		doWithStatement((Statement stmt) -> {
-			stmt.execute(insertToLine.replace("@2", line.getLineNumber())
-				        .replace("@3", line.getName())
-				        .replace("@4", line.getType().getName()));
+			stmt.execute(qInsertToLine.replace("@2", line.getLineNumber())
+			        .replace("@3", line.getName())
+			        .replace("@4", line.getType().toString()));
 		});
 	}
 
@@ -308,10 +294,10 @@ public class Model implements IModel {
 		if (town == null)
 			throw new IllegalArgumentException("town can't be null");
 
-		final String insertToCity = "INSERT INTO City(name) VALUES ('@2')";
+		final String qInsertToCity = "INSERT INTO City(name) VALUES ('@2')";
 
 		doWithStatement((Statement stmt) -> {
-		    stmt.execute(insertToCity.replace("@2", town.getName()));
+		    stmt.execute(qInsertToCity.replace("@2", town.getName()));
 		});
 	}
 
@@ -320,12 +306,12 @@ public class Model implements IModel {
 		if (station == null)
 			throw new IllegalArgumentException("station can't be null");
 
-		final String   insertToStation = "INSERT INTO Station(name, x_coord, y_coord, city_id) VALUES ('@2', @3, @4, @5)";
-		final Position position        = station.getPosition();
+		final String   qInsertToStation = "INSERT INTO Station(name, x_coord, y_coord, city_id) VALUES ('@2', @3, @4, @5)";
+		final Position position         = station.getPosition();
 
 		doWithStatement((Statement stmt) -> {
 			stmt.execute(
-			        insertToStation.replace("@2", station.getName())
+			        qInsertToStation.replace("@2", station.getName())
 			                .replace("@3", String.valueOf(position.getX()))
 			                .replace("@4", String.valueOf(position.getY()))
 			                .replace("@5", String.valueOf(station.getTown().getId())));
@@ -342,12 +328,27 @@ public class Model implements IModel {
 			throw new IllegalArgumentException(
 			        "index must be between 0 and the number of the line's stations");
 
-		final String insertToLineStation = "INSERT INTO LineStation VALUES (@1, @2, @3)";
+		final String qDeleteExistingStationsFromLine = "DELETE FROM LineStation AS LS "
+		        + "WHERE LS.line_id = @1";
+		final String lineID                          = String.valueOf(line.getId());
 
 		doWithStatement((Statement stmt) -> {
-			stmt.execute(insertToLineStation.replace("@1", String.valueOf(line.getId()))
-			        .replace("@2", String.valueOf(station.getId()))
-			        .replace("@3", String.valueOf(index)));
+		    stmt.execute(
+		            qDeleteExistingStationsFromLine.replace("@1", lineID));
+		});
+
+		final String qInsertToLineStation = "INSERT INTO LineStation VALUES (@1, @2, @3)";
+
+		final List<EStation> stationsToAdd = new ArrayList<>(line.getStations());
+		stationsToAdd.add(index, station);
+
+		doWithConnection((Connection conn) -> {
+			for (int i = 0; i < stationsToAdd.size(); i++)
+				try (Statement stmt = conn.createStatement()) {
+					stmt.execute(qInsertToLineStation.replace("@1", lineID)
+					        .replace("@2", String.valueOf(stationsToAdd.get(i).getId()))
+					        .replace("@3", String.valueOf(i)));
+				}
 		});
 	}
 
@@ -358,27 +359,11 @@ public class Model implements IModel {
 		if (timetable == null)
 			throw new IllegalArgumentException("timetable can't be null");
 
-		final String insertToLineTimetable = "INSERT INTO LineTimetable VALUES (@1, '@2')";
+		final String qInsertToLineTimetable = "INSERT INTO LineTimetable VALUES (@1, '@2')";
 
 		doWithStatement((Statement stmt) -> {
-			stmt.execute(insertToLineTimetable.replace("@1", String.valueOf(line.getId()))
-			        .replace("@2", timetable.toString()));
+			stmt.execute(qInsertToLineTimetable.replace("@1", String.valueOf(line.getId()))
+			        .replace("@2", timetable.getFormattedTime()));
 		});
-	}
-
-	@Override
-	public BufferedImage loadImage(String name) throws IOException {
-		BufferedImage loadedSprite = null;
-		File          file         = null;
-		file = getResourcePath(name);
-		loadedSprite = ImageIO.read(file);
-		return loadedSprite;
-	}
-
-	private static File getResourcePath(String spriteName) {
-		Path path = Paths.get(System.getProperty("user.dir"));
-		String resource_dir = path.toString() + File.separator + "other_resources" + File.separator + "resources";
-		String icon_path = resource_dir + File.separator + spriteName;
-		return new File(icon_path);
 	}
 }

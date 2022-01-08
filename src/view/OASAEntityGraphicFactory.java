@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,46 +21,46 @@ import entity.ETown;
 
 /**
  * A Factory producing self-describing graphics which open pop-up windows to
- * select operations.
+ * select operations to perform related to entities.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
 class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 
-	private static final Font largeFont = new Font ("TimesRoman", Font.BOLD, 24);
-	private static final Font standardFont = new Font ("TimesRoman", Font.BOLD | Font.ITALIC, 18);
-	private static final Font smallFont = new Font ("TimesRoman", Font.PLAIN, 12);
+	private static final String fontName        = "TimesRoman";                                   //$NON-NLS-1$
+	private static final Font largeFont = new Font (fontName, Font.BOLD, 24);
+	private static final Font standardFont = new Font (fontName, Font.BOLD | Font.ITALIC, 18);
+	private static final Font smallFont = new Font (fontName, Font.PLAIN, 12);
 	private static final Color textColor = Color.BLACK;
 	private static final Color backgroundColor = Color.WHITE;
 	private static final int ICON_SIZE = 54;
 
 	private static final String FIND_TOWNS = "Find towns";
 	private static final String FIND_LINES = "Find lines";
-	private static final String FIND_TIMES = "Find arrival times";
+	private static final String FIND_TIMES    = "Find departure times";
 	private static final String FIND_STATIONS = "Find stations";
 
 	private AbstractView view;
 
-	public OASAEntityGraphicFactory(AbstractView view) {
-		this.view = view;
-	}
-
+	/** Constructs an OASAEntityGraphicFactory */
 	public OASAEntityGraphicFactory() {
-		this.view = null;
+		view = null;
 	}
 
 	@Override
-	public void initializeView(AbstractView view) {
-		if(this.view == null)
-			this.view = view;
+	public void initializeView(AbstractView newView) {
+		if (view == null)
+			view = newView;
 	}
 
 	@Override
 	public JPanel getETownGraphic(ETown town) {
 		JPanel graphic = prepareGraphic();
 
-		graphic.add(new JLabel(view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE)));
+		ImageIcon icon = view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE); //$NON-NLS-1$
+
+		graphic.add(new JLabel(icon));
 		graphic.add(Box.createHorizontalBox());
 
 		JLabel nameLabel = new JLabel(town.getName());
@@ -73,11 +74,12 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				String msg = String.format("What do you wish to look for in the town of %s?", town.getName());
+				String title = "Town Options";
+				String[] options = new String[]{ FIND_LINES, FIND_STATIONS} ;
+				String   initial = FIND_LINES;
                 String   res     = (String) JOptionPane.showInputDialog(view.getContentPane(),
-                		"What do you wish to look for in the town of " + town.getName() + "?", "Town Options",
-                		JOptionPane.QUESTION_MESSAGE,
-				        view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE),
-                		new String[]{ FIND_LINES, FIND_STATIONS}, FIND_LINES);
+				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
 
                 switch (res) {
                 case FIND_LINES:
@@ -86,6 +88,8 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
                 case FIND_STATIONS:
                     view.getStationsByTown(town);
                     break;
+				default:
+					break;
                 }
 			}
 		});
@@ -97,8 +101,9 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	public JPanel getELineGraphic(ELine line) {
 		JPanel graphic = prepareGraphic();
 
-		graphic.add(new JLabel(
-		        view.getImageIcon(line.getType().getSpriteName(), ICON_SIZE, ICON_SIZE)));
+		ImageIcon icon = view.getImageIcon(line.getType().getSpriteName(), ICON_SIZE, ICON_SIZE);
+
+		graphic.add(new JLabel(icon));
 		graphic.add(Box.createHorizontalBox());
 
 		JPanel namePanel = new JPanel();
@@ -122,11 +127,14 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				String   msg            = String
+				        .format("What do you wish to look for in the line %s?", line.getName());
+				String   title          = "Line Options";
+				String[] options        = new String[] { FIND_TIMES, FIND_STATIONS, FIND_TOWNS };
+				String   initial = FIND_TIMES;
+
                 String   res     = (String) JOptionPane.showInputDialog(view.getContentPane(),
-                		"What do you wish to look for in the line" + line.getName() + "?", "Line Options",
-                		JOptionPane.QUESTION_MESSAGE,
-				        view.getImageIcon("trolley.png", ICON_SIZE, ICON_SIZE),
-                		new String[]{ FIND_TIMES, FIND_STATIONS, FIND_TOWNS}, FIND_TIMES);
+				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
 
                 switch (res) {
                 case FIND_TIMES:
@@ -138,6 +146,8 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
                 case FIND_TOWNS:
                 	view.getTownsByLine(line);
                 	break;
+				default:
+					break;
                 }
 			}
 		});
@@ -149,7 +159,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	public JPanel getEStationGraphic(EStation station) {
 		JPanel graphic = prepareGraphic();
 
-		graphic.add(new JLabel(view.getImageIcon("station.png", ICON_SIZE, ICON_SIZE)));
+		graphic.add(new JLabel(view.getImageIcon("station.png", ICON_SIZE, ICON_SIZE))); //$NON-NLS-1$
 		graphic.add(Box.createHorizontalBox());
 
 		JPanel namePanel = new JPanel();
@@ -160,7 +170,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 		numLabel.setFont(largeFont);
 		numLabel.setForeground(textColor);
 
-		JLabel descrLabel = new JLabel("in " + station.getTown().getName());
+		JLabel descrLabel = new JLabel(String.format("in %s", station.getTown().getName()));
 		descrLabel.setFont(smallFont);
 		descrLabel.setForeground(textColor);
 
@@ -173,8 +183,10 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-               int answer = JOptionPane.showConfirmDialog(view.getContentPane(),
-            		   "Would you like to view the lines servicing the station " + station.getName() + "?");
+				String msg    = String.format(
+				        "Would you like to view the lines servicing the station %s?",
+				        station.getName());
+				int    answer = JOptionPane.showConfirmDialog(view.getContentPane(), msg);
 
                if(answer == JOptionPane.OK_OPTION)
             	   view.getLinesByStation(station);
