@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import localisation.Languages;
+
 /**
  * The ELine class represents a public transport Line. It contains details about
  * the line as well as the {@link EStation Stations} and {@link ETimetable
@@ -92,7 +94,7 @@ public class ELine extends AbstractEntity {
 
 	@Override
 	public String toString() {
-		return String.format("%s: %s-%s, %s. Stations: %s, Departure times: %s", super.toString(),
+		return String.format(Languages.getString("ELine.0"), super.toString(), //$NON-NLS-1$
 		        getName(), getType(), getDescription(), getStations(), getTimetables());
 	}
 

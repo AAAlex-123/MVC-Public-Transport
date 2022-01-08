@@ -25,10 +25,10 @@ public class ETimetable extends AbstractEntity {
 		super(-1);
 
 		if((hours < 0) || (hours >= 24))
-			throw new IllegalArgumentException(String.format("Invalid hour value : %d", hours));
+			throw new IllegalArgumentException(String.format("Invalid hour value : %d", hours)); //$NON-NLS-1$
 
 		if((minutes < 0) || (minutes >= 60))
-			throw new IllegalArgumentException(String.format("Invalid minute value : %d", minutes));
+			throw new IllegalArgumentException(String.format("Invalid minute value : %d", minutes)); //$NON-NLS-1$
 
 		this.hours = hours;
 		this.minutes = minutes;
@@ -58,12 +58,12 @@ public class ETimetable extends AbstractEntity {
 	 * @return the formatted time
 	 */
 	public String getFormattedTime() {
-		return String.format("%d:%d", getHours(), getMinutes());
+		return String.format("%d:%d", getHours(), getMinutes()); //$NON-NLS-1$
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%s: %s", super.toString(), getFormattedTime());
+		return String.format("%s: %s", super.toString(), getFormattedTime()); //$NON-NLS-1$
 	}
 
 	@Override

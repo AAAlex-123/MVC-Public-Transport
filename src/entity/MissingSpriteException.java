@@ -21,6 +21,6 @@ public final class MissingSpriteException extends UncheckedIOException {
 	 */
 	public MissingSpriteException(File file) {
 		super(new IOException(
-		        String.format(Languages.getString("MissingSpriteException.0"), file)));
+		        String.format(Languages.getString("MissingSpriteException.0"), file))); //$NON-NLS-1$
 	}
 }

@@ -57,7 +57,7 @@ public class Position {
 
 	@Override
 	public String toString() {
-		return String.format("(%f, %f)", getX(), getY());
+		return String.format("(%f, %f)", getX(), getY()); //$NON-NLS-1$
 	}
 
 	@Override

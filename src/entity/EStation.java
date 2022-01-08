@@ -2,6 +2,8 @@ package entity;
 
 import java.util.Objects;
 
+import localisation.Languages;
+
 /**
  * The EStation class contains information about any public transport Station.
  * Multiple {@link ELine lines} can use the same Station.
@@ -59,7 +61,7 @@ public class EStation extends AbstractEntity {
 
 	@Override
 	public String toString() {
-		return String.format("%s: %s at %s in town %s", super.toString(), getName(), getPosition(),
+		return String.format(Languages.getString("EStation.0"), super.toString(), getName(), getPosition(), //$NON-NLS-1$
 		        getTown());
 	}
 

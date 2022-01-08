@@ -35,7 +35,7 @@ public class ETown extends AbstractEntity {
 
 	@Override
 	public String toString() {
-		return String.format("%s: %s", super.toString(), getName());
+		return String.format("%s: %s", super.toString(), getName()); //$NON-NLS-1$
 	}
 
 	@Override
