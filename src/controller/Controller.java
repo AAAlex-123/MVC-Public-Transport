@@ -1,6 +1,7 @@
 package controller;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -11,6 +12,7 @@ import entity.ETown;
 import entity.LineType;
 import entity.Position;
 import model.IModel;
+import requirement.requirements.StringType;
 import requirement.util.Requirements;
 import view.IView;
 
@@ -138,7 +140,7 @@ public class Controller implements IController {
 		final EStation newStation = new EStation(-1,
 		        reqs.getValue("name", String.class),
 		        position,
-		        reqs.getValue("city id", ETown.class));
+		        reqs.getValue("city", ETown.class));
 		try {
 			model.insertStation(newStation);
 		} catch (final SQLException e) {
@@ -175,5 +177,83 @@ public class Controller implements IController {
 		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
+	}
+
+	@Override
+	public Requirements getInsertTownRequirements() {
+		Requirements reqs = new Requirements();
+		reqs.add("name", StringType.NON_EMPTY);
+		return reqs;
+	}
+
+	@Override
+	public Requirements getInsertLineRequirements() {
+		Requirements reqs = new Requirements();
+		reqs.add("line number", StringType.NON_EMPTY);
+		reqs.add("line type", Arrays.asList(LineType.values()));
+		reqs.add("description", StringType.NON_EMPTY);
+		return reqs;
+	}
+
+	@Override
+	public Requirements getInsertStationRequirements() {
+		List<ETown> availableTowns;
+		try {
+			availableTowns = model.getTowns(null);
+		} catch (final SQLException e) {
+			view.updateViewWithError(new RuntimeException("Could not fetch available towns", e));
+			return null;
+		}
+
+		Requirements reqs = new Requirements();
+		reqs.add("name", StringType.NON_EMPTY);
+		reqs.add("x coord", StringType.NON_NEG_INTEGER);
+		reqs.add("y coord", StringType.NON_NEG_INTEGER);
+		reqs.add("city", availableTowns);
+		return reqs;
+	}
+
+	@Override
+	public Requirements getInsertStationToLineRequirements() {
+		List<ELine>    lines;
+		List<EStation> stations;
+
+		try {
+			lines = model.getLines(null, null);
+		} catch (final SQLException e) {
+			view.updateViewWithError(new RuntimeException("Could not fetch available lines", e));
+			return null;
+		}
+
+		try {
+			stations = model.getStations(null);
+		} catch (final SQLException e) {
+			view.updateViewWithError(new RuntimeException("Could not fetch available stations", e));
+			return null;
+		}
+
+		Requirements reqs = new Requirements();
+		reqs.add("line", lines);
+		reqs.add("station", stations);
+		reqs.add("index", StringType.NON_NEG_INTEGER);
+		return reqs;
+	}
+
+	@Override
+	public Requirements getInsertTimetableToLineRequirements() {
+		List<ELine> lines;
+
+		try {
+			lines = model.getLines(null, null);
+		} catch (final SQLException e) {
+			view.updateViewWithError(new RuntimeException("Could not fetch available lines", e));
+			return null;
+		}
+
+		Requirements reqs = new Requirements();
+		reqs.add("line", lines);
+		reqs.add("hours", StringType.HOUR_24);
+		reqs.add("minutes", StringType.MINUTE);
+		return reqs;
 	}
 }

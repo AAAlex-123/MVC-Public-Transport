@@ -42,4 +42,14 @@ public interface IController {
 	void insertStationToLine(Requirements reqs);
 
 	void insertTimetableToLine(Requirements reqs);
+
+	Requirements getInsertTownRequirements();
+
+	Requirements getInsertLineRequirements();
+
+	Requirements getInsertStationRequirements();
+
+	Requirements getInsertStationToLineRequirements();
+
+	Requirements getInsertTimetableToLineRequirements();
 }

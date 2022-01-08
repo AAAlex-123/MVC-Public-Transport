@@ -24,6 +24,7 @@ import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
+import requirement.util.Requirements;
 
 /**
  * A concrete implementation of the {@link IView} interface that extends the
@@ -49,30 +50,56 @@ public class OASAView extends AbstractView {
 	protected JMenuBar constructJMenuBar() {
 		final JMenuBar menuBar = new JMenuBar();
 
-		final JMenu     m_preferences;
-		final JMenuItem home, prev, next, p_settings, p_language;
+		final JMenu     m_insert, m_preferences;
+		final JMenuItem home, prev, next, i_town, i_station, i_line, i_station_to_line,
+		        i_timetable_to_line, p_settings, p_language;
 
 		home = new JMenuItem("<HOME_ICON>");
 		prev = new JMenuItem("<PREV_ICON>");
 		next = new JMenuItem("<NEXT_ICON>");
 
-		m_preferences = new JMenu("Preferences"); //$NON-NLS-1$
-		p_settings = new JMenuItem("Settings"); //$NON-NLS-1$
-		p_language = new JMenuItem("Language"); //$NON-NLS-1$
+		m_insert = new JMenu("Insert");
+		i_town = new JMenuItem("Town");
+		i_station = new JMenuItem("Station");
+		i_line = new JMenuItem("Line");
+		i_station_to_line = new JMenuItem("Station to Line");
+		i_timetable_to_line = new JMenuItem("Timetable to Line");
+		m_insert.add(i_town);
+		m_insert.add(i_station);
+		m_insert.add(i_line);
+		m_insert.add(i_station_to_line);
+		m_insert.add(i_timetable_to_line);
+
+		m_preferences = new JMenu("Preferences");
+		p_settings = new JMenuItem("Settings");
+		p_language = new JMenuItem("Language");
 		m_preferences.add(p_settings);
 		m_preferences.add(p_language);
-
 
 		menuBar.add(home);
 		menuBar.add(prev);
 		menuBar.add(next);
+		menuBar.add(m_insert);
 		menuBar.add(m_preferences);
+
 
 		home.addActionListener(e -> OASAView.this.changeToHomePanel());
 		prev.addActionListener(e -> OASAView.this.changeToPreviousPanel());
 		next.addActionListener(e -> OASAView.this.changeToNextPanel());
 
+		i_town.addActionListener(e -> OASAView.this.insertTown());
+		i_station.addActionListener(e -> OASAView.this.insertStation());
+		i_line.addActionListener(e -> OASAView.this.insertLine());
+		i_station_to_line.addActionListener(e -> OASAView.this.insertStationToLine());
+		i_timetable_to_line.addActionListener(e -> OASAView.this.insertTimetableToLine());
+
+
 		return menuBar;
+	}
+
+	@Override
+	protected void fulfilRequirements(Requirements reqs, String prompt) {
+		reqs.fulfillWithDialog(this, prompt);
 	}
 
 	@Override

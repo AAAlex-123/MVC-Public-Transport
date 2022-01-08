@@ -17,6 +17,7 @@ import controller.IImageController;
 import entity.ELine;
 import entity.EStation;
 import entity.ETown;
+import requirement.util.Requirements;
 
 /**
  * An abstract implementation of the {@link IView} interface which defines
@@ -257,6 +258,50 @@ abstract class AbstractView extends JFrame implements IView {
 		updateHeaderPanel(null);
 		controller.getAllLines();
 	}
+
+	protected final void insertTown() {
+		Requirements reqs = controller.getInsertTownRequirements();
+		fulfilRequirements(reqs, "Insert Town Parameters");
+		if (reqs.fulfilled())
+			controller.insertTown(reqs);
+	}
+
+	protected final void insertLine() {
+		Requirements reqs = controller.getInsertLineRequirements();
+		fulfilRequirements(reqs, "Insert Line Parameters");
+		if (reqs.fulfilled())
+			controller.insertLine(reqs);
+	}
+
+	protected final void insertStation() {
+		Requirements reqs = controller.getInsertStationRequirements();
+		fulfilRequirements(reqs, "Insert Station Parameters");
+		if (reqs.fulfilled())
+			controller.insertStation(reqs);
+	}
+
+	protected final void insertStationToLine() {
+		Requirements reqs = controller.getInsertStationToLineRequirements();
+		fulfilRequirements(reqs, "Insert Station to Line Parameters");
+		if (reqs.fulfilled())
+			controller.insertStationToLine(reqs);
+	}
+
+	protected final void insertTimetableToLine() {
+		Requirements reqs = controller.getInsertTimetableToLineRequirements();
+		fulfilRequirements(reqs, "Insert Timetable to Line Parameters");
+		if (reqs.fulfilled())
+			controller.insertTimetableToLine(reqs);
+	}
+
+	/**
+	 * Allows each subclass to define how to fulfil a {@link Requirements}.
+	 *
+	 * @param reqs   the Requirements object to fulfil
+	 * @param prompt the prompt for the fulfilment, which may be displayed to the
+	 *               user
+	 */
+	protected abstract void fulfilRequirements(Requirements reqs, String prompt);
 
 	/**
 	 * <b>TODO: FIX DOCUMENTATION! THIS METHOD ONLY CHANGES THE HEADER_PANEL. IT
