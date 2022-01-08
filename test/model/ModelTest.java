@@ -197,7 +197,6 @@ class ModelTest {
 		                + "(2, '9:00'), (2, '9:30'), (2, '10:00'), (2, '10:30'), (2, '11:00'), (2, '11:30'), (2, '12:00'),"
 		                + "(3, '17:00'), (3, '18:00'), (3, '19:00'), (3, '20:00'), (3, '21:00'), (3, '22:00'), (3, '23:00'),"
 		                + "(4, '5:00'), (4, '8:00'), (4, '11:00'), (4, '14:00'), (4, '17:00'), (4, '20:00'), (4, '23:00');",
-
 		};
 
 		try (Connection conn = DriverManager.getConnection(url, user, pass)) {
@@ -298,7 +297,11 @@ class ModelTest {
 	 */
 	@Test
 	final void testGetStations() {
-		assertThrows(IllegalArgumentException.class, () -> model.getStations(null));
+		List<EStation> eAllStations = List.of(sAerodromio, sAgia_paraskevi, sMonasthraki,
+		        sNea_ionia, sNomismatokopeio, sPapandreou, sPlateia, sSpata, sSyntagma);
+		List<EStation> aAllStations = assertDoesNotThrow(() -> model.getStations(null));
+
+		assertIterableEquals(eAllStations, aAllStations);
 
 		List<EStation> eStationsByAgiaParaskevi = List.of(sAgia_paraskevi, sNomismatokopeio);
 		List<EStation> aStationsByAgiaParaskevi = assertDoesNotThrow(() -> {

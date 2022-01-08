@@ -251,29 +251,43 @@ public class Model implements IModel {
 
 	@Override
 	public List<EStation> getStations(ETown town) throws SQLException {
-		if (town == null)
-			throw new IllegalArgumentException("town can't be null");
 
-		final String qSelectStationsByTown = "SELECT S.* FROM Station AS S "
+		final String qSelectAllStations    = "SELECT S.*, C.* FROM Station AS S "
+		        + "JOIN City AS C ON S.city_id = C.id "
+		        + "ORDER BY S.name";
+		final String qSelectStationsByTown = "SELECT S.*, C.* FROM Station AS S "
 		        + "JOIN City AS C ON S.city_id = C.id "
 		        + "WHERE C.id=@1 "
 		        + "ORDER BY S.name";
 
-		final String query = qSelectStationsByTown.replaceAll("@1", String.valueOf(town.getId()));
+		final String qFinalisedQuery;
+		if (town == null) {
+			qFinalisedQuery = qSelectAllStations;
+		} else {
+			qFinalisedQuery = qSelectStationsByTown.replaceAll("@1", String.valueOf(town.getId()));
+		}
 
-		final List<EStation> stations = new LinkedList<>();
+		final List<EStation> sationsFromDatabase = new LinkedList<>();
 
 		doWithStatement((Statement stmt) -> {
-			try (ResultSet rs = stmt.executeQuery(query)) {
-				while (rs.next())
-					stations.add(new EStation(rs.getInt("id"), rs.getString("name"),
-					        new Position(rs.getDouble("x_coord"), rs.getDouble("y_coord")), town));
+			try (ResultSet rs = stmt.executeQuery(qFinalisedQuery)) {
+				while (rs.next()) {
+
+					Position newPosition = new Position(rs.getDouble("S.x_coord"),
+					        rs.getDouble("S.y_coord"));
+
+					ETown newTown = town;
+					if (newTown == null)
+						newTown = new ETown(rs.getInt("C.id"), rs.getString("C.name"));
+
+					sationsFromDatabase.add(new EStation(rs.getInt("S.id"), rs.getString("S.name"),
+					        newPosition, newTown));
+				}
 			}
 		});
 
-		return stations;
+		return sationsFromDatabase;
 	}
-
 
 	@Override
 	public void insertLine(ELine line) throws SQLException {
