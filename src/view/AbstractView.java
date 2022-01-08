@@ -17,6 +17,7 @@ import controller.IImageController;
 import entity.ELine;
 import entity.EStation;
 import entity.ETown;
+import localisation.Languages;
 import requirement.util.Requirements;
 
 /**
@@ -50,7 +51,7 @@ abstract class AbstractView extends JFrame implements IView {
 	 * @param factory the factory that will be used to construct its graphics
 	 */
 	public AbstractView(AbstractEntityGraphicFactory factory) {
-		super("Public Transport Prototype");
+		super(Languages.getString("AbstractView.0")); //$NON-NLS-1$
 		this.factory = factory;
 		factory.initializeView(this);
 		navigationHistory = new UndoableHistory<>();
@@ -261,35 +262,35 @@ abstract class AbstractView extends JFrame implements IView {
 
 	protected final void insertTown() {
 		Requirements reqs = controller.getInsertTownRequirements();
-		fulfilRequirements(reqs, "Insert Town Parameters");
+		fulfilRequirements(reqs, Languages.getString("AbstractView.1")); //$NON-NLS-1$
 		if (reqs.fulfilled())
 			controller.insertTown(reqs);
 	}
 
 	protected final void insertLine() {
 		Requirements reqs = controller.getInsertLineRequirements();
-		fulfilRequirements(reqs, "Insert Line Parameters");
+		fulfilRequirements(reqs, Languages.getString("AbstractView.2")); //$NON-NLS-1$
 		if (reqs.fulfilled())
 			controller.insertLine(reqs);
 	}
 
 	protected final void insertStation() {
 		Requirements reqs = controller.getInsertStationRequirements();
-		fulfilRequirements(reqs, "Insert Station Parameters");
+		fulfilRequirements(reqs, Languages.getString("AbstractView.3")); //$NON-NLS-1$
 		if (reqs.fulfilled())
 			controller.insertStation(reqs);
 	}
 
 	protected final void insertStationToLine() {
 		Requirements reqs = controller.getInsertStationToLineRequirements();
-		fulfilRequirements(reqs, "Insert Station to Line Parameters");
+		fulfilRequirements(reqs, Languages.getString("AbstractView.4")); //$NON-NLS-1$
 		if (reqs.fulfilled())
 			controller.insertStationToLine(reqs);
 	}
 
 	protected final void insertTimetableToLine() {
 		Requirements reqs = controller.getInsertTimetableToLineRequirements();
-		fulfilRequirements(reqs, "Insert Timetable to Line Parameters");
+		fulfilRequirements(reqs, Languages.getString("AbstractView.5")); //$NON-NLS-1$
 		if (reqs.fulfilled())
 			controller.insertTimetableToLine(reqs);
 	}

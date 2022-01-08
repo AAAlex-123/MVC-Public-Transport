@@ -36,11 +36,11 @@ class FactoryTest {
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		frame.add(
-		        f.getELineGraphic(new ELine(45, "A8", LineType.BUS, "Marousi-Hrakleio-Polytechnio",
+		        f.getELineGraphic(new ELine(45, "A8", LineType.BUS, "Marousi-Hrakleio-Polytechnio", //$NON-NLS-1$ //$NON-NLS-2$
 		                new LinkedList<EStation>(), new LinkedList<ETimetable>())));
-		frame.add(f.getETownGraphic(new ETown(56, "Dimos Spaton-Metamorphosis")));
+		frame.add(f.getETownGraphic(new ETown(56, "Dimos Spaton-Metamorphosis"))); //$NON-NLS-1$
 		frame.add(f.getEStationGraphic(
-		        new EStation(23, "Fournos", new Position(56, 67), new ETown(23, "Spata"))));
+		        new EStation(23, "Fournos", new Position(56, 67), new ETown(23, "Spata")))); //$NON-NLS-1$ //$NON-NLS-2$
 		frame.add(f.getETimetableGraphic(new ETimetable(23, 50)));
 
 		frame.setVisible(true);

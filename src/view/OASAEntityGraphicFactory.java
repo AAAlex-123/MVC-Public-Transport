@@ -18,6 +18,7 @@ import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
+import localisation.Languages;
 
 /**
  * A Factory producing self-describing graphics which open pop-up windows to
@@ -36,10 +37,10 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	private static final Color  backgroundColor = Color.WHITE;
 	private static final int    ICON_SIZE       = 54;
 
-	private static final String FIND_TOWNS    = "Find towns";
-	private static final String FIND_LINES    = "Find lines";
-	private static final String FIND_TIMES    = "Find departure times";
-	private static final String FIND_STATIONS = "Find stations";
+	private static final String FIND_TOWNS    = Languages.getString("OASAEntityGraphicFactory.0"); //$NON-NLS-1$
+	private static final String FIND_LINES    = Languages.getString("OASAEntityGraphicFactory.1"); //$NON-NLS-1$
+	private static final String FIND_TIMES    = Languages.getString("OASAEntityGraphicFactory.2"); //$NON-NLS-1$
+	private static final String FIND_STATIONS = Languages.getString("OASAEntityGraphicFactory.3"); //$NON-NLS-1$
 
 	private AbstractView view;
 
@@ -75,23 +76,18 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				final String   msg     = String
-				        .format("What do you wish to look for in the town of %s?", town.getName());
-				final String   title   = "Town Options";
+				        .format(Languages.getString("OASAEntityGraphicFactory.4"), town.getName()); //$NON-NLS-1$
+				final String   title   = Languages.getString("OASAEntityGraphicFactory.5"); //$NON-NLS-1$
 				final String[] options = { FIND_LINES, FIND_STATIONS };
 				final String   initial = FIND_LINES;
+
 				final String   res     = (String) JOptionPane.showInputDialog(view.getContentPane(),
 				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
 
-				switch (res) {
-				case FIND_LINES:
+				if (res.equals(FIND_LINES))
 					view.getLinesByTown(town);
-					break;
-				case FIND_STATIONS:
+				else if (res.equals(FIND_STATIONS))
 					view.getStationsByTown(town);
-					break;
-				default:
-					break;
-				}
 			}
 		});
 
@@ -130,27 +126,20 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				final String   msg     = String
-				        .format("What do you wish to look for in the line %s?", line.getDescription());
-				final String   title   = "Line Options";
+				        .format(Languages.getString("OASAEntityGraphicFactory.6"), line.getDescription()); //$NON-NLS-1$
+				final String   title   = Languages.getString("OASAEntityGraphicFactory.7"); //$NON-NLS-1$
 				final String[] options = { FIND_TIMES, FIND_STATIONS, FIND_TOWNS };
 				final String   initial = FIND_TIMES;
 
 				final String res = (String) JOptionPane.showInputDialog(view.getContentPane(),
 				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
 
-				switch (res) {
-				case FIND_TIMES:
+				if (res.equals(FIND_TIMES))
 					view.getTimetablesByLine(line);
-					break;
-				case FIND_STATIONS:
+				else if (res.equals(FIND_STATIONS))
 					view.getStationsByLine(line);
-					break;
-				case FIND_TOWNS:
+				else if (res.equals(FIND_TOWNS))
 					view.getTownsByLine(line);
-					break;
-				default:
-					break;
-				}
 			}
 		});
 
@@ -172,7 +161,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 		numLabel.setFont(largeFont);
 		numLabel.setForeground(textColor);
 
-		final JLabel descrLabel = new JLabel(String.format("in %s", station.getTown().getName()));
+		final JLabel descrLabel = new JLabel(String.format(Languages.getString("OASAEntityGraphicFactory.8"), station.getTown().getName())); //$NON-NLS-1$
 		descrLabel.setFont(smallFont);
 		descrLabel.setForeground(textColor);
 
@@ -186,7 +175,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				final String msg = String.format(
-				        "Would you like to view the lines servicing the station %s?",
+				        Languages.getString("OASAEntityGraphicFactory.9"), //$NON-NLS-1$
 				        station.getName());
 
 				final int answer = JOptionPane.showConfirmDialog(view.getContentPane(), msg);
