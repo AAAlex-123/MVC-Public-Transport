@@ -16,12 +16,12 @@ public class EStation extends AbstractEntity {
 	private final ETown    town;
 
 	/**
-	 * Creates a Station.
+	 * Constructs a Station.
 	 *
-	 * @param id       the Station's id
-	 * @param name     the Station's name
-	 * @param position the Station's geographical position
-	 * @param town     the town in which the Station is located
+	 * @param id       the id of this Station
+	 * @param name     the name of this Station
+	 * @param position the Position of this Station, its geographical location
+	 * @param town     the Town of this Station, where it is located
 	 */
 	public EStation(int id, String name, Position position, ETown town) {
 		super(id);
@@ -40,7 +40,7 @@ public class EStation extends AbstractEntity {
 	}
 
 	/**
-	 * Returns the geographical {@link Position position} of this Station.
+	 * Returns the geographical {@link Position} of this Station.
 	 *
 	 * @return this Station's position
 	 */
@@ -49,7 +49,7 @@ public class EStation extends AbstractEntity {
 	}
 
 	/**
-	 * Returns the {@link ETown town} where this Station is located.
+	 * Returns the {@link ETown} where this Station is located.
 	 *
 	 * @return this Station's town
 	 */
@@ -63,7 +63,13 @@ public class EStation extends AbstractEntity {
 		        getTown());
 	}
 
-
+	@Override
+	public int hashCode() {
+		final int prime  = 31;
+		int       result = super.hashCode();
+		result = (prime * result) + Objects.hash(name, position, town);
+		return result;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -77,4 +83,6 @@ public class EStation extends AbstractEntity {
 		return Objects.equals(name, other.name) && Objects.equals(position, other.position)
 		        && Objects.equals(town, other.town);
 	}
+
+
 }

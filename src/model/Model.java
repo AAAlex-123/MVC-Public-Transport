@@ -240,8 +240,8 @@ public class Model implements IModel {
 			final List<EStation>   stationsForLine   = stationsFromDatabase.get(lineId);
 			final List<ETimetable> timetablesForLine = timetablesFromDatabase.get(lineId);
 
-			final ELine newLine = new ELine(lineId, line.getLineNumber(), line.getType(),
-			        line.getName(), stationsForLine, timetablesForLine);
+			final ELine newLine = new ELine(lineId, line.getName(), line.getType(),
+			        line.getDescription(), stationsForLine, timetablesForLine);
 
 			completeLinesFromDatabase.add(newLine);
 		}
@@ -297,8 +297,8 @@ public class Model implements IModel {
 		final String qInsertToLine = "INSERT INTO Line (lineNo, description, type) VALUES ('@2', '@3', '@4')";
 
 		doWithStatement((Statement stmt) -> {
-			stmt.execute(qInsertToLine.replace("@2", line.getLineNumber())
-			        .replace("@3", line.getName())
+			stmt.execute(qInsertToLine.replace("@2", line.getName())
+			        .replace("@3", line.getDescription())
 			        .replace("@4", line.getType().toString()));
 		});
 	}

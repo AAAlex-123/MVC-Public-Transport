@@ -24,11 +24,11 @@ class ELineTest {
 	}
 
 	/**
-	 * Test method for {@link entity.ELine#getLineNumber()}.
+	 * Test method for {@link entity.ELine#getName()}.
 	 */
 	@Test
 	final void getLineNumber() {
-		assertEquals("A8", defaultLine.getLineNumber()); //$NON-NLS-1$
+		assertEquals("A8", defaultLine.getName()); //$NON-NLS-1$
 	}
 
 	/**
@@ -40,11 +40,11 @@ class ELineTest {
 	}
 
 	/**
-	 * Test method for {@link entity.ELine#getName()}.
+	 * Test method for {@link entity.ELine#getDescription()}.
 	 */
 	@Test
 	final void testGetName() {
-		assertEquals("marousi-akadhmia", defaultLine.getName()); //$NON-NLS-1$
+		assertEquals("marousi-akadhmia", defaultLine.getDescription()); //$NON-NLS-1$
 	}
 
 	/**

@@ -10,18 +10,17 @@ import localisation.Languages;
  */
 public enum LineType {
 
-    //actual real life averages
 	/** Constant for Bus */
-	BUS(Languages.getString("LineType.0"), 20.5, "bus"), //$NON-NLS-1$ //$NON-NLS-2$
+	BUS(Languages.getString("LineType.0"), 20.5, "bus"),
 
 	/** Constant for Subway */
-	SUBWAY(Languages.getString("LineType.2"), 28.0, "metro"), //$NON-NLS-1$ //$NON-NLS-2$
+	SUBWAY(Languages.getString("LineType.2"), 28.0, "metro"),
 
 	/** Constant for Trolley */
-	TROLLEY(Languages.getString("LineType.4"), 20.5, "trolley"), //$NON-NLS-1$ //$NON-NLS-2$
+	TROLLEY(Languages.getString("LineType.4"), 20.5, "trolley"),
 
 	/** Constant for Tram */
-	TRAM(Languages.getString("LineType.6"), 16, "tram"); //$NON-NLS-1$ //$NON-NLS-2$
+	TRAM(Languages.getString("LineType.6"), 16, "tram");
 
 	private final String name;
 	private final String spriteName;
@@ -29,7 +28,7 @@ public enum LineType {
 
 	LineType(String name, double averageSpeed, String spriteName) {
 		this.name = name;
-		this.spriteName = spriteName + ".png"; //$NON-NLS-1$
+		this.spriteName = spriteName + ".png";
 		this.averageSpeed = averageSpeed;
 	}
 

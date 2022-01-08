@@ -108,7 +108,7 @@ public class OASAView extends AbstractView {
 		home.setLayout(new BoxLayout(home, BoxLayout.Y_AXIS));
 
 		final JPanel imagePanel = new JPanel();
-		imagePanel.add(new JLabel(super.getImageIcon("oasa_home.jpg")));
+		imagePanel.add(new JLabel(super.getImageIcon("oasa_home.jpg"))); //$NON-NLS-1$
 
 		final JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));

@@ -1,22 +1,22 @@
 package entity;
 
+import java.util.Objects;
+
 /**
  * Describes a time stamp composed of pair of HOUR:MINUTES integers.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-@SuppressWarnings("nls")
 public class ETimetable extends AbstractEntity {
 
-	private final int hours;
-	private final int minutes;
+	private final int hours, minutes;
 
 	/**
-	 * Checks the validity of and creates a hour:minute time stamp.
+	 * Checks the validity of and creates a hour:minute time-stamp.
 	 *
-	 * @param hours   the timestamp's hours
-	 * @param minutes the timestamp's minutes
+	 * @param hours   the hours of this time-stamp
+	 * @param minutes the minutes of this time-stamp
 	 *
 	 * @throws IllegalArgumentException if the hours or minutes are out of range
 	 *                                  (e.g hours = -1 or minutes == 60)
@@ -25,35 +25,35 @@ public class ETimetable extends AbstractEntity {
 		super(-1);
 
 		if((hours < 0) || (hours >= 24))
-			throw new IllegalArgumentException("Invalid hour parameter value :" + hours);
+			throw new IllegalArgumentException(String.format("Invalid hour value : %d", hours));
 
 		if((minutes < 0) || (minutes >= 60))
-			throw new IllegalArgumentException("Invalid minute parameter value :" + minutes);
+			throw new IllegalArgumentException(String.format("Invalid minute value : %d", minutes));
 
 		this.hours = hours;
 		this.minutes = minutes;
 	}
 
 	/**
-	 * Returns the time stamp's hours.
+	 * Returns this time-stamp's hours.
 	 *
-	 * @return the time stamp's hours
+	 * @return this time-stamp's hours
 	 */
 	public int getHours() {
 		return hours;
 	}
 
 	/**
-	 * Returns the time stamp's minutes.
+	 * Returns this time-stamp's minutes.
 	 *
-	 * @return the time stamp's minutes
+	 * @return this time-stamp's minutes
 	 */
 	public int getMinutes() {
 		return minutes;
 	}
 
 	/**
-	 * Returns the time in the HOURS::MINUTES format.
+	 * Returns this time-stamp's time in the HOURS::MINUTES format.
 	 *
 	 * @return the formatted time
 	 */
@@ -64,6 +64,14 @@ public class ETimetable extends AbstractEntity {
 	@Override
 	public String toString() {
 		return String.format("%s: %s", super.toString(), getFormattedTime());
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime  = 31;
+		int       result = super.hashCode();
+		result = (prime * result) + Objects.hash(hours, minutes);
+		return result;
 	}
 
 	@Override

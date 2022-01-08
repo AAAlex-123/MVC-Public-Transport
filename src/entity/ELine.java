@@ -14,78 +14,77 @@ import java.util.Objects;
  */
 public class ELine extends AbstractEntity {
 
-	private final String           lineNo;
-	private final LineType         type;
 	private final String           name;
+	private final LineType         type;
+	private final String           description;
 	private final List<EStation>   stations;
 	private final List<ETimetable> startTimes;
 
 	/**
 	 * Constructs a Line.
 	 *
-	 * @param id         the Line's id
-	 * @param lineNo     the number of the Line
-	 * @param type       the type of the Line
-	 * @param name       the description of the Line
-	 * @param stations   the list of Stations the Line goes through
-	 * @param startTimes the list of Times when the Line departs
+	 * @param id          the id of this Line
+	 * @param name        the name of this Line
+	 * @param type        the type of this Line
+	 * @param description the description of this Line
+	 * @param stations    the list of Stations this Line goes through
+	 * @param startTimes  the list of Times when this Line departs
 	 */
-	public ELine(int id, String lineNo, LineType type, String name,
+	public ELine(int id, String name, LineType type, String description,
 	        List<EStation> stations, List<ETimetable> startTimes) {
 		super(id);
-		this.lineNo = lineNo;
-		this.type = type;
 		this.name = name;
+		this.type = type;
+		this.description = description;
 		this.stations = (stations == null) ? List.of() : Collections.unmodifiableList(stations);
 		this.startTimes = (startTimes == null) ? List.of()
 		        : Collections.unmodifiableList(startTimes);
 	}
 
 	/**
-	 * Returns the Line's ID number. Keep in mind this is unique ONLY to each
-	 * {@link LineType}. For example Line 3 (Subway) is different than the
-	 * Trolley-line 3 despite having the same IDs.
+	 * Returns this Line's name. This should be unique to each {@link LineType}. For
+	 * example, Subway line 3 is different than the Bus Line 3 despite having the
+	 * same name.
 	 *
-	 * @return the ID number
-	 */
-	public String getLineNumber() {
-		return lineNo;
-	}
-
-	/**
-	 * Returns the {@link LineType type} of the public transport vehicle operating
-	 * on this Line.
-	 *
-	 * @return the type
-	 */
-	public LineType getType() {
-		return type;
-	}
-
-	/**
-	 * Returns the name of this Line, a description of its route.
-	 *
-	 * @return the name
+	 * @return this Line's name
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * Returns the {@link EStation stations} this Line passes through.
+	 * Returns this Line's {@link LineType type,} the type of the public transport
+	 * vehicle operating on this Line.
 	 *
-	 * @return an immutable list containing the stations
+	 * @return this Line's type
+	 */
+	public LineType getType() {
+		return type;
+	}
+
+	/**
+	 * Returns this Line's description of its route.
+	 *
+	 * @return this Line's description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * Returns the {@link EStation stations} that this Line passes through.
+	 *
+	 * @return an immutable list containing this Line's stations
 	 */
 	public List<EStation> getStations() {
 		return stations;
 	}
 
 	/**
-	 * Returns the timetables for this Line, that is the times a transport vehicle
-	 * departs from its starting station. These times are represented by
+	 * Returns the departure times for this Line. These times are represented by
 	 * {@link ETimetable} objects.
 	 *
-	 * @return an immutable list containing the departure times for this Line.
+	 * @return an immutable list containing this Line's departure times
 	 */
 	public List<ETimetable> getTimetables() {
 		return startTimes;
@@ -94,9 +93,15 @@ public class ELine extends AbstractEntity {
 	@Override
 	public String toString() {
 		return String.format("%s: %s-%s, %s. Stations: %s, Departure times: %s", super.toString(),
-		        getLineNumber(),
-		        getType(),
-		        getName(), getStations(), getTimetables());
+		        getName(), getType(), getDescription(), getStations(), getTimetables());
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime  = 31;
+		int       result = super.hashCode();
+		result = (prime * result) + Objects.hash(name, description, startTimes, stations, type);
+		return result;
 	}
 
 	@Override
@@ -108,7 +113,7 @@ public class ELine extends AbstractEntity {
 		if (!(obj instanceof ELine))
 			return false;
 		ELine other = (ELine) obj;
-		return Objects.equals(lineNo, other.lineNo) && Objects.equals(name, other.name)
+		return Objects.equals(name, other.name) && Objects.equals(description, other.description)
 		        && Objects.equals(startTimes, other.startTimes)
 		        && Objects.equals(stations, other.stations) && (type == other.type);
 	}

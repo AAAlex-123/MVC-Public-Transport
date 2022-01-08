@@ -341,8 +341,8 @@ class ModelTest {
 		for (int i = 0; i < toAddStations.size(); i++) {
 			final int j = i; // must be final to use inside lambda expression
 
-			final ELine lUpdatedLine = new ELine(lExpress.getId(), lExpress.getLineNumber(),
-			        lExpress.getType(), lExpress.getName(), addedStations, null);
+			final ELine lUpdatedLine = new ELine(lExpress.getId(), lExpress.getName(),
+			        lExpress.getType(), lExpress.getDescription(), addedStations, null);
 
 			final EStation sStationToAdd = toAddStations.get(j);
 
@@ -351,8 +351,8 @@ class ModelTest {
 			addedStations.add(sStationToAdd);
 		}
 
-		ELine lExpressWithStations = new ELine(lExpress.getId(), lExpress.getLineNumber(),
-		        lExpress.getType(), lExpress.getName(), toAddStations, null);
+		ELine lExpressWithStations = new ELine(lExpress.getId(), lExpress.getName(),
+		        lExpress.getType(), lExpress.getDescription(), toAddStations, null);
 
 		eLinesFromSpata.add(1, lExpressWithStations);
 		aLinesFromSpata = assertDoesNotThrow(() -> model.getLines(tSpata, null));
@@ -474,8 +474,8 @@ class ModelTest {
 
 		List<EStation> stations = new ArrayList<>(l305.getStations());
 		stations.add(0, sAerodromio);
-		el305 = new ELine(l305.getId(), l305.getLineNumber(), l305.getType(),
-		        l305.getName(), stations, l305.getTimetables());
+		el305 = new ELine(l305.getId(), l305.getName(), l305.getType(),
+		        l305.getDescription(), stations, l305.getTimetables());
 		al305 = assertDoesNotThrow(() -> model.getLines(tSpata, null)).get(0);
 
 		assertEquals(el305, al305);
@@ -483,8 +483,8 @@ class ModelTest {
 		final ELine newl305 = al305;
 		assertDoesNotThrow(() -> model.insertStationToLine(newl305, sSyntagma, 4));
 		stations.add(4, sSyntagma);
-		el305 = new ELine(newl305.getId(), newl305.getLineNumber(), newl305.getType(),
-		        newl305.getName(), stations, newl305.getTimetables());
+		el305 = new ELine(newl305.getId(), newl305.getName(), newl305.getType(),
+		        newl305.getDescription(), stations, newl305.getTimetables());
 		al305 = assertDoesNotThrow(() -> model.getLines(tSpata, null)).get(0);
 
 		assertEquals(el305, al305);
@@ -515,8 +515,8 @@ class ModelTest {
 
 		List<ETimetable> timetables = new ArrayList<>(l421.getTimetables());
 		timetables.add(0, newTimetable);
-		el421 = new ELine(l421.getId(), l421.getLineNumber(), l421.getType(),
-		        l421.getName(), l421.getStations(), timetables);
+		el421 = new ELine(l421.getId(), l421.getName(), l421.getType(),
+		        l421.getDescription(), l421.getStations(), timetables);
 		al421 = assertDoesNotThrow(() -> model.getLines(null, sNea_ionia)).get(0);
 
 		assertEquals(el421, al421);

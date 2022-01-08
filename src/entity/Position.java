@@ -1,5 +1,7 @@
 package entity;
 
+import java.util.Objects;
+
 /**
  * The Position class describes objects that hold an immutable pair of x and y
  * coordinates representing a geographical location. The base class implements
@@ -10,17 +12,7 @@ package entity;
  */
 public class Position {
 
-	/**
-	 * The X coordinate of this Position expressed in the Cartesian coordinate
-	 * system.
-	 */
-	private final double x;
-
-	/**
-	 * The Y coordinate of this Position expressed in the Cartesian coordinate
-	 * system.
-	 */
-	private final double y;
+	private final double x, y;
 
 	/**
 	 * Construct a new position using x-y coordinates.
@@ -39,25 +31,25 @@ public class Position {
 	 *
 	 * @param other the other position
 	 *
-	 * @return the distance between the 2 positions
+	 * @return the euclidean distance between the 2 positions
 	 */
 	public double distanceFrom(Position other) {
 		return Math.hypot(getX() - other.getX(), getY() - other.getY());
 	}
 
 	/**
-	 * Returns the x.
+	 * Returns the x coordinate of this Position.
 	 *
-	 * @return the x
+	 * @return the x coordinate
 	 */
 	public double getX() {
 		return x;
 	}
 
 	/**
-	 * Returns the y.
+	 * Returns the y coordinate of this Position.
 	 *
-	 * @return the y
+	 * @return the y coordinate
 	 */
 	public double getY() {
 		return y;
@@ -65,10 +57,13 @@ public class Position {
 
 	@Override
 	public String toString() {
-		return String.format("(%f, %f)", getX(), getY()); //$NON-NLS-1$
+		return String.format("(%f, %f)", getX(), getY());
 	}
 
-
+	@Override
+	public int hashCode() {
+		return Objects.hash(x, y);
+	}
 
 	@Override
 	public boolean equals(Object obj) {

@@ -112,11 +112,11 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 		namePanel.setBackground(backgroundColor);
 		namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.Y_AXIS));
 
-		final JLabel numLabel = new JLabel(line.getLineNumber());
+		final JLabel numLabel = new JLabel(line.getName());
 		numLabel.setFont(largeFont);
 		numLabel.setForeground(textColor);
 
-		final JLabel descrLabel = new JLabel(line.getName());
+		final JLabel descrLabel = new JLabel(line.getDescription());
 		descrLabel.setFont(standardFont);
 		descrLabel.setForeground(textColor);
 
@@ -130,7 +130,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				final String   msg     = String
-				        .format("What do you wish to look for in the line %s?", line.getName());
+				        .format("What do you wish to look for in the line %s?", line.getDescription());
 				final String   title   = "Line Options";
 				final String[] options = { FIND_TIMES, FIND_STATIONS, FIND_TOWNS };
 				final String   initial = FIND_TIMES;
