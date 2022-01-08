@@ -46,12 +46,13 @@ public class ConsoleView extends AbstractView<String> {
 	@Override
 	public void updateViewWithHomepage() {
 		sourceEntityDescription = "";
-
+		
 		out.println("1. Show all Lines");
 		out.println("2. Show all Towns");
-		out.println("3. Exit");
+		out.println("3. Insert data into the system");
+		out.println("4. Exit");
 
-		switch (getAnswer(1, 3)) {
+		switch(getAnswer(1,4)) {
 		case 1:
 			super.getAllLines();
 			break;
@@ -59,8 +60,12 @@ public class ConsoleView extends AbstractView<String> {
 			super.getAllTowns();
 			break;
 		case 3:
+			showInsertMenu();
+			break;
+		case 4:
 			System.exit(0);
 		}
+
 	}
 
 	@Override
@@ -180,6 +185,45 @@ public class ConsoleView extends AbstractView<String> {
 	public void updateViewWithError(Exception e) {
 		err.println(e.getLocalizedMessage());
 	}
+	
+	@Override
+	protected void fulfilRequirements(Requirements reqs, String prompt) {
+		out.println(prompt);
+		
+		for (var req : reqs) {
+		    if (req instanceof ListRequirement) {
+		    	out.println("Please select one of the following options: ");
+		    	
+		    	@SuppressWarnings("unchecked")
+				List<Object> options = ((ListRequirement<Object>) req).getOptions();
+		    	StringBuffer optionBuffer = new StringBuffer();
+				
+				int count = 1;
+				for(var option : options) {
+					optionBuffer.append(count);
+					optionBuffer.append(": ");
+					optionBuffer.append(option.toString());
+					optionBuffer.append('\n');
+					count++;
+				}
+				
+				out.println(optionBuffer);
+		        
+		       int answer = getAnswer(1, options.size()) - 1;
+		       while (!req.finalise(options.get(answer))) {
+		           answer = getAnswer(1, options.size()) - 1;
+		       }
+		        
+		    } else if (req instanceof StringRequirement) {
+		    	String key = ((StringRequirement) req).key();
+		        out.println("give value for: " + key);
+		        
+		        while(!req.finalise(in.nextLine()))
+		        	updateViewWithError(new RuntimeException("This is not a valid value for " + key));
+		        	
+		    }
+		}
+	}
 
 	private int getAnswer(int bottomRange, int upperRange) {
 		while (true) {
@@ -199,14 +243,39 @@ public class ConsoleView extends AbstractView<String> {
 		}
 	}
 
-	@Override
-	protected void fulfilRequirements(Requirements reqs, String prompt) {
-		// TODO Auto-generated method stub
-
+	private void showInsertMenu() {
+		out.println("1. Register a new line");
+		out.println("2. Register a new town");
+		out.println("3. Register a new station");
+		out.println("4. Register a new station to an existing line");
+		out.println("5. Register a new timetable to an existing line");
+		out.println("6. Return to homepage");
+		
+		switch(getAnswer(1,6)) {
+		case 1:
+			super.insertLine();
+			break;
+		case 2:
+			super.insertTown();
+			break;
+		case 3:
+			super.insertStation();
+			break;
+		case 4:
+			super.insertStationToLine();
+			break;
+		case 5:
+			super.insertTimetableToLine();
+			break;
+		case 6:
+			updateViewWithHomepage();
+		}
+	
+		updateViewWithHomepage();
 	}
 
 	private void printSource() {
-		if (sourceEntityDescription.isEmpty())
+		if (!sourceEntityDescription.isEmpty())
 			out.printf("From %s:%n%n", sourceEntityDescription);
 	}
 }
