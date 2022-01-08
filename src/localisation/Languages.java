@@ -62,7 +62,7 @@ public final class Languages {
 			System.exit(0);
 		} catch (final IOException e) {
 			System.err.printf(
-			        "Error while reading from file %s. Inform the developer about 'Settings.static-IO'%", //$NON-NLS-1$
+			        "Error while reading from file %s. Inform the developer about 'Languages.static-IO'%", //$NON-NLS-1$
 			        Languages.FILE);
 			System.exit(0);
 		}
