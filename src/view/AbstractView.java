@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.List;
@@ -13,35 +14,29 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import controller.IController;
-import controller.IImageController;
+import controller.IImageLoader;
 import entity.ELine;
 import entity.EStation;
 import entity.ETown;
-import requirement.util.Requirements;
 
 /**
- * An abstract implementation of the {@link IView} interface which defines
- * delegate methods to the View's registered {@link IController}, which the
- * concrete implementations will call.
+ * An implementation of the {@link AbstractView} class which offers
+ * a GUI template and expanded delegate methods supporting graphics.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-abstract class AbstractView extends JFrame implements IView {
-	private static final int WINDOW_HEIGHT = 750;
-	private static final int WINDOW_WIDTH  = 500;
-
-	/** The factory that constructs graphics for the Entities this View displays */
-	protected final AbstractEntityGraphicFactory factory;
-
-	private IController      controller;
-	private IImageController imageController;
+abstract class AbstractGUIView extends AbstractView<JPanel>  {
+	
+	private final IImageLoader loader;
 
 	private final UndoableHistory<ChangeViewCommand> navigationHistory;
 
-	private JPanel       mainPanel, headerPanel;
-	private final JPanel contentPanel;
-
+	private JPanel mainPanel, headerPanel, contentPanel;
+	
+	protected final JFrame frame;
+	
+	
 	/**
 	 * Constructs the view initialising its UI and providing a factory with which to
 	 * construct its graphics. The factory can be changed to provide different
@@ -49,12 +44,15 @@ abstract class AbstractView extends JFrame implements IView {
 	 *
 	 * @param factory the factory that will be used to construct its graphics
 	 */
-	public AbstractView(AbstractEntityGraphicFactory factory) {
-		super("Public Transport Prototype");
-		this.factory = factory;
+	public AbstractGUIView(AbstractEntityGraphicFactory<JPanel> factory, Dimension windowSize, IController controller, IImageLoader loader) {
+		super(factory, controller);
+		frame = new JFrame("Public Transport Prototype");
+		
+		this.loader = loader;
 		factory.initializeView(this);
+		
 		navigationHistory = new UndoableHistory<>();
-		setLayout(new FlowLayout());
+		frame.setLayout(new FlowLayout());
 
 		mainPanel = new JPanel();
 		headerPanel = new JPanel();
@@ -63,34 +61,146 @@ abstract class AbstractView extends JFrame implements IView {
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.add(headerPanel, BorderLayout.NORTH);
 		mainPanel.add(contentPanel, BorderLayout.CENTER);
-		getContentPane().add(mainPanel);
-		setJMenuBar(constructJMenuBar());
+		frame.getContentPane().add(mainPanel);
+		frame.setJMenuBar(constructJMenuBar());
 
-		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-		setSize(new Dimension(AbstractView.WINDOW_WIDTH, AbstractView.WINDOW_HEIGHT));
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+		frame.setSize(new Dimension(windowSize));
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.getContentPane().add(constructFooter());
+	}
+	
+	/**
+	 * Constructs the view <b> without assigning a {@link IController} </b> and 
+	 * initialising its UI and providing a factory with which to
+	 * construct its graphics. The factory can be changed to provide different
+	 * graphics while maintaining the same layout.
+	 *
+	 * @param factory the factory that will be used to construct its graphics
+	 */
+	public AbstractGUIView(AbstractEntityGraphicFactory<JPanel> factory, Dimension windowSize,  IImageLoader loader) {
+		this(factory, windowSize, null, loader);
 	}
 
 	@Override
 	public final void start() {
 		changeToHomePanel();
 		navigationHistory.clear();
-		setVisible(true);
+		frame.setVisible(true);
 	}
-
-	@Override
-	public final void registerController(IController newController) {
-		controller = newController;
-	}
-
-	@Override
-	public final void registerImageController(IImageController newImageController) {
-		imageController = newImageController;
+	
+	public Container getContentPane() {
+		return frame.getContentPane();
 	}
 
 	protected abstract JMenuBar constructJMenuBar();
+	
+	protected abstract JPanel constructFooter();
 
 	// ---------- Methods for the Concrete View classes ---------- //
+	
+	/**
+	 * A wrapper method for {@link IController#getStationsByTown(ETown)} that also
+	 * updates the source panel of the view.
+	 *
+	 * @param town the town from which the stations will be selected
+	 *
+	 * @see #updateHeaderPanel(JPanel)
+	 */
+	@Override
+	protected void getStationsByTown(ETown town) {
+		super.getStationsByTown(town);
+		updateHeaderPanel(factory.getETownGraphic(town));
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getLinesByTown(ETown)}
+	 * that also updates the source panel of the view.
+	 *
+	 * @param town the town from which the lines will be selected
+	 * @see #updateHeaderPanel(JPanel)
+	 */
+	@Override
+	protected void getLinesByTown(ETown town) {
+		super.getLinesByTown(town);
+		updateHeaderPanel(factory.getETownGraphic(town));
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getStationsByLine(ELine)}
+	 * that also updates the source panel of the view.
+	 *
+	 * @param line the line from which the stations will be selected
+	 * @see #updateHeaderPanel(JPanel)
+	 */
+	@Override
+	protected void getStationsByLine(ELine line) {
+		super.getStationsByLine(line);
+		updateHeaderPanel(factory.getELineGraphic(line));
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getTimetablesByLine(ELine)}
+	 * that also updates the source panel of the view.
+	 *
+	 * @param line the line from which the timetables will be selected
+	 * @see #updateHeaderPanel(JPanel)
+	 */
+	@Override
+	protected void getTimetablesByLine(ELine line) {
+		super.getTimetablesByLine(line);
+		updateHeaderPanel(factory.getELineGraphic(line));
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getTownsByLine(ELine)}
+	 * that also updates the source panel of the view.
+	 *
+	 * @param line the line from which the timetables will be selected
+	 * @see #updateHeaderPanel(JPanel)
+	 */
+	@Override
+	protected void getTownsByLine(ELine line) {
+		super.getTownsByLine(line);
+		updateHeaderPanel(factory.getELineGraphic(line));
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getLinesByStation(EStation)}
+	 * that also updates the source panel of the view.
+	 *
+	 * @param station the station from which the timetables will be selected
+	 * @see #updateHeaderPanel(JPanel)
+	 */
+	@Override
+	protected void getLinesByStation(EStation station) {
+		super.getLinesByStation(station);
+		updateHeaderPanel(factory.getEStationGraphic(station));
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getAllTowns()}
+	 * that also resets the source panel of the view.
+	 *
+	 * @see #updateHeaderPanel(JPanel)
+	 */
+	@Override
+	protected void getAllTowns() {
+		super.getAllTowns();
+		updateHeaderPanel(null);
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getAllLines()}
+	 * that also resets the source panel of the view.
+	 *
+	 * @see #updateHeaderPanel(JPanel)
+	 */
+	@Override
+	protected void getAllLines() {
+		super.getAllLines();
+		updateHeaderPanel(null);
+	}
 
 	/**
 	 * Replaces the panel inside this JFrame with a new one by executing the
@@ -99,18 +209,18 @@ abstract class AbstractView extends JFrame implements IView {
 	 * @param newContentPanel the new panel
 	 */
 	protected final void updatePanel(JPanel newContentPanel) {
-		final JPanel newMainPanel = new JPanel(new BorderLayout());
+		JPanel newMainPanel = new JPanel(new BorderLayout());
 		newMainPanel.add(headerPanel, BorderLayout.NORTH);
 		newMainPanel.add(newContentPanel, BorderLayout.CENTER);
 
-		final ChangeViewCommand u = new ChangeViewCommand(this, mainPanel, newMainPanel);
+		ChangeViewCommand u = new ChangeViewCommand(this, mainPanel, newMainPanel);
 		u.execute();
-		mainPanel = newMainPanel;
+		this.mainPanel = newMainPanel;
 		navigationHistory.add(u);
 	}
 
 	/**
-	 * A wrapper method for {@link IImageController#loadImage(String, int, int)}.
+	 * A wrapper method for {@link IController#loadImage(String, int, int)}.
 	 *
 	 * @param name      the image's name
 	 * @param maxWidth  the maximum width of the image
@@ -119,22 +229,24 @@ abstract class AbstractView extends JFrame implements IView {
 	 * @return an {@code ImageIcon} for the image with the corresponding name
 	 */
 	protected final ImageIcon getImageIcon(String name, int maxWidth, int maxHeight) {
-		return new ImageIcon(imageController.loadImage(name, maxWidth, maxHeight));
+		return new ImageIcon(loader.loadImage(name, maxWidth, maxHeight));
 	}
-
+	
 	/**
 	 * Delegates to {@link #getImageIcon(String, int, int)}.
 	 *
 	 * @param name the image's name
+	 * @param maximumSize a Dimension describing the maximum height and
+	 * width of the image 
 	 *
 	 * @return an {@code ImageIcon} for the image with the corresponding name, with
-	 *         a maximum width and height equal to that of this View
+	 *         a maximum width and height equal to the provided dimension object
 	 */
-	protected final ImageIcon getImageIcon(String name) {
-		return getImageIcon(name, AbstractView.WINDOW_WIDTH, AbstractView.WINDOW_HEIGHT);
+	protected final ImageIcon getImageIcon(String name, Dimension maximumSize) {
+		return getImageIcon(name, maximumSize.width, maximumSize.height);
 	}
 
-	// ---------- AbstractView Commands ---------- //
+	// ---------- AbstractGUIView Commands ---------- //
 
 	protected final void changeToHomePanel() {
 		updateHeaderPanel(null);
@@ -145,8 +257,8 @@ abstract class AbstractView extends JFrame implements IView {
 		if (navigationHistory.canUndo()) {
 			navigationHistory.undo();
 			// top of stack is last in the list
-			final List<ChangeViewCommand> future = navigationHistory.getFuture();
-			mainPanel = future.get(future.size() - 1).prevPanel;
+			List<ChangeViewCommand> future = navigationHistory.getFuture();
+			this.mainPanel = future.get(future.size() - 1).prevPanel;
 		}
 	}
 
@@ -154,154 +266,10 @@ abstract class AbstractView extends JFrame implements IView {
 		if (navigationHistory.canRedo()) {
 			navigationHistory.redo();
 			// top of stack is last in the list
-			final List<ChangeViewCommand> past = navigationHistory.getPast();
-			mainPanel = past.get(past.size() - 1).prevPanel;
+			List<ChangeViewCommand> past = navigationHistory.getPast();
+			this.mainPanel = past.get(past.size() - 1).prevPanel;
 		}
 	}
-
-	/**
-	 * A wrapper method for {@link IController#getStationsByTown(ETown)} that also
-	 * updates the source panel of the view.
-	 *
-	 * @param town the town from which the stations will be selected
-	 *
-	 * @see #updateHeaderPanel(JPanel)
-	 */
-	protected final void getStationsByTown(ETown town) {
-		updateHeaderPanel(factory.getETownGraphic(town));
-		controller.getStationsByTown(town);
-	}
-
-	/**
-	 * A wrapper method for {@link IController#getLinesByTown(ETown)} that also
-	 * updates the source panel of the view.
-	 *
-	 * @param town the town from which the lines will be selected
-	 *
-	 * @see #updateHeaderPanel(JPanel)
-	 */
-	protected final void getLinesByTown(ETown town) {
-		updateHeaderPanel(factory.getETownGraphic(town));
-		controller.getLinesByTown(town);
-	}
-
-	/**
-	 * A wrapper method for {@link IController#getStationsByLine(ELine)} that also
-	 * updates the source panel of the view.
-	 *
-	 * @param line the line from which the stations will be selected
-	 *
-	 * @see #updateHeaderPanel(JPanel)
-	 */
-	protected final void getStationsByLine(ELine line) {
-		updateHeaderPanel(factory.getELineGraphic(line));
-		controller.getStationsByLine(line);
-	}
-
-	/**
-	 * A wrapper method for {@link IController#getTimetablesByLine(ELine)} that also
-	 * updates the source panel of the view.
-	 *
-	 * @param line the line from which the timetables will be selected
-	 *
-	 * @see #updateHeaderPanel(JPanel)
-	 */
-	protected final void getTimetablesByLine(ELine line) {
-		updateHeaderPanel(factory.getELineGraphic(line));
-		controller.getTimetablesByLine(line);
-	}
-
-	/**
-	 * A wrapper method for {@link IController#getTownsByLine(ELine)} that also
-	 * updates the source panel of the view.
-	 *
-	 * @param line the line from which the timetables will be selected
-	 *
-	 * @see #updateHeaderPanel(JPanel)
-	 */
-	protected final void getTownsByLine(ELine line) {
-		updateHeaderPanel(factory.getELineGraphic(line));
-		controller.getTownsByLine(line);
-	}
-
-	/**
-	 * A wrapper method for {@link IController#getLinesByStation(EStation)} that
-	 * also updates the source panel of the view.
-	 *
-	 * @param station the station from which the timetables will be selected
-	 *
-	 * @see #updateHeaderPanel(JPanel)
-	 */
-	protected final void getLinesByStation(EStation station) {
-		updateHeaderPanel(factory.getEStationGraphic(station));
-		controller.getLinesByStation(station);
-	}
-
-	/**
-	 * A wrapper method for {@link IController#getAllTowns()} that also resets the
-	 * source panel of the view.
-	 *
-	 * @see #updateHeaderPanel(JPanel)
-	 */
-	protected final void getAllTowns() {
-		updateHeaderPanel(null);
-		controller.getAllTowns();
-	}
-
-	/**
-	 * A wrapper method for {@link IController#getAllLines()} that also resets the
-	 * source panel of the view.
-	 *
-	 * @see #updateHeaderPanel(JPanel)
-	 */
-	protected final void getAllLines() {
-		updateHeaderPanel(null);
-		controller.getAllLines();
-	}
-
-	protected final void insertTown() {
-		Requirements reqs = controller.getInsertTownRequirements();
-		fulfilRequirements(reqs, "Insert Town Parameters");
-		if (reqs.fulfilled())
-			controller.insertTown(reqs);
-	}
-
-	protected final void insertLine() {
-		Requirements reqs = controller.getInsertLineRequirements();
-		fulfilRequirements(reqs, "Insert Line Parameters");
-		if (reqs.fulfilled())
-			controller.insertLine(reqs);
-	}
-
-	protected final void insertStation() {
-		Requirements reqs = controller.getInsertStationRequirements();
-		fulfilRequirements(reqs, "Insert Station Parameters");
-		if (reqs.fulfilled())
-			controller.insertStation(reqs);
-	}
-
-	protected final void insertStationToLine() {
-		Requirements reqs = controller.getInsertStationToLineRequirements();
-		fulfilRequirements(reqs, "Insert Station to Line Parameters");
-		if (reqs.fulfilled())
-			controller.insertStationToLine(reqs);
-	}
-
-	protected final void insertTimetableToLine() {
-		Requirements reqs = controller.getInsertTimetableToLineRequirements();
-		fulfilRequirements(reqs, "Insert Timetable to Line Parameters");
-		if (reqs.fulfilled())
-			controller.insertTimetableToLine(reqs);
-	}
-
-	/**
-	 * Allows each subclass to define how to fulfil a {@link Requirements}.
-	 *
-	 * @param reqs   the Requirements object to fulfil
-	 * @param prompt the prompt for the fulfilment, which may be displayed to the
-	 *               user
-	 */
-	protected abstract void fulfilRequirements(Requirements reqs, String prompt);
 
 	/**
 	 * <b>TODO: FIX DOCUMENTATION! THIS METHOD ONLY CHANGES THE HEADER_PANEL. IT
@@ -318,7 +286,7 @@ abstract class AbstractView extends JFrame implements IView {
 	 * @param newSourcePanel null to remove the main panel, a JPanel to update it
 	 *                       with a new graphic
 	 */
-	private void updateHeaderPanel(JPanel newSourcePanel) {
+	void updateHeaderPanel(JPanel newSourcePanel) {
 		headerPanel = newSourcePanel;
 		if (headerPanel == null)
 			headerPanel = new JPanel();
