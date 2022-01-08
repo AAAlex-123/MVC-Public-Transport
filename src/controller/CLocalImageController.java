@@ -35,19 +35,19 @@ public class CLocalImageController implements IImageController {
 	@Override
 	public Image loadImage(String name, int maxWidth, int maxHeight) {
 		if (name == null)
-			throw new IllegalArgumentException("name can't be null");
+			throw new IllegalArgumentException("name can't be null"); //$NON-NLS-1$
 
 		if (name.isEmpty())
-			throw new IllegalArgumentException("name can't be empty");
+			throw new IllegalArgumentException("name can't be empty"); //$NON-NLS-1$
 
 		if ((maxWidth <= 0) && (maxHeight <= 0))
-			throw new IllegalArgumentException("maxWidth and maxHeight must be positive");
+			throw new IllegalArgumentException("maxWidth and maxHeight must be positive"); //$NON-NLS-1$
 
 		if (maxWidth <= 0)
-			throw new IllegalArgumentException("maxWidth must be positive");
+			throw new IllegalArgumentException("maxWidth must be positive"); //$NON-NLS-1$
 
 		if (maxHeight <= 0)
-			throw new IllegalArgumentException("maxHeight must be positive");
+			throw new IllegalArgumentException("maxHeight must be positive"); //$NON-NLS-1$
 
 		final Image cachedSprite = imageCache.get(name);
 		if (cachedSprite != null)

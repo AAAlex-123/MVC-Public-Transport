@@ -11,6 +11,7 @@ import entity.ETimetable;
 import entity.ETown;
 import entity.LineType;
 import entity.Position;
+import localisation.ControllerStrings;
 import model.IModel;
 import requirement.requirements.StringType;
 import requirement.util.Requirements;
@@ -106,7 +107,7 @@ public class Controller implements IController {
 
 	@Override
 	public void insertTown(Requirements reqs) {
-		final ETown newTown = new ETown(-1, reqs.getValue("name", String.class));
+		final ETown newTown = new ETown(-1, reqs.getValue(ControllerStrings.NAME, String.class));
 		try {
 			model.insertTown(newTown);
 		} catch (final SQLException e) {
@@ -116,11 +117,11 @@ public class Controller implements IController {
 
 	@Override
 	public void insertLine(Requirements reqs) {
-		final String   lineNo      = reqs.getValue("lineNo", String.class);
-		final LineType type        = reqs.getValue("type", LineType.class);
-		final String   description = reqs.getValue("description", String.class);
+		final String   name        = reqs.getValue(ControllerStrings.NAME, String.class);
+		final LineType type        = reqs.getValue(ControllerStrings.TYPE, LineType.class);
+		final String   description = reqs.getValue(ControllerStrings.DESCRIPTION, String.class);
 
-		final ELine newLine = new ELine(-1, lineNo, type, description, null, null);
+		final ELine newLine = new ELine(-1, name, type, description, null, null);
 		try {
 			model.insertLine(newLine);
 		} catch (final SQLException e) {
@@ -132,14 +133,16 @@ public class Controller implements IController {
 	public void insertStation(Requirements reqs) {
 		final Function<String, Double> dtoi = Double::parseDouble;
 
-		final double   x_coord  = dtoi.apply(reqs.getValue("x coord", String.class));
-		final double   y_coord  = dtoi.apply(reqs.getValue("y coord", String.class));
+		final double   x_coord  = dtoi
+		        .apply(reqs.getValue(ControllerStrings.X_COORD, String.class));
+		final double   y_coord  = dtoi
+		        .apply(reqs.getValue(ControllerStrings.Y_COORD, String.class));
 		final Position position = new Position(x_coord, y_coord);
 
 		final EStation newStation = new EStation(-1,
-		        reqs.getValue("name", String.class),
+		        reqs.getValue(ControllerStrings.NAME, String.class),
 		        position,
-		        reqs.getValue("city", ETown.class));
+		        reqs.getValue(ControllerStrings.CITY, ETown.class));
 		try {
 			model.insertStation(newStation);
 		} catch (final SQLException e) {
@@ -151,9 +154,9 @@ public class Controller implements IController {
 	public void insertStationToLine(Requirements reqs) {
 		final Function<String, Integer> stoi = Integer::parseInt;
 
-		final ELine    line    = reqs.getValue("line", ELine.class);
-		final EStation station = reqs.getValue("station", EStation.class);
-		final int      index   = stoi.apply(reqs.getValue("index", String.class));
+		final ELine    line    = reqs.getValue(ControllerStrings.LINE, ELine.class);
+		final EStation station = reqs.getValue(ControllerStrings.STATION, EStation.class);
+		final int      index   = stoi.apply(reqs.getValue(ControllerStrings.INDEX, String.class));
 
 		try {
 			model.insertStationToLine(line, station, index);
@@ -166,9 +169,11 @@ public class Controller implements IController {
 	public void insertTimetableToLine(Requirements reqs) {
 		final Function<String, Integer> stoi = Integer::parseInt;
 
-		final ELine      line      = reqs.getValue("line", ELine.class);
-		final int        hours     = stoi.apply(reqs.getValue("hours", String.class));
-		final int        minutes   = stoi.apply(reqs.getValue("minutes", String.class));
+		final ELine      line      = reqs.getValue(ControllerStrings.LINE, ELine.class);
+		final int        hours     = stoi
+		        .apply(reqs.getValue(ControllerStrings.HOURS, String.class));
+		final int        minutes   = stoi
+		        .apply(reqs.getValue(ControllerStrings.MINUTES, String.class));
 		final ETimetable timetable = new ETimetable(hours, minutes);
 
 		try {
@@ -180,17 +185,17 @@ public class Controller implements IController {
 
 	@Override
 	public Requirements getInsertTownRequirements() {
-		Requirements reqs = new Requirements();
-		reqs.add("name", StringType.NON_EMPTY);
+		final Requirements reqs = new Requirements();
+		reqs.add(ControllerStrings.NAME, StringType.NON_EMPTY);
 		return reqs;
 	}
 
 	@Override
 	public Requirements getInsertLineRequirements() {
-		Requirements reqs = new Requirements();
-		reqs.add("line number", StringType.NON_EMPTY);
-		reqs.add("line type", Arrays.asList(LineType.values()));
-		reqs.add("description", StringType.NON_EMPTY);
+		final Requirements reqs = new Requirements();
+		reqs.add(ControllerStrings.NAME, StringType.NON_EMPTY);
+		reqs.add(ControllerStrings.TYPE, Arrays.asList(LineType.values()));
+		reqs.add(ControllerStrings.DESCRIPTION, StringType.NON_EMPTY);
 		return reqs;
 	}
 
@@ -200,15 +205,16 @@ public class Controller implements IController {
 		try {
 			availableTowns = model.getTowns(null);
 		} catch (final SQLException e) {
-			view.updateViewWithError(new RuntimeException("Could not fetch available towns", e));
+			view.updateViewWithError(new RuntimeException(
+			        String.format(ControllerStrings.CANT_FETCH, ControllerStrings.TOWNS), e));
 			return null;
 		}
 
-		Requirements reqs = new Requirements();
-		reqs.add("name", StringType.NON_EMPTY);
-		reqs.add("x coord", StringType.NON_NEG_INTEGER);
-		reqs.add("y coord", StringType.NON_NEG_INTEGER);
-		reqs.add("city", availableTowns);
+		final Requirements reqs = new Requirements();
+		reqs.add(ControllerStrings.NAME, StringType.NON_EMPTY);
+		reqs.add(ControllerStrings.X_COORD, StringType.NON_NEG_INTEGER);
+		reqs.add(ControllerStrings.Y_COORD, StringType.NON_NEG_INTEGER);
+		reqs.add(ControllerStrings.CITY, availableTowns);
 		return reqs;
 	}
 
@@ -220,21 +226,23 @@ public class Controller implements IController {
 		try {
 			lines = model.getLines(null, null);
 		} catch (final SQLException e) {
-			view.updateViewWithError(new RuntimeException("Could not fetch available lines", e));
+			view.updateViewWithError(new RuntimeException(
+			        String.format(ControllerStrings.CANT_FETCH, ControllerStrings.LINES), e));
 			return null;
 		}
 
 		try {
 			stations = model.getStations(null);
 		} catch (final SQLException e) {
-			view.updateViewWithError(new RuntimeException("Could not fetch available stations", e));
+			view.updateViewWithError(new RuntimeException(
+			        String.format(ControllerStrings.CANT_FETCH, ControllerStrings.STATIONS), e));
 			return null;
 		}
 
-		Requirements reqs = new Requirements();
-		reqs.add("line", lines);
-		reqs.add("station", stations);
-		reqs.add("index", StringType.NON_NEG_INTEGER);
+		final Requirements reqs = new Requirements();
+		reqs.add(ControllerStrings.LINE, lines);
+		reqs.add(ControllerStrings.STATION, stations);
+		reqs.add(ControllerStrings.INDEX, StringType.NON_NEG_INTEGER);
 		return reqs;
 	}
 
@@ -245,14 +253,15 @@ public class Controller implements IController {
 		try {
 			lines = model.getLines(null, null);
 		} catch (final SQLException e) {
-			view.updateViewWithError(new RuntimeException("Could not fetch available lines", e));
+			view.updateViewWithError(new RuntimeException(
+			        String.format(ControllerStrings.CANT_FETCH, ControllerStrings.LINES), e));
 			return null;
 		}
 
-		Requirements reqs = new Requirements();
-		reqs.add("line", lines);
-		reqs.add("hours", StringType.HOUR_24);
-		reqs.add("minutes", StringType.MINUTE);
+		final Requirements reqs = new Requirements();
+		reqs.add(ControllerStrings.LINE, lines);
+		reqs.add(ControllerStrings.HOURS, StringType.HOUR_24);
+		reqs.add(ControllerStrings.MINUTES, StringType.MINUTE);
 		return reqs;
 	}
 }
