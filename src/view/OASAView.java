@@ -1,7 +1,10 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.List;
@@ -28,22 +31,26 @@ import requirement.util.Requirements;
 
 /**
  * A concrete implementation of the {@link IView} interface that extends the
- * {@link AbstractView}. More Concrete Views can be implemented to illustrate
- * different ways to use the {@link IView} interface.
+ * {@link AbstractGUIView}. It provides the users with a Graphical Interface
+ * with which to use the application.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-public class OASAView extends AbstractView {
+public class OASAView extends AbstractGUIView {
 
-	private static final Font textFont = new Font(Font.SANS_SERIF, Font.BOLD, 18);
+	private static final int WINDOW_WIDTH  = 750;
+	private static final int WINDOW_HEIGHT = 1000;
+
+	private static final Font textFont   = new Font(Font.SANS_SERIF, Font.BOLD, 18);
+	private static final Font footerFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
 	/**
 	 * Constructs a concrete OASAView and provides an instance of
 	 * {@link OASAEntityGraphicFactory} to the abstract super class.
 	 */
 	public OASAView() {
-		super(new OASAEntityGraphicFactory());
+		super(new OASAEntityRepresentationFactory<OASAView>());
 	}
 
 	@Override
@@ -54,9 +61,9 @@ public class OASAView extends AbstractView {
 		final JMenuItem home, prev, next, i_town, i_station, i_line, i_station_to_line,
 		        i_timetable_to_line, p_settings, p_language;
 
-		home = new JMenuItem("<HOME_ICON>");
-		prev = new JMenuItem("<PREV_ICON>");
-		next = new JMenuItem("<NEXT_ICON>");
+		home = new JMenuItem(getImageIcon("home_button.jpg", 54, 54));
+		prev = new JMenuItem(getImageIcon("prev_button_small.png", 54, 54));
+		next = new JMenuItem(getImageIcon("next_button_small.png", 54, 54));
 
 		m_insert = new JMenu("Insert");
 		i_town = new JMenuItem("Town");
@@ -99,7 +106,34 @@ public class OASAView extends AbstractView {
 
 	@Override
 	protected void fulfilRequirements(Requirements reqs, String prompt) {
-		reqs.fulfillWithDialog(this, prompt);
+		reqs.fulfillWithDialog(frame, prompt);
+	}
+
+	@Override
+	protected JPanel constructFooter() {
+		JPanel footerPanel = new JPanel();
+		footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.Y_AXIS));
+
+		JPanel plusPanel = new JPanel();
+
+		JPanel infoPanel = new JPanel();
+		infoPanel.setBackground(Color.BLUE);
+		infoPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+		infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		infoPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT / 8));
+
+		JLabel phoneLabel = new JLabel("Contact us at 6945692313");
+		phoneLabel.setFont(footerFont);
+		JLabel emailLabel = new JLabel("or at legit-company@hotmail.com");
+		emailLabel.setFont(footerFont);
+
+		infoPanel.add(phoneLabel);
+		infoPanel.add(emailLabel);
+
+		footerPanel.add(plusPanel);
+		footerPanel.add(infoPanel);
+
+		return footerPanel;
 	}
 
 	@Override
@@ -188,7 +222,7 @@ public class OASAView extends AbstractView {
 
 	@Override
 	public void updateViewWithError(Exception e) {
-		JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error",
+		JOptionPane.showMessageDialog(frame, e.getLocalizedMessage(), "Error",
 		        JOptionPane.ERROR_MESSAGE);
 	}
 

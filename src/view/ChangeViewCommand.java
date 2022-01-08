@@ -6,14 +6,14 @@ import javax.swing.JPanel;
 
 /**
  * Encapsulates the information necessary to change the main panel of an
- * {@link AbstractView} to a new one. This process can be undone to display the
- * previous panel.
+ * {@link AbstractGUIView} to a new one. This process can be undone to display
+ * the previous panel.
  *
  * @author Alex Mandelias
  */
 class ChangeViewCommand implements Undoable {
 
-	private final AbstractView view;
+	private final AbstractGUIView view;
 
 	/** The current panel that will be removed on execution */
 	final JPanel prevPanel;
@@ -33,7 +33,7 @@ class ChangeViewCommand implements Undoable {
 	 * @param prevPanel the panel which will be removed
 	 * @param nextPanel the panel which will be added
 	 */
-	public ChangeViewCommand(AbstractView view, JPanel prevPanel, JPanel nextPanel) {
+	public ChangeViewCommand(AbstractGUIView view, JPanel prevPanel, JPanel nextPanel) {
 		this.view = view;
 		this.prevPanel = prevPanel;
 		this.nextPanel = nextPanel;
@@ -56,9 +56,9 @@ class ChangeViewCommand implements Undoable {
 	 * @param newPanel the new panel
 	 */
 	private void gotoPanel(JPanel oldPanel, JPanel newPanel) {
-		view.getContentPane().remove(oldPanel);
-		view.getContentPane().add(newPanel, BorderLayout.CENTER);
-		view.revalidate();
-		view.repaint();
+		view.frame.getContentPane().remove(oldPanel);
+		view.frame.getContentPane().add(newPanel, BorderLayout.CENTER);
+		// view.revalidate();
+		// view.repaint();
 	}
 }
