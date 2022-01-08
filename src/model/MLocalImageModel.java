@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-@SuppressWarnings("nls")
 public class MLocalImageModel implements IImageModel {
 
 	/** The directory inside which all image files are located */
@@ -23,7 +22,7 @@ public class MLocalImageModel implements IImageModel {
 	 * {@code other_resources\resources} directory.
 	 */
 	public MLocalImageModel() {
-		this("other_resources", "resources");
+		this("other_resources", "resources"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
@@ -33,14 +32,14 @@ public class MLocalImageModel implements IImageModel {
 	 *                       where the images are located
 	 */
 	public MLocalImageModel(String... subdirectories) {
-		final String curr_dir = System.getProperty("user.dir");
-		final String fs       = System.getProperty("file.separator");
+		final String curr_dir = System.getProperty("user.dir"); //$NON-NLS-1$
+		final String fs       = System.getProperty("file.separator"); //$NON-NLS-1$
 		resourceDirectory = curr_dir + fs + String.join(fs, subdirectories) + fs;
 	}
 
 	@Override
 	public BufferedImage loadImage(String filename) throws IOException {
-		final String pathToFile = resourceDirectory + System.getProperty("file.separator")
+		final String pathToFile = resourceDirectory + System.getProperty("file.separator") //$NON-NLS-1$
 		        + filename;
 		return ImageIO.read(new File(pathToFile));
 	}
