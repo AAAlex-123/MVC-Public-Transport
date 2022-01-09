@@ -5,6 +5,7 @@ import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
 import entity.Position;
+import localisation.Languages;
 
 /**
  * A Factory producing String representations of entities.
@@ -13,10 +14,7 @@ import entity.Position;
  * @author Dimitris Tsirmpas
  */
 public class StringEntityRepresentationFactory
-        implements AbstractEntityRepresentationFactory<String, ConsoleView> {
-
-	@Override
-	public void initializeView(ConsoleView view) {}
+        implements AbstractEntityRepresentationFactory<String> {
 
 	@Override
 	public String getETownGraphic(ETown town) {
@@ -25,14 +23,15 @@ public class StringEntityRepresentationFactory
 
 	@Override
 	public String getELineGraphic(ELine line) {
-		return String.format("%s (%s): %s", line.getName(), line.getType(), line.getDescription());
+		return String.format("%s (%s): %s", line.getName(), line.getType(), line.getDescription()); //$NON-NLS-1$
 	}
 
 	@Override
 	public String getEStationGraphic(EStation station) {
 		Position     pos  = station.getPosition();
 
-		StringBuffer buff = new StringBuffer(station.getName() + " at coordinates: ");
+		StringBuffer buff = new StringBuffer(
+		        String.format(Languages.getString("StringEntityRepresentationFactory.0"), station.getName())); //$NON-NLS-1$
 
 		buff.append(Math.abs(pos.getX()));
 		buff.append(pos.getX() > 0 ? 'N' : 'S');

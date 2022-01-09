@@ -10,19 +10,11 @@ import entity.ETown;
  * user-friendly representations for the Entities of the {@link entity} package.
  *
  * @param <E> the type of the representation of the Entities
- * @param <V> the type of the View associated with this factory
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-interface AbstractEntityRepresentationFactory<E, V> {
-
-	/**
-	 * Sets the View of this factory, if not already set.
-	 *
-	 * @param newView the new view of this factory
-	 */
-	void initializeView(V newView);
+interface AbstractEntityRepresentationFactory<E> {
 
 	/**
 	 * Returns a Graphic for a {@link ETown}.

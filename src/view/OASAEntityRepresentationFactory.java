@@ -30,7 +30,7 @@ import localisation.Languages;
  * @author Dimitris Tsirmpas
  */
 class OASAEntityRepresentationFactory<V extends AbstractGUIView>
-        implements AbstractEntityRepresentationFactory<JPanel, V> {
+        extends AbstractGraphicalEntityRepresentationFactory<V> {
 
 	private static final String fontName        = "TimesRoman";                                   //$NON-NLS-1$
 	private static final Font   largeFont       = new Font(fontName, Font.BOLD, 24);
@@ -60,7 +60,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	public JPanel getETownGraphic(ETown town) {
 		final JPanel graphic = prepareGraphic();
 
-		final ImageIcon icon = view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE);
+		final ImageIcon icon = view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE); //$NON-NLS-1$
 
 		graphic.add(new JLabel(icon));
 		graphic.add(Box.createHorizontalBox());
