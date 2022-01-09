@@ -85,6 +85,8 @@ public class ConsoleView extends AbstractView<String> {
 		} catch (final IOException e) {
 			message(file, e);
 		}
+
+		updateViewWithHomepage();
 	}
 
 	@Override
@@ -362,7 +364,7 @@ public class ConsoleView extends AbstractView<String> {
 			output = err;
 		}
 
-		output.println(titleString);
-		output.println(messageString);
+		output.println("\n" + titleString); //$NON-NLS-1$
+		output.printf(messageString + "%n", file); //$NON-NLS-1$
 	}
 }
