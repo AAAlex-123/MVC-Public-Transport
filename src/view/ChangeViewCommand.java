@@ -58,7 +58,7 @@ class ChangeViewCommand implements Undoable {
 	private void gotoPanel(JPanel oldPanel, JPanel newPanel) {
 		view.frame.remove(oldPanel);
 		view.frame.add(newPanel, BorderLayout.CENTER);
-		// view.frame.revalidate();
-		// view.frame.repaint();
+		view.frame.revalidate();
+		view.frame.repaint();
 	}
 }

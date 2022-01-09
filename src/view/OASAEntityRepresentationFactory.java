@@ -193,7 +193,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	public JPanel getETimetableGraphic(ETimetable timetable) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
-		final JLabel nameLabel = new JLabel(timetable.toString());
+		final JLabel nameLabel = new JLabel(timetable.getFormattedTime());
 		nameLabel.setFont(largeFont);
 		nameLabel.setForeground(textColor);
 		nameLabel.setBackground(backgroundColor);
