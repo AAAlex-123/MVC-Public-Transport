@@ -9,6 +9,9 @@ import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
+import requirement.requirements.AbstractRequirement;
+import requirement.requirements.ListRequirement;
+import requirement.requirements.StringRequirement;
 import requirement.util.Requirements;
 
 /**
@@ -46,10 +49,10 @@ public class ConsoleView extends AbstractView<String> {
 	@Override
 	public void updateViewWithHomepage() {
 		sourceEntityDescription = "";
-		
+
 		out.println("1. Show all Lines");
 		out.println("2. Show all Towns");
-		out.println("3. Insert data into the system");
+		out.println("3. Insert data");
 		out.println("4. Exit");
 
 		switch(getAnswer(1,4)) {
@@ -65,7 +68,6 @@ public class ConsoleView extends AbstractView<String> {
 		case 4:
 			System.exit(0);
 		}
-
 	}
 
 	@Override
@@ -185,43 +187,44 @@ public class ConsoleView extends AbstractView<String> {
 	public void updateViewWithError(Exception e) {
 		err.println(e.getLocalizedMessage());
 	}
-	
+
 	@Override
 	protected void fulfilRequirements(Requirements reqs, String prompt) {
 		out.println(prompt);
-		
-		for (var req : reqs) {
-		    if (req instanceof ListRequirement) {
-		    	out.println("Please select one of the following options: ");
-		    	
-		    	@SuppressWarnings("unchecked")
-				List<Object> options = ((ListRequirement<Object>) req).getOptions();
-		    	StringBuffer optionBuffer = new StringBuffer();
-				
+
+		for (AbstractRequirement req : reqs) {
+			if (req instanceof ListRequirement) {
+				out.println("Please select one of the following options: ");
+
+				@SuppressWarnings("unchecked")
+				List<Object> options      = ((ListRequirement<Object>) req).getOptions();
+				StringBuffer optionBuffer = new StringBuffer();
+
 				int count = 1;
-				for(var option : options) {
-					optionBuffer.append(count);
-					optionBuffer.append(": ");
-					optionBuffer.append(option.toString());
-					optionBuffer.append('\n');
+				for (Object option : options) {
+					optionBuffer.append(String.format("%d: %s%n", count, option.toString()));
 					count++;
 				}
-				
+
 				out.println(optionBuffer);
-		        
-		       int answer = getAnswer(1, options.size()) - 1;
-		       while (!req.finalise(options.get(answer))) {
-		           answer = getAnswer(1, options.size()) - 1;
-		       }
-		        
-		    } else if (req instanceof StringRequirement) {
-		    	String key = ((StringRequirement) req).key();
-		        out.println("give value for: " + key);
-		        
-		        while(!req.finalise(in.nextLine()))
-		        	updateViewWithError(new RuntimeException("This is not a valid value for " + key));
-		        	
-		    }
+
+				int answer = getAnswer(1, options.size()) - 1;
+				while (!req.finalise(options.get(answer))) {
+					answer = getAnswer(1, options.size()) - 1;
+					System.out.println("lmao can this even happen?");
+				}
+
+			} else if (req instanceof StringRequirement) {
+				StringRequirement stringReq = (StringRequirement) req;
+				String            key       = stringReq.key();
+
+				out.printf("Give a value for: %s%n", key);
+
+				while (!req.finalise(in.nextLine()))
+					updateViewWithError(new RuntimeException(
+					        String.format("Invalid value for key '%s'. Please provide a(n): %s%n",
+					                stringReq.stringType.getDescription())));
+			}
 		}
 	}
 
@@ -244,13 +247,13 @@ public class ConsoleView extends AbstractView<String> {
 	}
 
 	private void showInsertMenu() {
-		out.println("1. Register a new line");
-		out.println("2. Register a new town");
-		out.println("3. Register a new station");
-		out.println("4. Register a new station to an existing line");
-		out.println("5. Register a new timetable to an existing line");
+		out.println("1. Insert a new Line");
+		out.println("2. Insert a new Town");
+		out.println("3. Insert a new Station");
+		out.println("4. Insert an existing Station to a Line");
+		out.println("5. Insert a new Timetable to a Line");
 		out.println("6. Return to homepage");
-		
+
 		switch(getAnswer(1,6)) {
 		case 1:
 			super.insertLine();
@@ -268,9 +271,9 @@ public class ConsoleView extends AbstractView<String> {
 			super.insertTimetableToLine();
 			break;
 		case 6:
-			updateViewWithHomepage();
+			break;
 		}
-	
+
 		updateViewWithHomepage();
 	}
 
