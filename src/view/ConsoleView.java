@@ -59,24 +59,29 @@ public class ConsoleView extends AbstractView<String> {
 		}, "");
 
 		doWithAnswer(
-		        super::getAllLines,
-		        super::getAllTowns,
-		        this::showInsertMenu,
+		        () -> super.getAllLines(),
+		        () -> super.getAllTowns(),
+		        () -> showInsertMenu(),
 		        () -> System.exit(0));
 	}
 
 	@Override
 	public void updateViewWithTowns(List<ETown> towns) {
+		if (towns.isEmpty()) {
+			goToHomepage("towns");
+		}
+
 		printSource();
 
-		final FormatBuffer buffer = new FormatBuffer("Please select a town: \n");
+		FormatBuffer buffer = new FormatBuffer("Please select a town: \n");
 
-		for (final ETown town : towns)
+		for (ETown town : towns) {
 			buffer.format(factory.getETownGraphic(town));
+		}
 
-		out.println(buffer);
+		out.print(buffer);
 
-		final ETown selected = towns.get(getAnswer(1, towns.size()) - 1);
+		ETown selected = towns.get(getAnswer(1, towns.size()) - 1);
 
 		sourceEntityDescription = factory.getETownGraphic(selected);
 
@@ -88,20 +93,25 @@ public class ConsoleView extends AbstractView<String> {
 		        "Select what you want to access from the town: %s%n", selected.getName());
 
 		doWithAnswer(() -> super.getLinesByTown(selected), () -> super.getStationsByTown(selected),
-		        this::updateViewWithHomepage);
+		        () -> updateViewWithHomepage());
 	}
 
 	@Override
 	public void updateViewWithLines(List<ELine> lines) {
+		if (lines.isEmpty()) {
+			goToHomepage("lines");
+		}
+
 		printSource();
-		final FormatBuffer buffer = new FormatBuffer("Please select a line:\n");
+		FormatBuffer buffer = new FormatBuffer("Please select a line:\n");
 
-		for (final ELine line : lines)
+		for (ELine line : lines) {
 			buffer.format(factory.getELineGraphic(line));
+		}
 
-		out.println(buffer);
+		out.print(buffer);
 
-		final ELine selected = lines.get(getAnswer(1, lines.size()) - 1);
+		ELine selected = lines.get(getAnswer(1, lines.size()) - 1);
 
 		sourceEntityDescription = factory.getELineGraphic(selected);
 
@@ -116,20 +126,25 @@ public class ConsoleView extends AbstractView<String> {
 		        () -> super.getTownsByLine(selected),
 		        () -> super.getStationsByLine(selected),
 		        () -> super.getTimetablesByLine(selected),
-		        this::updateViewWithHomepage);
+		        () -> updateViewWithHomepage());
 	}
 
 	@Override
 	public void updateViewWithStations(List<EStation> stations) {
+		if (stations.isEmpty()) {
+			goToHomepage("stations");
+		}
+
 		printSource();
-		final FormatBuffer buffer = new FormatBuffer("Please select a station:\n");
+		FormatBuffer buffer = new FormatBuffer("Please select a station:\n");
 
-		for (final EStation station : stations)
+		for (EStation station : stations) {
 			buffer.format(factory.getEStationGraphic(station));
+		}
 
-		out.println(buffer);
+		out.print(buffer);
 
-		final EStation selected = stations.get(getAnswer(1, stations.size()) - 1);
+		EStation selected = stations.get(getAnswer(1, stations.size()) - 1);
 
 		sourceEntityDescription = factory.getEStationGraphic(selected);
 
@@ -140,18 +155,23 @@ public class ConsoleView extends AbstractView<String> {
 
 		doWithAnswer(
 		        () -> super.getLinesByStation(selected),
-		        this::updateViewWithHomepage);
+		        () -> updateViewWithHomepage());
 	}
 
 	@Override
 	public void updateViewWithTimetables(List<ETimetable> timetables) {
+		if (timetables.isEmpty()) {
+			goToHomepage("timetables");
+		}
+
 		printSource();
-		final FormatBuffer buffer = new FormatBuffer();
+		FormatBuffer buffer = new FormatBuffer();
 
-		for (final ETimetable timetable : timetables)
+		for (ETimetable timetable : timetables) {
 			buffer.format(factory.getETimetableGraphic(timetable));
+		}
 
-		out.println(buffer);
+		out.print(buffer);
 
 		sourceEntityDescription = "";
 
@@ -165,9 +185,9 @@ public class ConsoleView extends AbstractView<String> {
 
 	@Override
 	protected void fulfilRequirements(Requirements reqs, String prompt) {
-		out.println(prompt);
+		out.println(System.lineSeparator() + prompt);
 
-		for (final AbstractRequirement req : reqs)
+		for (AbstractRequirement req : reqs) {
 			if (req instanceof ListRequirement) {
 				out.println("Please select one of the following options:");
 
@@ -175,10 +195,10 @@ public class ConsoleView extends AbstractView<String> {
 				final List<Object> options = ((ListRequirement<Object>) req).getOptions();
 				final FormatBuffer buffer  = new FormatBuffer();
 
-				for (final Object option : options)
+				for (Object option : options)
 					buffer.format(option.toString());
 
-				out.println(buffer);
+				out.print(buffer);
 
 				int answer = getAnswer(1, options.size()) - 1;
 				while (!req.finalise(options.get(answer))) {
@@ -196,6 +216,7 @@ public class ConsoleView extends AbstractView<String> {
 					err.printf("Invalid value for key '%s'. Please provide a(n): %s%n",
 					        stringReq.stringType.getDescription());
 			}
+		}
 	}
 
 	private static class FormatBuffer {
@@ -208,7 +229,7 @@ public class ConsoleView extends AbstractView<String> {
 		}
 
 		public FormatBuffer(String initial) {
-			buffer = new StringBuffer(initial);
+			buffer = new StringBuffer(System.lineSeparator() + initial);
 			count = 1;
 		}
 
@@ -224,12 +245,17 @@ public class ConsoleView extends AbstractView<String> {
 		}
 	}
 
+	private void goToHomepage(String reason) {
+		out.printf("%nNo %s to show%n", reason);
+		updateViewWithHomepage();
+	}
+
 	private void printMenu(String[] menuItems, String headerFormat, Object... headerArgs) {
 		final FormatBuffer buffer = new FormatBuffer(String.format(headerFormat, headerArgs));
 		for (final String menuItem : menuItems)
 			buffer.format(menuItem);
 
-		out.println(buffer);
+		out.print(buffer);
 	}
 
 	private void doWithAnswer(Runnable... runnables) {
@@ -241,15 +267,16 @@ public class ConsoleView extends AbstractView<String> {
 		while (true) {
 			int answer;
 			try {
+				out.print("> ");
 				answer = Integer.parseInt(in.nextLine());
-			} catch (final NumberFormatException ne) {
+			} catch (NumberFormatException ne) {
 				answer = bottomRange - 1;
 			}
 
 			if ((bottomRange <= answer) && (answer <= upperRange))
 				return answer;
 
-			err.printf("Please provide an answer between %d and %d%n",
+			err.printf("Please provide an answer between %d and %d%n%n",
 			        bottomRange, upperRange);
 		}
 	}
@@ -265,11 +292,11 @@ public class ConsoleView extends AbstractView<String> {
 		}, "");
 
 		doWithAnswer(
-		        super::insertLine,
-		        super::insertTown,
-		        super::insertStation,
-		        super::insertStationToLine,
-		        super::insertTimetableToLine
+			() -> super.insertLine(),
+			() -> super.insertTown(),
+			() -> super.insertStation(),
+			() -> super.insertStationToLine(),
+			() -> super.insertTimetableToLine()
 		// ignore 6 - return to homepage, it always happens
 		);
 
@@ -278,6 +305,6 @@ public class ConsoleView extends AbstractView<String> {
 
 	private void printSource() {
 		if (!sourceEntityDescription.isEmpty())
-			out.printf("From %s:%n%n", sourceEntityDescription);
+			out.printf("%nFrom %s:%n", sourceEntityDescription);
 	}
 }
