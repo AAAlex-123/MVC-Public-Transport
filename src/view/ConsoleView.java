@@ -22,6 +22,7 @@ import requirement.util.Requirements;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
+@SuppressWarnings("nls")
 public class ConsoleView extends AbstractView<String> {
 
 	private final Scanner     in;
@@ -55,23 +56,16 @@ public class ConsoleView extends AbstractView<String> {
 		out.println("3. Insert data");
 		out.println("4. Exit");
 
-		switch(getAnswer(1,4)) {
-		case 1:
-			super.getAllLines();
-			break;
-		case 2:
-			super.getAllTowns();
-			break;
-		case 3:
-			showInsertMenu();
-			break;
-		case 4:
-			System.exit(0);
-		}
+		doWithAnswer(
+		        () -> super.getAllLines(),
+		        () -> super.getAllTowns(),
+		        () -> showInsertMenu(),
+		        () -> System.exit(0));
 	}
 
 	@Override
 	public void updateViewWithTowns(List<ETown> towns) {
+		printSource();
 		StringBuffer townString = new StringBuffer("Please select a town: \n");
 
 		int count = 1;
@@ -92,17 +86,8 @@ public class ConsoleView extends AbstractView<String> {
 		out.println("2. Show all stations in this town");
 		out.println("3. Return to homepage");
 
-		switch (getAnswer(1, 3)) {
-		case 1:
-			super.getLinesByTown(selected);
-			break;
-		case 2:
-			super.getStationsByTown(selected);
-			break;
-		case 3:
-			updateViewWithHomepage();
-			break;
-		}
+		doWithAnswer(() -> super.getLinesByTown(selected), () -> super.getStationsByTown(selected),
+		        () -> updateViewWithHomepage());
 	}
 
 	@Override
@@ -129,20 +114,11 @@ public class ConsoleView extends AbstractView<String> {
 		out.println("3. Show all arrival times for this line");
 		out.println("4. Return to homepage");
 
-		switch (getAnswer(1, 4)) {
-		case 1:
-			super.getTownsByLine(selected);
-			break;
-		case 2:
-			super.getStationsByLine(selected);
-			break;
-		case 3:
-			super.getTimetablesByLine(selected);
-			break;
-		case 4:
-			updateViewWithHomepage();
-			break;
-		}
+		doWithAnswer(
+		        () -> super.getTownsByLine(selected),
+		        () -> super.getStationsByLine(selected),
+		        () -> super.getTimetablesByLine(selected),
+		        () -> updateViewWithHomepage());
 	}
 
 	@Override
@@ -162,13 +138,20 @@ public class ConsoleView extends AbstractView<String> {
 		EStation selected = stations.get(getAnswer(1, stations.size()) - 1);
 
 		sourceEntityDescription = factory.getEStationGraphic(selected);
-		super.getLinesByStation(selected);
+
+		out.printf("Select what you want to access from the station %s:%n", selected.getName());
+		out.println("1. Show all lines going through this station");
+		out.println("2. Return to homepage");
+
+		doWithAnswer(
+		        () -> super.getLinesByStation(selected),
+		        () -> updateViewWithHomepage());
 	}
 
 	@Override
 	public void updateViewWithTimetables(List<ETimetable> timetables) {
 		printSource();
-		StringBuffer timetableString = new StringBuffer("Please select a station: \n");
+		StringBuffer timetableString = new StringBuffer();
 
 		int count = 1;
 		for (ETimetable timetable : timetables) {
@@ -246,6 +229,11 @@ public class ConsoleView extends AbstractView<String> {
 		}
 	}
 
+	private void doWithAnswer(Runnable... runnables) {
+		final int answer = getAnswer(1, runnables.length);
+		runnables[answer - 1].run();
+	}
+
 	private void showInsertMenu() {
 		out.println("1. Insert a new Line");
 		out.println("2. Insert a new Town");
@@ -254,25 +242,14 @@ public class ConsoleView extends AbstractView<String> {
 		out.println("5. Insert a new Timetable to a Line");
 		out.println("6. Return to homepage");
 
-		switch(getAnswer(1,6)) {
-		case 1:
-			super.insertLine();
-			break;
-		case 2:
-			super.insertTown();
-			break;
-		case 3:
-			super.insertStation();
-			break;
-		case 4:
-			super.insertStationToLine();
-			break;
-		case 5:
-			super.insertTimetableToLine();
-			break;
-		case 6:
-			break;
-		}
+		doWithAnswer(
+			() -> super.insertLine(),
+			() -> super.insertTown(),
+			() -> super.insertStation(),
+			() -> super.insertStationToLine(),
+			() -> super.insertTimetableToLine()
+		// ignore 6 - return to homepage
+		);
 
 		updateViewWithHomepage();
 	}
