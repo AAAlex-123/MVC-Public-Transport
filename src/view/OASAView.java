@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -25,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+import controller.IImageController;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
@@ -42,18 +42,23 @@ import requirement.util.Requirements;
  */
 public class OASAView extends AbstractGUIView {
 
-	private static final int WINDOW_WIDTH  = 750;
-	private static final int WINDOW_HEIGHT = 1000;
+	private static final int WINDOW_HEIGHT = 750;
+	private static final int WINDOW_WIDTH  = 500;
 
 	private static final Font textFont   = new Font(Font.SANS_SERIF, Font.BOLD, 18);
 	private static final Font footerFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 
 	/**
 	 * Constructs a concrete OASAView and provides an instance of
-	 * {@link OASAEntityGraphicFactory} to the abstract super class.
+	 * {@link OASAEntityRepresentationFactory} to the abstract super class.
+	 *
+	 * @param imageController this View's Image Controller
 	 */
-	public OASAView() {
-		super(new OASAEntityRepresentationFactory<OASAView>());
+	public OASAView(IImageController imageController) {
+		super(new OASAEntityRepresentationFactory<OASAView>(), imageController, WINDOW_WIDTH,
+		        WINDOW_HEIGHT);
+
+		((OASAEntityRepresentationFactory<AbstractGUIView>) factory).initializeView(this);
 	}
 
 	@Override
@@ -64,9 +69,9 @@ public class OASAView extends AbstractGUIView {
 		final JMenuItem home, prev, next, i_town, i_station, i_line, i_station_to_line,
 		        i_timetable_to_line, p_settings, p_language;
 
-		home = new JMenuItem(getImageIcon("home_button.jpg", 54, 54));
-		prev = new JMenuItem(getImageIcon("prev_button_small.png", 54, 54));
-		next = new JMenuItem(getImageIcon("next_button_small.png", 54, 54));
+		home = new JMenuItem(getImageIcon("home_button.jpg", 54, 54)); //$NON-NLS-1$
+		prev = new JMenuItem(getImageIcon("prev_button_small.png", 54, 54)); //$NON-NLS-1$
+		next = new JMenuItem(getImageIcon("next_button_small.png", 54, 54)); //$NON-NLS-1$
 
 		m_insert = new JMenu(Languages.getString("OASAView.3")); //$NON-NLS-1$
 		i_town = new JMenuItem(Languages.getString("OASAView.4")); //$NON-NLS-1$
@@ -129,29 +134,22 @@ public class OASAView extends AbstractGUIView {
 
 	@Override
 	protected JPanel constructFooter() {
-		JPanel footerPanel = new JPanel();
-		footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.Y_AXIS));
-
-		JPanel plusPanel = new JPanel();
 
 		JPanel infoPanel = new JPanel();
-		infoPanel.setBackground(Color.BLUE);
-		infoPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-		infoPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-		infoPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT / 8));
+		infoPanel.setLayout(new GridLayout(0, 1, 10, 0));
+		infoPanel.setBackground(Color.CYAN);
+		infoPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3));
+		infoPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT / 15));
 
-		JLabel phoneLabel = new JLabel("Contact us at 6945692313");
+		JLabel phoneLabel = getCenteredLabel(Languages.getString("OASAView.0")); //$NON-NLS-1$
 		phoneLabel.setFont(footerFont);
-		JLabel emailLabel = new JLabel("or at legit-company@hotmail.com");
+		JLabel emailLabel = getCenteredLabel(Languages.getString("OASAView.1")); //$NON-NLS-1$
 		emailLabel.setFont(footerFont);
 
 		infoPanel.add(phoneLabel);
 		infoPanel.add(emailLabel);
 
-		footerPanel.add(plusPanel);
-		footerPanel.add(infoPanel);
-
-		return footerPanel;
+		return infoPanel;
 	}
 
 	@Override

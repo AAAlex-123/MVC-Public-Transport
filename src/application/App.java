@@ -69,16 +69,15 @@ public class App {
 		if (fail)
 			return;
 
-		IView view = oasa ? new OASAView() : new ConsoleView();
+		IImageModel      imageModel      = new MLocalImageModel();
+		IImageController imageController = new CLocalImageController(imageModel);
+
+		IView view = oasa ? new OASAView(imageController) : new ConsoleView();
 
 		IModel      model      = new Model();
 		IController controller = new Controller(model, view);
 
-		IImageModel imageModel = new MLocalImageModel();
-		IImageController imageController = new CLocalImageController(imageModel);
-
 		view.registerController(controller);
-		view.registerImageController(imageController);
 
 		view.start();
 	}

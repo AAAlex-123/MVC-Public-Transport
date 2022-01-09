@@ -13,17 +13,17 @@ import requirement.util.Requirements;
  * delegate methods to the View's registered {@link IController}, which the
  * concrete implementations will call.
  *
- * @param <EntityType> the type of the representation of the Entities
+ * @param <E> the type of the representation of the Entities
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-abstract class AbstractView<EntityType> implements IView {
+abstract class AbstractView<E> implements IView {
 
 	private IController controller;
 
 	/** The factory that constructs graphics for the Entities this View displays */
-	protected final AbstractEntityRepresentationFactory<EntityType, ? extends AbstractView<? extends EntityType>> factory;
+	protected final AbstractEntityRepresentationFactory<E> factory;
 
 	/**
 	 * Constructs the view initialising its UI and providing a factory with which to
@@ -32,9 +32,24 @@ abstract class AbstractView<EntityType> implements IView {
 	 *
 	 * @param factory the factory that will be used to construct its graphics
 	 */
-	public AbstractView(
-	        AbstractEntityRepresentationFactory<EntityType, ? extends AbstractView<? extends EntityType>> factory) {
+	public <A> AbstractView(
+	        AbstractEntityRepresentationFactory<E> factory) {
 		this.factory = factory;
+	}
+
+	/**
+	 * Constructs the view initialising its UI and providing a factory with which to
+	 * construct its graphics. The factory can be changed to provide different
+	 * graphics while maintaining the same layout.
+	 *
+	 * @param factory         the factory that will be used to construct its
+	 *                        graphics
+	 * @param imageController the controller that will be used to load its images
+	 */
+	public AbstractView(AbstractEntityRepresentationFactory<E> factory,
+	        IImageController imageController) {
+		this(factory);
+		registerImageController(imageController);
 	}
 
 	@Override
@@ -125,41 +140,6 @@ abstract class AbstractView<EntityType> implements IView {
 		controller.getAllLines();
 	}
 
-	protected final void insertTown() {
-		Requirements reqs = controller.getInsertTownRequirements();
-		fulfilRequirements(reqs, Languages.getString("AbstractView.1")); //$NON-NLS-1$
-		if (reqs.fulfilled())
-			controller.insertTown(reqs);
-	}
-
-	protected final void insertLine() {
-		Requirements reqs = controller.getInsertLineRequirements();
-		fulfilRequirements(reqs, Languages.getString("AbstractView.2")); //$NON-NLS-1$
-		if (reqs.fulfilled())
-			controller.insertLine(reqs);
-	}
-
-	protected final void insertStation() {
-		Requirements reqs = controller.getInsertStationRequirements();
-		fulfilRequirements(reqs, Languages.getString("AbstractView.3")); //$NON-NLS-1$
-		if (reqs.fulfilled())
-			controller.insertStation(reqs);
-	}
-
-	protected final void insertStationToLine() {
-		Requirements reqs = controller.getInsertStationToLineRequirements();
-		fulfilRequirements(reqs, Languages.getString("AbstractView.4")); //$NON-NLS-1$
-		if (reqs.fulfilled())
-			controller.insertStationToLine(reqs);
-	}
-
-	protected final void insertTimetableToLine() {
-		Requirements reqs = controller.getInsertTimetableToLineRequirements();
-		fulfilRequirements(reqs, Languages.getString("AbstractView.5")); //$NON-NLS-1$
-		if (reqs.fulfilled())
-			controller.insertTimetableToLine(reqs);
-	}
-
 	/**
 	 * Allows each subclass to define how to fulfil a {@link Requirements}.
 	 *
@@ -168,4 +148,39 @@ abstract class AbstractView<EntityType> implements IView {
 	 *               user
 	 */
 	protected abstract void fulfilRequirements(Requirements reqs, String prompt);
+
+	protected final void insertTown() {
+		Requirements reqs = controller.getInsertTownRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.0")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertTown(reqs);
+	}
+
+	protected final void insertLine() {
+		Requirements reqs = controller.getInsertLineRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.1")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertLine(reqs);
+	}
+
+	protected final void insertStation() {
+		Requirements reqs = controller.getInsertStationRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.2")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertStation(reqs);
+	}
+
+	protected final void insertStationToLine() {
+		Requirements reqs = controller.getInsertStationToLineRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.3")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertStationToLine(reqs);
+	}
+
+	protected final void insertTimetableToLine() {
+		Requirements reqs = controller.getInsertTimetableToLineRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.4")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertTimetableToLine(reqs);
+	}
 }

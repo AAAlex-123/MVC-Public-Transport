@@ -2,10 +2,8 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -27,46 +25,56 @@ import localisation.Languages;
  * @author Dimitris Tsirmpas
  */
 abstract class AbstractGUIView extends AbstractView<JPanel> {
-	private static final int WINDOW_HEIGHT = 750;
-	private static final int WINDOW_WIDTH  = 500;
+
+	private final int width, height;
 
 	private IImageController imageController;
 
 	private final UndoableHistory<ChangeViewCommand> navigationHistory;
 
+	/** The frame that will display the UI */
 	protected final JFrame frame;
-	private JPanel mainPanel, headerPanel, contentPanel;
+
+	private JPanel mainPanel, headerPanel;
 
 	/**
 	 * Constructs the view initialising its UI and providing a factory with which to
 	 * construct its graphics. The factory can be changed to provide different
 	 * graphics while maintaining the same layout.
 	 *
-	 * @param factory the factory that will be used to construct its graphics
+	 * @param factory         the factory that will be used to construct its
+	 *                        graphics
+	 * @param imageController the controller that will be used to load its images
+	 * @param width           the width of the window
+	 * @param height          the height of the window
 	 */
 	public AbstractGUIView(
-	        AbstractEntityRepresentationFactory<JPanel, ? extends AbstractGUIView> factory) {
-		super(factory);
-		frame = new JFrame(Languages.getString("AbstractView.0"));
+	        AbstractGraphicalEntityRepresentationFactory<? extends AbstractGUIView> factory,
+	        IImageController imageController, int width, int height) {
+		super(factory, imageController);
 
+		this.width = width;
+		this.height = height;
+
+		frame = new JFrame(Languages.getString("AbstractGUIView.0")); //$NON-NLS-1$
 
 		navigationHistory = new UndoableHistory<>();
-		frame.setLayout(new FlowLayout());
+		frame.setLayout(new BorderLayout());
 
 		mainPanel = new JPanel();
 		headerPanel = new JPanel();
-		contentPanel = new JPanel();
 
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.add(headerPanel, BorderLayout.NORTH);
-		mainPanel.add(contentPanel, BorderLayout.CENTER);
-		frame.add(mainPanel);
-		frame.setJMenuBar(constructJMenuBar());
+		mainPanel.add(new JPanel(), BorderLayout.CENTER);
 
-		frame.setLayout(new BoxLayout(frame, BoxLayout.Y_AXIS));
-		frame.setSize(new Dimension(AbstractGUIView.WINDOW_WIDTH, AbstractGUIView.WINDOW_HEIGHT));
+		frame.setJMenuBar(constructJMenuBar());
+		frame.add(mainPanel, BorderLayout.CENTER);
+		frame.add(constructFooter(), BorderLayout.SOUTH);
+
+		// frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+		frame.setSize(new Dimension(this.width, this.height));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		// frame.add(constructFooter());
 	}
 
 	@Override
@@ -80,8 +88,19 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 		imageController = newImageController;
 	}
 
+	/**
+	 * Constructs a JMenuBar for this View.
+	 *
+	 * @return the JMenuBar
+	 */
 	protected abstract JMenuBar constructJMenuBar();
 
+	/**
+	 * Constructs a JPanel that will be used as a footer for this View, meaning that
+	 * it will be placed at the bottom of every view.
+	 *
+	 * @return the JPanel
+	 */
 	protected abstract JPanel constructFooter();
 
 	// ---------- Methods for the Concrete GUIView classes ---------- //
@@ -125,16 +144,18 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 *         a maximum width and height equal to that of this View
 	 */
 	protected final ImageIcon getImageIcon(String name) {
-		return getImageIcon(name, AbstractGUIView.WINDOW_WIDTH, AbstractGUIView.WINDOW_HEIGHT);
+		return getImageIcon(name, width, height);
 	}
 
 	// ---------- AbstractGUIView Commands ---------- //
 
+	/** Command to change to home panel */
 	protected final void changeToHomePanel() {
 		updateHeaderPanel(null);
 		updateViewWithHomepage();
 	}
 
+	/** Command to change to the previous panel in the history */
 	protected final void changeToPreviousPanel() {
 		if (navigationHistory.canUndo()) {
 			navigationHistory.undo();
@@ -144,6 +165,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 		}
 	}
 
+	/** Command to change to the next panel in the history */
 	protected final void changeToNextPanel() {
 		if (navigationHistory.canRedo()) {
 			navigationHistory.redo();
@@ -154,6 +176,22 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	}
 
 	// ---------- AbstractView Command Implementations ---------- //
+
+	/**
+	 * Changes the headerPanel to a new one.
+	 * <p>
+	 * <b>Note:</b> this only changes the reference to a new one, it does <b>not</b>
+	 * update the view. The {@link #updatePanel(JPanel)} method is responsible for
+	 * combining the new header panel with the rest of the view.
+	 *
+	 * @param newHeaderPanel null to remove the header panel, a JPanel to update it
+	 *                       with a new one
+	 */
+	private void updateHeaderPanel(JPanel newHeaderPanel) {
+		headerPanel = newHeaderPanel;
+		if (headerPanel == null)
+			headerPanel = new JPanel();
+	}
 
 	/**
 	 * A wrapper method for {@link IController#getStationsByTown(ETown)} that also
@@ -261,26 +299,5 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	protected void getAllLines() {
 		super.getAllLines();
 		updateHeaderPanel(null);
-	}
-
-	/**
-	 * <b>TODO: FIX DOCUMENTATION! THIS METHOD ONLY CHANGES THE HEADER_PANEL. IT
-	 * DOESN'T UPDATE THE MAIN PANEL WITH THE NEW HEADER PANEL. LOOK AT SOURCE OF
-	 * {@link #updatePanel(JPanel)} FOR MORE INFO. </b>
-	 * <p>
-	 * Update the panel above the main panel. The new panel represents the previous
-	 * panel which produced the change in view.
-	 * <p>
-	 * For example if the view showed the stations, and a click on a station changed
-	 * the main panel to show the lines from that station, this method should be
-	 * updated with the clicked station.
-	 *
-	 * @param newSourcePanel null to remove the main panel, a JPanel to update it
-	 *                       with a new graphic
-	 */
-	private void updateHeaderPanel(JPanel newSourcePanel) {
-		headerPanel = newSourcePanel;
-		if (headerPanel == null)
-			headerPanel = new JPanel();
 	}
 }
