@@ -198,9 +198,8 @@ public class ConsoleView extends AbstractView<String> {
 				out.printf("Give a value for: %s%n", key);
 
 				while (!req.finalise(in.nextLine()))
-					updateViewWithError(new RuntimeException(
-					        String.format("Invalid value for key '%s'. Please provide a(n): %s%n",
-					                stringReq.stringType.getDescription())));
+					err.printf("Invalid value for key '%s'. Please provide a(n): %s%n",
+					        stringReq.stringType.getDescription());
 			}
 		}
 	}
@@ -256,9 +255,8 @@ public class ConsoleView extends AbstractView<String> {
 			if ((bottomRange <= answer) && (answer <= upperRange))
 				return answer;
 
-			updateViewWithError(new RuntimeException(
-			        String.format("Please provide a valid answer between %d and %d%n",
-			                bottomRange, upperRange)));
+			err.printf("Please provide an answer between %d and %d%n",
+			        bottomRange, upperRange);
 		}
 	}
 
