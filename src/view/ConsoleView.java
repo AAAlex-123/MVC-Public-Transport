@@ -16,6 +16,7 @@ import static localisation.ConsoleViewStrings.THE_TOWN;
 import static localisation.ConsoleViewStrings.TIMETABLES;
 import static localisation.ConsoleViewStrings.TOWNS;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
@@ -65,7 +66,25 @@ public class ConsoleView extends AbstractView<String> {
 
 	@Override
 	protected void changeLanguage() {
+		Requirements reqs = Languages.getLanguageRequirements();
+		if (reqs == null) {
+			err.println(Languages.getString("Languages.2")); //$NON-NLS-1$
+			err.printf(Languages.getString("Languages.1"), //$NON-NLS-1$
+			        Languages.LANGUAGES_DIRECTORY);
+			return;
+		}
 
+		fulfilRequirements(reqs, Languages.getString("Languages.3")); //$NON-NLS-1$
+
+		final String file  = Languages.FILE;
+
+		try {
+			final boolean languageChanged = Languages.updateLanguageWithReqs(reqs);
+			if (languageChanged)
+				message(file, null);
+		} catch (final IOException e) {
+			message(file, e);
+		}
 	}
 
 	@Override
@@ -76,6 +95,7 @@ public class ConsoleView extends AbstractView<String> {
 		        String.format("%s %s", SHOW_ALL, LINES), //$NON-NLS-1$
 		        String.format("%s %s", SHOW_ALL, TOWNS), //$NON-NLS-1$
 		        Languages.getString("ConsoleView.3"), //$NON-NLS-1$
+		        Languages.getString("ConsoleView.1"), //$NON-NLS-1$
 		        Languages.getString("ConsoleView.4"), //$NON-NLS-1$
 		}, EMPTY);
 
@@ -83,6 +103,7 @@ public class ConsoleView extends AbstractView<String> {
 		        super::getAllLines,
 		        super::getAllTowns,
 		        this::showInsertMenu,
+		        this::changeLanguage,
 		        () -> System.exit(0));
 	}
 
@@ -325,5 +346,23 @@ public class ConsoleView extends AbstractView<String> {
 	private void printSource() {
 		if (!sourceEntityDescription.isEmpty())
 			out.printf(Languages.getString("ConsoleView.28"), sourceEntityDescription); //$NON-NLS-1$
+	}
+
+	private void message(String file, Exception e) {
+		final String      messageString, titleString;
+		final PrintStream output;
+
+		if (e == null) {
+			messageString = Languages.getString("OASAView.20"); //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.21"); //$NON-NLS-1$
+			output = out;
+		} else {
+			messageString = Languages.getString("OASAView.22"); //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.23"); //$NON-NLS-1$
+			output = err;
+		}
+
+		output.println(titleString);
+		output.println(messageString);
 	}
 }
