@@ -66,16 +66,14 @@ public class ConsoleView extends AbstractView<String> {
 	@Override
 	public void updateViewWithTowns(List<ETown> towns) {
 		printSource();
-		StringBuffer townString = new StringBuffer("Please select a town: \n");
 
-		int count = 1;
+		FormatBuffer buffer = new FormatBuffer("Please select a town: \n");
+
 		for (ETown town : towns) {
-			final String graphic = factory.getETownGraphic(town);
-			townString.append(String.format("%d: %s%n", count, graphic));
-			count++;
+			buffer.format(factory.getETownGraphic(town));
 		}
 
-		out.println(townString);
+		out.println(buffer);
 
 		ETown selected = towns.get(getAnswer(1, towns.size()) - 1);
 
@@ -93,16 +91,13 @@ public class ConsoleView extends AbstractView<String> {
 	@Override
 	public void updateViewWithLines(List<ELine> lines) {
 		printSource();
-		StringBuffer lineString = new StringBuffer("Please select a line: \n");
+		FormatBuffer buffer = new FormatBuffer("Please select a line:\n");
 
-		int count = 1;
 		for (ELine line : lines) {
-			final String graphic = factory.getELineGraphic(line);
-			lineString.append(String.format("%d: %s%n", count, graphic));
-			count++;
+			buffer.format(factory.getELineGraphic(line));
 		}
 
-		out.println(lineString);
+		out.println(buffer);
 
 		ELine selected = lines.get(getAnswer(1, lines.size()) - 1);
 
@@ -124,16 +119,13 @@ public class ConsoleView extends AbstractView<String> {
 	@Override
 	public void updateViewWithStations(List<EStation> stations) {
 		printSource();
-		StringBuffer stationString = new StringBuffer("Please select a station: \n");
+		FormatBuffer buffer = new FormatBuffer("Please select a station:\n");
 
-		int count = 1;
 		for (EStation station : stations) {
-			final String graphic = factory.getEStationGraphic(station);
-			stationString.append(String.format("%d: %s%n", count, graphic));
-			count++;
+			buffer.format(factory.getEStationGraphic(station));
 		}
 
-		out.println(stationString);
+		out.println(buffer);
 
 		EStation selected = stations.get(getAnswer(1, stations.size()) - 1);
 
@@ -151,16 +143,14 @@ public class ConsoleView extends AbstractView<String> {
 	@Override
 	public void updateViewWithTimetables(List<ETimetable> timetables) {
 		printSource();
-		StringBuffer timetableString = new StringBuffer();
+		FormatBuffer buffer = new FormatBuffer();
 
-		int count = 1;
 		for (ETimetable timetable : timetables) {
-			final String graphic = factory.getETimetableGraphic(timetable);
-			timetableString.append(String.format("%d: %s%n", count, graphic));
-			count++;
+			buffer.format(factory.getETimetableGraphic(timetable));
 		}
 
-		out.println(timetableString);
+		out.println(buffer);
+
 		sourceEntityDescription = "";
 
 		updateViewWithHomepage();
@@ -177,19 +167,17 @@ public class ConsoleView extends AbstractView<String> {
 
 		for (AbstractRequirement req : reqs) {
 			if (req instanceof ListRequirement) {
-				out.println("Please select one of the following options: ");
+				out.println("Please select one of the following options:");
 
 				@SuppressWarnings("unchecked")
 				List<Object> options      = ((ListRequirement<Object>) req).getOptions();
-				StringBuffer optionBuffer = new StringBuffer();
+				FormatBuffer buffer  = new FormatBuffer();
 
-				int count = 1;
 				for (Object option : options) {
-					optionBuffer.append(String.format("%d: %s%n", count, option.toString()));
-					count++;
+					buffer.format(option.toString());
 				}
 
-				out.println(optionBuffer);
+				out.println(buffer);
 
 				int answer = getAnswer(1, options.size()) - 1;
 				while (!req.finalise(options.get(answer))) {
@@ -208,6 +196,32 @@ public class ConsoleView extends AbstractView<String> {
 					        String.format("Invalid value for key '%s'. Please provide a(n): %s%n",
 					                stringReq.stringType.getDescription())));
 			}
+		}
+	}
+
+	private static class FormatBuffer {
+
+		private final StringBuffer buffer;
+		private int                count;
+
+		public FormatBuffer() {
+			this("");
+		}
+
+		public FormatBuffer(String initial) {
+			buffer = new StringBuffer(initial);
+			count = 1;
+		}
+
+		public void format(String format, Object... args) {
+			final String preparedString = String.format("%d: %s%n", count, format);
+			buffer.append(String.format(preparedString, args));
+			count++;
+		}
+
+		@Override
+		public String toString() {
+			return buffer.toString();
 		}
 	}
 
