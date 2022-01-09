@@ -51,10 +51,12 @@ public class ConsoleView extends AbstractView<String> {
 	public void updateViewWithHomepage() {
 		sourceEntityDescription = "";
 
-		out.println("1. Show all Lines");
-		out.println("2. Show all Towns");
-		out.println("3. Insert data");
-		out.println("4. Exit");
+		printMenu(new String[] {
+		        "Show all Lines",
+		        "Show all Towns",
+		        "Insert data",
+		        "Exit",
+		}, "");
 
 		doWithAnswer(
 		        () -> super.getAllLines(),
@@ -79,10 +81,12 @@ public class ConsoleView extends AbstractView<String> {
 
 		sourceEntityDescription = factory.getETownGraphic(selected);
 
-		out.printf("Select what you want to access from the town: %s%n", selected.getName());
-		out.println("1. Show all lines going through this town");
-		out.println("2. Show all stations in this town");
-		out.println("3. Return to homepage");
+		printMenu(new String[] {
+		        "Show all lines going through this town",
+		        "Show all stations in this town",
+		        "Return to homepage",
+		},
+		        "Select what you want to access from the town: %s%n", selected.getName());
 
 		doWithAnswer(() -> super.getLinesByTown(selected), () -> super.getStationsByTown(selected),
 		        () -> updateViewWithHomepage());
@@ -103,11 +107,12 @@ public class ConsoleView extends AbstractView<String> {
 
 		sourceEntityDescription = factory.getELineGraphic(selected);
 
-		out.printf("Select what you want to access from the line %s:%n", selected.getName());
-		out.println("1. Show all towns serviced by this line");
-		out.println("2. Show all stations serviced by this line");
-		out.println("3. Show all arrival times for this line");
-		out.println("4. Return to homepage");
+		printMenu(new String[] {
+		        "Show all towns serviced by this line",
+		        "Show all stations serviced by this line",
+		        "Show all arrival times for this line",
+		        "Return to homepage",
+		}, "Select what you want to access from the line %s:%n", selected.getName());
 
 		doWithAnswer(
 		        () -> super.getTownsByLine(selected),
@@ -131,9 +136,10 @@ public class ConsoleView extends AbstractView<String> {
 
 		sourceEntityDescription = factory.getEStationGraphic(selected);
 
-		out.printf("Select what you want to access from the station %s:%n", selected.getName());
-		out.println("1. Show all lines going through this station");
-		out.println("2. Return to homepage");
+		printMenu(new String[] {
+		        "Show all lines going through this station",
+		        "Return to homepage",
+		}, "Select what you want to access from the station %s:%n", selected.getName());
 
 		doWithAnswer(
 		        () -> super.getLinesByStation(selected),
@@ -225,6 +231,19 @@ public class ConsoleView extends AbstractView<String> {
 		}
 	}
 
+	private void printMenu(String[] menuItems, String headerFormat, Object... headerArgs) {
+		final FormatBuffer buffer = new FormatBuffer(String.format(headerFormat, headerArgs));
+		for (final String menuItem : menuItems)
+			buffer.format(menuItem);
+
+		out.println(buffer);
+	}
+
+	private void doWithAnswer(Runnable... runnables) {
+		final int answer = getAnswer(1, runnables.length);
+		runnables[answer - 1].run();
+	}
+
 	private int getAnswer(int bottomRange, int upperRange) {
 		while (true) {
 			int answer;
@@ -243,18 +262,15 @@ public class ConsoleView extends AbstractView<String> {
 		}
 	}
 
-	private void doWithAnswer(Runnable... runnables) {
-		final int answer = getAnswer(1, runnables.length);
-		runnables[answer - 1].run();
-	}
-
 	private void showInsertMenu() {
-		out.println("1. Insert a new Line");
-		out.println("2. Insert a new Town");
-		out.println("3. Insert a new Station");
-		out.println("4. Insert an existing Station to a Line");
-		out.println("5. Insert a new Timetable to a Line");
-		out.println("6. Return to homepage");
+		printMenu(new String[] {
+		        "Insert a new Line",
+		        "Insert a new Town",
+		        "Insert a new Station",
+		        "Insert an existing Station to a Line",
+		        "Insert a new Timetable to a Line",
+		        "Return to homepage",
+		}, "");
 
 		doWithAnswer(
 			() -> super.insertLine(),
@@ -262,7 +278,7 @@ public class ConsoleView extends AbstractView<String> {
 			() -> super.insertStation(),
 			() -> super.insertStationToLine(),
 			() -> super.insertTimetableToLine()
-		// ignore 6 - return to homepage
+		// ignore 6 - return to homepage, it always happens
 		);
 
 		updateViewWithHomepage();
