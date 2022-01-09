@@ -30,7 +30,7 @@ public class App {
 
 	private static final String OASA        = "oasa";                       //$NON-NLS-1$
 	private static final String CONSOLE     = "console";                    //$NON-NLS-1$
-	private static final String USE_COMMAND = "java App [%s|%s] <options>"; //$NON-NLS-1$
+	private static final String USE_COMMAND = "java App [%s|%s] "; //$NON-NLS-1$
 
 	/**
 	 * Constructs and runs an Application.
@@ -39,9 +39,12 @@ public class App {
 	 */
 	public static void main(String[] args) {
 		boolean oasa, console, reset = false;
+		String  ip = "localhost";            //$NON-NLS-1$
 
-		if (args.length == 0)
+		if (args.length == 0) {
 			fail(String.format(Languages.getString("App.3"), USE_COMMAND), OASA, CONSOLE); //$NON-NLS-1$
+			System.exit(1);
+		}
 
 		oasa = args[0].equals(OASA);
 		console = args[0].equals(CONSOLE);
@@ -52,6 +55,8 @@ public class App {
 			for (int i = 1; i < args.length; i++) {
 				if (args[i].equals("-r")) //$NON-NLS-1$
 					reset = true;
+				else if (args[i].equals("-h")) //$NON-NLS-1$
+					ip = args[++i];
 				else
 					fail(Languages.getString("App.6"), args[i]); //$NON-NLS-1$
 			}
@@ -67,14 +72,19 @@ public class App {
 		}
 
 		if (fail)
-			return;
+			System.exit(2);
 
 		IImageModel      imageModel      = new MLocalImageModel();
 		IImageController imageController = new CLocalImageController(imageModel);
 
 		IView view = oasa ? new OASAView(imageController) : new ConsoleView();
 
-		IModel      model      = new Model();
+		IModel model;
+		if (ip.equals("localhost")) //$NON-NLS-1$
+			model = Model.forRoot();
+		else
+			model = Model.forHost(ip, "cant_drop_db", "pass"); //$NON-NLS-1$ //$NON-NLS-2$
+
 		IController controller = new Controller(model, view);
 
 		view.registerController(controller);

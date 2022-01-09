@@ -27,60 +27,33 @@ import entity.Position;
 @SuppressWarnings("nls")
 public class Model implements IModel {
 
-	@FunctionalInterface
-	private interface ExecutableWithStatement<S extends Statement> {
-		void execute(S statement) throws SQLException;
-	}
-
-	private interface ExecutableWithConnection<C extends Connection> {
-		void execute(C connection) throws SQLException;
+	/**
+	 * Constructs a Model for a {@code user} that communicates with the live
+	 * underlying database hosted on another {@code host} to retrieve and return
+	 * data using objects from the {@link entity} package.
+	 *
+	 * @param host     the ip address of the database's host
+	 * @param user     the database use on whose behalf the connection is being made
+	 * @param password the user's password
+	 *
+	 * @return the Model
+	 */
+	public static Model forHost(String host, String user, String password) {
+		return new Model("jdbc:mysql://" + host + ":3306/oasaripoff", user, password);
 	}
 
 	/**
-	 * Creates a new {@code Connection} that executes an instance of an
-	 * {@code ExecutableWithStatement}. A {@code Statement} is created from that
-	 * Connection and is passed as a parameter to the ExecutableWithStatement.
-	 * <p>
-	 * Use to execute a single Statement with a single Statement.
+	 * Constructs a Model for the {@code root} user that communicates with the live
+	 * underlying database hosted on {@code localhost} to retrieve and return data
+	 * using objects from the {@link entity} package.
 	 *
-	 * @param executable the instance of {@code ExecutableWithStatement} to run
-	 *
-	 * @throws SQLException if the executable throws an SQLException
+	 * @return the Model
 	 */
-	private void doWithStatement(ExecutableWithStatement<Statement> executable)
-	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(url, user, password);
-		        Statement stmt = conn.createStatement();) {
-			executable.execute(stmt);
-		}
-	}
-
-	/**
-	 * Creates a new {@code Connection} that is passed as a parameter to the
-	 * {@code ExecutableWithConnection}, which is then executed.
-	 * <p>
-	 * Use to execute many Statements with a single Connection.
-	 *
-	 * @param executable the instance of {@code ExecutableWithConnection} to run
-	 *
-	 * @throws SQLException if the executable throws an SQLException
-	 */
-	private void doWithConnection(ExecutableWithConnection<Connection> executable)
-	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(url, user, password)) {
-			executable.execute(conn);
-		}
+	public static Model forRoot() {
+		return new Model("jdbc:mysql://localhost/oasaripoff", "root", "localhostMVCMy$QL");
 	}
 
 	private final String url, user, password;
-
-	/**
-	 * Constructs a Model that communicates with the live underlying database to
-	 * retrieve and return data using objects from the {@link entity} package.
-	 */
-	public Model() {
-		this("jdbc:mysql://localhost/oasaripoff", "root", "localhostMVCMy$QL");
-	}
 
 	/**
 	 * Constructs a Model that communicates with a database to retrieve and return
@@ -91,7 +64,7 @@ public class Model implements IModel {
 	 *                 made
 	 * @param password the user's password
 	 */
-	public Model(String url, String user, String password) {
+	Model(String url, String user, String password) {
 		this.url = url;
 		this.user = user;
 		this.password = password;
@@ -380,4 +353,50 @@ public class Model implements IModel {
 			        .replace("@2", timetable.getFormattedTime()));
 		});
 	}
+
+	@FunctionalInterface
+	private interface ExecutableWithStatement<S extends Statement> {
+		void execute(S statement) throws SQLException;
+	}
+
+	private interface ExecutableWithConnection<C extends Connection> {
+		void execute(C connection) throws SQLException;
+	}
+
+	/**
+	 * Creates a new {@code Connection} that executes an instance of an
+	 * {@code ExecutableWithStatement}. A {@code Statement} is created from that
+	 * Connection and is passed as a parameter to the ExecutableWithStatement.
+	 * <p>
+	 * Use to execute a single Statement with a single Statement.
+	 *
+	 * @param executable the instance of {@code ExecutableWithStatement} to run
+	 *
+	 * @throws SQLException if the executable throws an SQLException
+	 */
+	private void doWithStatement(ExecutableWithStatement<Statement> executable)
+	        throws SQLException {
+		try (Connection conn = DriverManager.getConnection(url, user, password);
+		        Statement stmt = conn.createStatement();) {
+			executable.execute(stmt);
+		}
+	}
+
+	/**
+	 * Creates a new {@code Connection} that is passed as a parameter to the
+	 * {@code ExecutableWithConnection}, which is then executed.
+	 * <p>
+	 * Use to execute many Statements with a single Connection.
+	 *
+	 * @param executable the instance of {@code ExecutableWithConnection} to run
+	 *
+	 * @throws SQLException if the executable throws an SQLException
+	 */
+	private void doWithConnection(ExecutableWithConnection<Connection> executable)
+	        throws SQLException {
+		try (Connection conn = DriverManager.getConnection(url, user, password)) {
+			executable.execute(conn);
+		}
+	}
+
 }
