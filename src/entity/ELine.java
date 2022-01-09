@@ -38,8 +38,9 @@ public class ELine extends AbstractEntity {
 		this.name = name;
 		this.type = type;
 		this.description = description;
-		this.stations = (stations == null) ? List.of() : Collections.unmodifiableList(stations);
-		this.startTimes = (startTimes == null) ? List.of()
+		this.stations = (stations == null) ? Collections.emptyList()
+		        : Collections.unmodifiableList(stations);
+		this.startTimes = (startTimes == null) ? Collections.emptyList()
 		        : Collections.unmodifiableList(startTimes);
 	}
 

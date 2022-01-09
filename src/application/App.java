@@ -28,9 +28,12 @@ public class App {
 
 	private static boolean fail;
 
-	private static final String OASA        = "oasa";                       //$NON-NLS-1$
-	private static final String CONSOLE     = "console";                    //$NON-NLS-1$
-	private static final String USE_COMMAND = "java App [%s|%s] "; //$NON-NLS-1$
+	private static final String OASA        = "oasa";                                       //$NON-NLS-1$
+	private static final String CONSOLE     = "console";                                    //$NON-NLS-1$
+	private static final String USE_COMMAND = "java App [%s|%s] <options>\n\n"              //$NON-NLS-1$
+	        + "where possible options include:\n"                                           //$NON-NLS-1$
+	        + "\t-r       reset the database\n"                                             //$NON-NLS-1$
+	        + "\t-h <ip>  connect to the database at that IP address";                      //$NON-NLS-1$
 
 	/**
 	 * Constructs and runs an Application.

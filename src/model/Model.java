@@ -136,8 +136,7 @@ public class Model implements IModel {
 					final LineType type        = LineType.valueOf(rs.getString("L.type"));
 					final String   description = rs.getString("L.description");
 
-					linesFromDatabase
-					        .add(new ELine(id, lineNo, type, description, List.of(), List.of()));
+					linesFromDatabase.add(new ELine(id, lineNo, type, description, null, null));
 				}
 			}
 		});
