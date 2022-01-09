@@ -58,7 +58,7 @@ public class ETimetable extends AbstractEntity {
 	 * @return the formatted time
 	 */
 	public String getFormattedTime() {
-		return String.format("%d:%d", getHours(), getMinutes()); //$NON-NLS-1$
+		return String.format("%02d:%02d", getHours(), getMinutes()); //$NON-NLS-1$
 	}
 
 	@Override

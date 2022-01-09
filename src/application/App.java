@@ -14,6 +14,7 @@ import model.IImageModel;
 import model.IModel;
 import model.MLocalImageModel;
 import model.Model;
+import view.ConsoleView;
 import view.IView;
 import view.OASAView;
 
@@ -68,13 +69,12 @@ public class App {
 		if (fail)
 			return;
 
-		IModel      model      = new Model();
+		IView view = oasa ? new OASAView() : new ConsoleView();
 
-		// TODO replace ConsoleView() with actual implementation
-		IView       view       = oasa ? new OASAView() : null /* new ConsoleView() */ ;
+		IModel      model      = new Model();
 		IController controller = new Controller(model, view);
 
-		IImageModel      imageModel       = new MLocalImageModel();
+		IImageModel imageModel = new MLocalImageModel();
 		IImageController imageController = new CLocalImageController(imageModel);
 
 		view.registerController(controller);

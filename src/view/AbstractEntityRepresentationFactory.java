@@ -1,26 +1,28 @@
 package view;
 
-import javax.swing.JPanel;
-
 import entity.ELine;
 import entity.EStation;
 import entity.ETimetable;
 import entity.ETown;
 
 /**
- * TODO
+ * An interface for the Factories which are responsible for creating
+ * user-friendly representations for the Entities of the {@link entity} package.
+ *
+ * @param <E> the type of the representation of the Entities
+ * @param <V> the type of the View associated with this factory
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-interface AbstractEntityGraphicFactory {
+interface AbstractEntityRepresentationFactory<E, V> {
 
 	/**
-	 * Set the view of the factory, if not already set.
+	 * Sets the View of this factory, if not already set.
 	 *
-	 * @param view the new view of the factory
+	 * @param newView the new view of this factory
 	 */
-	void initializeView(AbstractView view);
+	void initializeView(V newView);
 
 	/**
 	 * Returns a Graphic for a {@link ETown}.
@@ -29,7 +31,7 @@ interface AbstractEntityGraphicFactory {
 	 *
 	 * @return a Graphic for the town
 	 */
-	JPanel getETownGraphic(ETown town);
+	E getETownGraphic(ETown town);
 
 	/**
 	 * Returns a Graphic for a {@link ELine}.
@@ -38,7 +40,7 @@ interface AbstractEntityGraphicFactory {
 	 *
 	 * @return a Graphic for the line
 	 */
-	JPanel getELineGraphic(ELine line);
+	E getELineGraphic(ELine line);
 
 	/**
 	 * Returns a Graphic for a {@link EStation}.
@@ -47,7 +49,7 @@ interface AbstractEntityGraphicFactory {
 	 *
 	 * @return a Graphic for the station
 	 */
-	JPanel getEStationGraphic(EStation station);
+	E getEStationGraphic(EStation station);
 
 	/**
 	 * Returns a Graphic for a {@link ETimetable}.
@@ -56,5 +58,5 @@ interface AbstractEntityGraphicFactory {
 	 *
 	 * @return a Graphic for the timetable
 	 */
-	JPanel getETimetableGraphic(ETimetable timetable);
+	E getETimetableGraphic(ETimetable timetable);
 }

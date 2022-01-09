@@ -24,10 +24,13 @@ import localisation.Languages;
  * A Factory producing self-describing graphics which open pop-up windows to
  * select operations to perform related to entities.
  *
+ * @param <V> the type of the View associated with this factory
+ *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
+class OASAEntityRepresentationFactory<V extends AbstractGUIView>
+        implements AbstractEntityRepresentationFactory<JPanel, V> {
 
 	private static final String fontName        = "TimesRoman";                                   //$NON-NLS-1$
 	private static final Font   largeFont       = new Font(fontName, Font.BOLD, 24);
@@ -42,15 +45,13 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	private static final String FIND_TIMES    = Languages.getString("OASAEntityGraphicFactory.2"); //$NON-NLS-1$
 	private static final String FIND_STATIONS = Languages.getString("OASAEntityGraphicFactory.3"); //$NON-NLS-1$
 
-	private AbstractView view;
+	private V view;
 
-	/** Constructs an OASAEntityGraphicFactory */
-	public OASAEntityGraphicFactory() {
-		view = null;
-	}
+	/** Constructs an OASAEntityRepresentationFactory */
+	public OASAEntityRepresentationFactory() {}
 
 	@Override
-	public void initializeView(AbstractView newView) {
+	public void initializeView(V newView) {
 		if (view == null)
 			view = newView;
 	}
@@ -59,7 +60,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 	public JPanel getETownGraphic(ETown town) {
 		final JPanel graphic = prepareGraphic();
 
-		final ImageIcon icon = view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE); //$NON-NLS-1$
+		final ImageIcon icon = view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE);
 
 		graphic.add(new JLabel(icon));
 		graphic.add(Box.createHorizontalBox());
@@ -81,7 +82,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 				final String[] options = { FIND_LINES, FIND_STATIONS };
 				final String   initial = FIND_LINES;
 
-				final String   res     = (String) JOptionPane.showInputDialog(view.getContentPane(),
+				final String   res     = (String) JOptionPane.showInputDialog(view.frame,
 				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
 
 				if (res.equals(FIND_LINES))
@@ -96,7 +97,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 
 	@Override
 	public JPanel getELineGraphic(ELine line) {
-		final JPanel graphic = OASAEntityGraphicFactory.prepareGraphic();
+		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		final ImageIcon icon = view.getImageIcon(line.getType().getSpriteName(), ICON_SIZE,
 		        ICON_SIZE);
@@ -131,7 +132,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 				final String[] options = { FIND_TIMES, FIND_STATIONS, FIND_TOWNS };
 				final String   initial = FIND_TIMES;
 
-				final String res = (String) JOptionPane.showInputDialog(view.getContentPane(),
+				final String res = (String) JOptionPane.showInputDialog(view.frame,
 				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
 
 				if (res.equals(FIND_TIMES))
@@ -148,7 +149,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 
 	@Override
 	public JPanel getEStationGraphic(EStation station) {
-		final JPanel graphic = OASAEntityGraphicFactory.prepareGraphic();
+		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		graphic.add(new JLabel(view.getImageIcon("station.png", ICON_SIZE, ICON_SIZE))); //$NON-NLS-1$
 		graphic.add(Box.createHorizontalBox());
@@ -178,7 +179,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 				        Languages.getString("OASAEntityGraphicFactory.9"), //$NON-NLS-1$
 				        station.getName());
 
-				final int answer = JOptionPane.showConfirmDialog(view.getContentPane(), msg);
+				final int answer = JOptionPane.showConfirmDialog(view.frame, msg);
 
 				if (answer == JOptionPane.OK_OPTION)
 					view.getLinesByStation(station);
@@ -190,7 +191,7 @@ class OASAEntityGraphicFactory implements AbstractEntityGraphicFactory {
 
 	@Override
 	public JPanel getETimetableGraphic(ETimetable timetable) {
-		final JPanel graphic = OASAEntityGraphicFactory.prepareGraphic();
+		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		final JLabel nameLabel = new JLabel(timetable.toString());
 		nameLabel.setFont(largeFont);

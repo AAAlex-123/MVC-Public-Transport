@@ -20,22 +20,58 @@ import entity.ETown;
  */
 public interface IView {
 
+	/** Makes the view accessible to the user and start processing user input */
 	void start();
 
-	void registerController(IController controller);
+	/**
+	 * Sets the Controller of this View to a new one
+	 *
+	 * @param newController the new controller
+	 */
+	void registerController(IController newController);
 
-	void registerImageController(IImageController imageController);
+	/**
+	 * Sets the Image Controller of this View to a new one
+	 *
+	 * @param newImageController the new controller
+	 */
+	void registerImageController(IImageController newImageController);
 
+	/** Request that the view switched to the homepage */
 	void updateViewWithHomepage();
 
+	/**
+	 * Request that the view switched to show a list of towns.
+	 *
+	 * @param towns the list of towns
+	 */
 	void updateViewWithTowns(List<ETown> towns);
 
+	/**
+	 * Request that the view switched to show a list of lines.
+	 *
+	 * @param lines the list of lines
+	 */
 	void updateViewWithLines(List<ELine> lines);
 
+	/**
+	 * Request that the view switched to show a list of stations.
+	 *
+	 * @param stations the list of stations
+	 */
 	void updateViewWithStations(List<EStation> stations);
 
+	/**
+	 * Request that the view switched to show a list of timetables.
+	 *
+	 * @param timetables the list of timetables
+	 */
 	void updateViewWithTimetables(List<ETimetable> timetables);
 
+	/**
+	 * Request that the view switched to show an error.
+	 *
+	 * @param e the error
+	 */
 	void updateViewWithError(Exception e);
-
 }
