@@ -81,6 +81,8 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	public final void start() {
 		changeToHomePanel();
 		frame.setVisible(true);
+		// remove the previous blank panel so the user can't go back from the initial home one
+		navigationHistory.clear();
 	}
 
 	@Override

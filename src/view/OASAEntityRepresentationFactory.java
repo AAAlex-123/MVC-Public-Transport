@@ -85,7 +85,9 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 				final String   res     = (String) JOptionPane.showInputDialog(view.frame,
 				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
 
-				if (res.equals(FIND_LINES))
+				if (res == null)
+					;
+				else if (res.equals(FIND_LINES))
 					view.getLinesByTown(town);
 				else if (res.equals(FIND_STATIONS))
 					view.getStationsByTown(town);
@@ -135,7 +137,9 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 				final String res = (String) JOptionPane.showInputDialog(view.frame,
 				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
 
-				if (res.equals(FIND_TIMES))
+				if (res == null)
+					;
+				else if (res.equals(FIND_TIMES))
 					view.getTimetablesByLine(line);
 				else if (res.equals(FIND_STATIONS))
 					view.getStationsByLine(line);
