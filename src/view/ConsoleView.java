@@ -133,7 +133,7 @@ public class ConsoleView extends AbstractView<String> {
 		        String.format(Languages.getString("ConsoleView.7"), SHOW_ALL), //$NON-NLS-1$
 		        RETURN_TO_HOME,
 		}, String.format("%s %s: %s%n", SELECT_ACCESS, //$NON-NLS-1$
-		        THE_TOWN), selected.getName());
+		        THE_TOWN, "%s"), selected.getName()); //$NON-NLS-1$
 
 		doWithAnswer(() -> super.getLinesByTown(selected), () -> super.getStationsByTown(selected),
 		        this::updateViewWithHomepage);
@@ -163,7 +163,7 @@ public class ConsoleView extends AbstractView<String> {
 		        String.format(Languages.getString("ConsoleView.12"), SHOW_ALL), //$NON-NLS-1$
 		        RETURN_TO_HOME,
 		}, String.format("%s %s: %s%n", SELECT_ACCESS, //$NON-NLS-1$
-		        THE_LINE), selected.getName());
+		        THE_LINE, "%s"), selected.getName()); //$NON-NLS-1$
 
 		doWithAnswer(
 		        () -> super.getTownsByLine(selected),
@@ -194,7 +194,7 @@ public class ConsoleView extends AbstractView<String> {
 		        String.format(Languages.getString("ConsoleView.15"), SHOW_ALL), //$NON-NLS-1$
 		        RETURN_TO_HOME,
 		}, String.format("%s %s: %s%n", SELECT_ACCESS, //$NON-NLS-1$
-		        THE_STATION), selected.getName());
+		        THE_STATION, "%s"), selected.getName()); //$NON-NLS-1$
 
 		doWithAnswer(
 		        () -> super.getLinesByStation(selected),
