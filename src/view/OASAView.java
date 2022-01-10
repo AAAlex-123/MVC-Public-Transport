@@ -98,15 +98,15 @@ public class OASAView extends AbstractGUIView {
 		menuBar.add(m_preferences);
 
 
-		home.addActionListener(e -> OASAView.this.changeToHomePanel());
-		prev.addActionListener(e -> OASAView.this.changeToPreviousPanel());
-		next.addActionListener(e -> OASAView.this.changeToNextPanel());
+		home.addActionListener(e -> OASAView.super.changeToHomePanel());
+		prev.addActionListener(e -> OASAView.super.changeToPreviousPanel());
+		next.addActionListener(e -> OASAView.super.changeToNextPanel());
 
-		i_town.addActionListener(e -> OASAView.this.insertTown());
-		i_station.addActionListener(e -> OASAView.this.insertStation());
-		i_line.addActionListener(e -> OASAView.this.insertLine());
-		i_station_to_line.addActionListener(e -> OASAView.this.insertStationToLine());
-		i_timetable_to_line.addActionListener(e -> OASAView.this.insertTimetableToLine());
+		i_town.addActionListener(e -> OASAView.super.insertTown());
+		i_station.addActionListener(e -> OASAView.super.insertStation());
+		i_line.addActionListener(e -> OASAView.super.insertLine());
+		i_station_to_line.addActionListener(e -> OASAView.super.insertStationToLine());
+		i_timetable_to_line.addActionListener(e -> OASAView.super.insertTimetableToLine());
 
 		p_language.addActionListener(e -> OASAView.this.changeLanguage());
 
