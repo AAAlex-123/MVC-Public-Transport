@@ -3,9 +3,11 @@ package view;
 import javax.swing.JPanel;
 
 /**
- * TODO
+ * An abstract factory used to create graphical represantations of Entities.
+ * This type of factory needs an {@link AbstractGUIView} to notify in case of user events 
+ * (such as mouse clicks).
  *
- * @param <V> the type of the View associated with this factory
+ * @param <V> the type of the AbstractGUIView associated with this factory
  *
  * @author Alex Mandelias
  */
