@@ -205,8 +205,8 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getStationsByTown(ETown town) {
-		super.getStationsByTown(town);
 		updateHeaderPanel(factory.getETownGraphic(town));
+		super.getStationsByTown(town);
 	}
 
 	/**
@@ -219,8 +219,8 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getLinesByTown(ETown town) {
-		super.getLinesByTown(town);
 		updateHeaderPanel(factory.getETownGraphic(town));
+		super.getLinesByTown(town);
 	}
 
 	/**
@@ -233,8 +233,8 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getStationsByLine(ELine line) {
-		super.getStationsByLine(line);
 		updateHeaderPanel(factory.getELineGraphic(line));
+		super.getStationsByLine(line);
 	}
 
 	/**
@@ -247,8 +247,8 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getTimetablesByLine(ELine line) {
-		super.getTimetablesByLine(line);
 		updateHeaderPanel(factory.getELineGraphic(line));
+		super.getTimetablesByLine(line);
 	}
 
 	/**
@@ -261,8 +261,8 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getTownsByLine(ELine line) {
-		super.getTownsByLine(line);
 		updateHeaderPanel(factory.getELineGraphic(line));
+		super.getTownsByLine(line);
 	}
 
 	/**
@@ -275,8 +275,8 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getLinesByStation(EStation station) {
-		super.getLinesByStation(station);
 		updateHeaderPanel(factory.getEStationGraphic(station));
+		super.getLinesByStation(station);
 	}
 
 	/**
@@ -287,8 +287,8 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getAllTowns() {
-		super.getAllTowns();
 		updateHeaderPanel(null);
+		super.getAllTowns();
 	}
 
 	/**
@@ -299,7 +299,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getAllLines() {
-		super.getAllLines();
 		updateHeaderPanel(null);
+		super.getAllLines();
 	}
 }
