@@ -42,11 +42,14 @@ import requirement.util.Requirements;
  */
 public class OASAView extends AbstractGUIView {
 
-	private static final int WINDOW_HEIGHT = 750;
-	private static final int WINDOW_WIDTH  = 500;
+	private static final int WINDOW_HEIGHT = 850;
+	private static final int WINDOW_WIDTH  = 650;
 
-	private static final Font textFont   = new Font(Font.SANS_SERIF, Font.BOLD, 18);
-	private static final Font footerFont = new Font(Font.SANS_SERIF, Font.BOLD, 14);
+	private static final Font globalFont = new Font(Font.SANS_SERIF, Font.PLAIN, 22);
+	private static final Font labelFont  = new Font(Font.SANS_SERIF, Font.BOLD, 20);
+	private static final Font footerFont = new Font(Font.SANS_SERIF, Font.BOLD, 16);
+
+	private JPanel cachedHomepage;
 
 	/**
 	 * Constructs a concrete OASAView and provides an instance of
@@ -69,9 +72,13 @@ public class OASAView extends AbstractGUIView {
 		final JMenuItem home, prev, next, i_town, i_station, i_line, i_station_to_line,
 		        i_timetable_to_line, /* p_settings, */ p_language;
 
-		home = new JMenuItem(getImageIcon("home_button.jpg", 54, 54)); //$NON-NLS-1$
-		prev = new JMenuItem(getImageIcon("prev_button_small.png", 54, 54)); //$NON-NLS-1$
-		next = new JMenuItem(getImageIcon("next_button_small.png", 54, 54)); //$NON-NLS-1$
+		home = new JMenuItem("Home");
+		prev = new JMenuItem("Previous");
+		next = new JMenuItem("Next");
+
+		home.setFont(globalFont);
+		prev.setFont(globalFont);
+		next.setFont(globalFont);
 
 		m_insert = new JMenu(Languages.getString("OASAView.3")); //$NON-NLS-1$
 		i_town = new JMenuItem(Languages.getString("OASAView.4")); //$NON-NLS-1$
@@ -79,6 +86,14 @@ public class OASAView extends AbstractGUIView {
 		i_line = new JMenuItem(Languages.getString("OASAView.6")); //$NON-NLS-1$
 		i_station_to_line = new JMenuItem(Languages.getString("OASAView.7")); //$NON-NLS-1$
 		i_timetable_to_line = new JMenuItem(Languages.getString("OASAView.8")); //$NON-NLS-1$
+
+		m_insert.setFont(globalFont);
+		i_town.setFont(globalFont);
+		i_station.setFont(globalFont);
+		i_line.setFont(globalFont);
+		i_station_to_line.setFont(globalFont);
+		i_timetable_to_line.setFont(globalFont);
+
 		m_insert.add(i_town);
 		m_insert.add(i_station);
 		m_insert.add(i_line);
@@ -90,6 +105,10 @@ public class OASAView extends AbstractGUIView {
 		p_language = new JMenuItem(Languages.getString("OASAView.11")); //$NON-NLS-1$
 		// m_preferences.add(p_settings);
 		m_preferences.add(p_language);
+
+		m_preferences.setFont(globalFont);
+		// p_settings.setFont(globalFont);
+		p_language.setFont(globalFont);
 
 		menuBar.add(home);
 		menuBar.add(prev);
@@ -110,13 +129,20 @@ public class OASAView extends AbstractGUIView {
 
 		p_language.addActionListener(e -> OASAView.this.changeLanguage());
 
+		home.setIcon(getImageIcon("home_button.jpg", 25, 25)); //$NON-NLS-1$
+		prev.setIcon(getImageIcon("prev_button_small.png", 25, 25)); //$NON-NLS-1$
+		next.setIcon(getImageIcon("next_button_small.png", 25, 25)); //$NON-NLS-1$
+		i_town.setIcon(getImageIcon("town.png", 18, 18)); //$NON-NLS-1$
+		i_station.setIcon(getImageIcon("station.png", 18, 18)); //$NON-NLS-1$
+		i_line.setIcon(getImageIcon("bus.png", 18, 18)); //$NON-NLS-1$
+		p_language.setIcon(getImageIcon("language.png", 18, 18)); //$NON-NLS-1$
 
 		return menuBar;
 	}
 
 	@Override
 	protected void changeLanguage() {
-		final String file  = Languages.FILE;
+		final String file = Languages.FILE;
 
 		try {
 			final boolean languageChanged = Languages.editAndWriteToFile(frame);
@@ -154,30 +180,38 @@ public class OASAView extends AbstractGUIView {
 
 	@Override
 	public void updateViewWithHomepage() {
-		final JPanel home = new JPanel();
-		home.setLayout(new BoxLayout(home, BoxLayout.Y_AXIS));
+		if (cachedHomepage == null) {
 
-		final JPanel imagePanel = new JPanel();
-		imagePanel.add(new JLabel(super.getImageIcon("oasa_home.jpg"))); //$NON-NLS-1$
+			final JPanel contentPanel = new JPanel();
+			contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
-		final JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));
-		buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 30, 30, 30));
+			final JPanel imagePanel = new JPanel();
+			imagePanel.add(new JLabel(super.getImageIcon("oasa_home.jpg"))); //$NON-NLS-1$
 
-		final JButton button1 = new JButton(Languages.getString("OASAView.13")); //$NON-NLS-1$
-		final JButton button2 = new JButton(Languages.getString("OASAView.14")); //$NON-NLS-1$
+			final JPanel buttonPanel = new JPanel();
+			buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));
+			buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 30, 30, 30));
 
-		button1.addActionListener(e -> OASAView.super.getAllLines());
-		button2.addActionListener(e -> OASAView.super.getAllTowns());
+			final JButton button1 = new JButton(Languages.getString("OASAView.13")); //$NON-NLS-1$
+			final JButton button2 = new JButton(Languages.getString("OASAView.14")); //$NON-NLS-1$
 
-		buttonPanel.add(button1);
-		buttonPanel.add(button2);
+			button1.setFont(globalFont);
+			button2.setFont(globalFont);
 
-		home.add(imagePanel);
-		home.add(Box.createVerticalStrut(15));
-		home.add(buttonPanel);
+			button1.addActionListener(e -> OASAView.super.getAllLines());
+			button2.addActionListener(e -> OASAView.super.getAllTowns());
 
-		super.updatePanel(home);
+			buttonPanel.add(button1);
+			buttonPanel.add(button2);
+
+			contentPanel.add(imagePanel);
+			contentPanel.add(Box.createVerticalStrut(15));
+			contentPanel.add(buttonPanel);
+
+			cachedHomepage = contentPanel;
+		}
+
+		super.updatePanel(cachedHomepage);
 	}
 
 	@Override
@@ -261,7 +295,7 @@ public class OASAView extends AbstractGUIView {
 
 	private static JLabel getCenteredLabel(String text) {
 		final JLabel label = new JLabel(text, SwingConstants.CENTER);
-		label.setFont(OASAView.textFont);
+		label.setFont(OASAView.labelFont);
 		label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		return label;
 	}
