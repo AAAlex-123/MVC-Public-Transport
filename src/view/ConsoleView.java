@@ -242,9 +242,7 @@ public class ConsoleView extends AbstractView<String> {
 				out.print(buffer);
 
 				int answer = getAnswer(1, options.size()) - 1;
-				while (!req.finalise(options.get(answer)))
-					answer = getAnswer(1, options.size()) - 1;
-				// System.out.println("lmao can this even happen?");
+				req.finalise(options.get(answer));
 
 			} else if (req instanceof StringRequirement) {
 				final StringRequirement stringReq = (StringRequirement) req;
