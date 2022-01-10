@@ -67,7 +67,7 @@ public class OASAView extends AbstractGUIView {
 
 		final JMenu     m_insert, m_preferences;
 		final JMenuItem home, prev, next, i_town, i_station, i_line, i_station_to_line,
-		        i_timetable_to_line, p_settings, p_language;
+		        i_timetable_to_line, /* p_settings, */ p_language;
 
 		home = new JMenuItem(getImageIcon("home_button.jpg", 54, 54)); //$NON-NLS-1$
 		prev = new JMenuItem(getImageIcon("prev_button_small.png", 54, 54)); //$NON-NLS-1$
@@ -86,9 +86,9 @@ public class OASAView extends AbstractGUIView {
 		m_insert.add(i_timetable_to_line);
 
 		m_preferences = new JMenu(Languages.getString("OASAView.9")); //$NON-NLS-1$
-		p_settings = new JMenuItem(Languages.getString("OASAView.10")); //$NON-NLS-1$
+		// p_settings = new JMenuItem(Languages.getString("OASAView.10")); //$NON-NLS-1$
 		p_language = new JMenuItem(Languages.getString("OASAView.11")); //$NON-NLS-1$
-		m_preferences.add(p_settings);
+		// m_preferences.add(p_settings);
 		m_preferences.add(p_language);
 
 		menuBar.add(home);

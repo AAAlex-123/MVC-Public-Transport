@@ -39,8 +39,7 @@ public class MLocalImageModel implements IImageModel {
 
 	@Override
 	public BufferedImage loadImage(String filename) throws IOException {
-		final String pathToFile = resourceDirectory + System.getProperty("file.separator") //$NON-NLS-1$
-		        + filename;
+		final String pathToFile = resourceDirectory + filename;
 		return ImageIO.read(new File(pathToFile));
 	}
 }

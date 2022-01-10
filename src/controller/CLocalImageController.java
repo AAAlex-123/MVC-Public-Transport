@@ -58,7 +58,7 @@ public class CLocalImageController implements IImageController {
 			img = model.loadImage(name);
 		} catch (final IOException ioe) {
 			// create empty image
-			img = new BufferedImage(54, 54, BufferedImage.TYPE_INT_RGB);
+			img = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
 		}
 
 		final int currHeight = img.getHeight();
