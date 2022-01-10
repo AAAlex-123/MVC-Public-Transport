@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import entity.LineType;
 import model.IImageModel;
@@ -17,9 +18,43 @@ import model.IImageModel;
  */
 public class CLocalImageController implements IImageController {
 
+	private static class ImageInfo {
+		public final String name;
+		public final int    width, height;
+
+		/**
+		 * TODO
+		 *
+		 * @param name   the Image's filename
+		 * @param width  the Image's width
+		 * @param height the Image's height
+		 */
+		public ImageInfo(String name, int width, int height) {
+			this.name = name;
+			this.width = width;
+			this.height = height;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(height, name, width);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!(obj instanceof ImageInfo))
+				return false;
+			ImageInfo other = (ImageInfo) obj;
+			return (height == other.height) && Objects.equals(name, other.name)
+			        && (width == other.width);
+		}
+	}
+
 	private final IImageModel model;
 
-	private final Map<String, Image> imageCache;
+	private final Map<ImageInfo, Image> imageCache;
 
 	/**
 	 * Constructs an ImageLoader Controller that communicates with an ImageModel to
@@ -49,7 +84,9 @@ public class CLocalImageController implements IImageController {
 		if (maxHeight <= 0)
 			throw new IllegalArgumentException("maxHeight must be positive"); //$NON-NLS-1$
 
-		final Image cachedSprite = imageCache.get(name);
+		ImageInfo iinfo = new ImageInfo(name, maxWidth, maxHeight);
+
+		final Image cachedSprite = imageCache.get(iinfo);
 		if (cachedSprite != null)
 			return cachedSprite;
 
@@ -75,7 +112,7 @@ public class CLocalImageController implements IImageController {
 		else if (currWidth > maxWidth)
 			loadedImage = img.getScaledInstance(maxWidth, currHeight, java.awt.Image.SCALE_SMOOTH);
 
-		imageCache.put(name, loadedImage);
+		imageCache.put(iinfo, loadedImage);
 		return loadedImage;
 	}
 
