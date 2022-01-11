@@ -83,8 +83,8 @@ public class Model implements IModel {
 		if (line == null)
 			qFinalisedQuery = qSelectAllTowns + " ORDER BY C.name;";
 		else {
-			final int id = line.getId();
-			qFinalisedQuery = qSelectTownsByLine.replaceAll("@1", String.valueOf(id))
+			final String id = String.valueOf(line.getId());
+			qFinalisedQuery = qSelectTownsByLine.replaceAll("@1", id)
 			        + " ORDER BY C.name;";
 		}
 
@@ -236,7 +236,8 @@ public class Model implements IModel {
 		if (town == null) {
 			qFinalisedQuery = qSelectAllStations;
 		} else {
-			qFinalisedQuery = qSelectStationsByTown.replaceAll("@1", String.valueOf(town.getId()));
+			final String id = String.valueOf(town.getId());
+			qFinalisedQuery = qSelectStationsByTown.replaceAll("@1", id);
 		}
 
 		final List<EStation> sationsFromDatabase = new LinkedList<>();
@@ -316,7 +317,8 @@ public class Model implements IModel {
 
 		final String qDeleteExistingStationsFromLine = "DELETE FROM LineStation AS LS "
 		        + "WHERE LS.line_id = @1";
-		final String lineID                          = String.valueOf(line.getId());
+
+		final String lineID = String.valueOf(line.getId());
 
 		doWithStatement((Statement stmt) -> {
 		    stmt.execute(

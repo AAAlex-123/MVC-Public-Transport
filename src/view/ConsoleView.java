@@ -37,7 +37,7 @@ import requirement.util.Requirements;
  * {@link ConsoleView}. It provides the users with a Console Interface with
  * which to use the application.
  *
- * The input, output and error messages can be redirected to any output/input 
+ * The input, output and error messages can be redirected to any output/input
  * stream.
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
@@ -48,23 +48,23 @@ public class ConsoleView extends AbstractView<String> {
 	private final PrintStream out, err;
 
 	private String sourceEntityDescription = EMPTY;
-	
+
 	/**
 	 * Construct a ConsoleView using the system provided input and output streams.
 	 */
 	public ConsoleView() {
 		this(System.in, System.out, System.err);
 	}
-	
+
 	/**
 	 * Constructs a ConsoleView with custom output and input streams.
-	 * 
+	 *
 	 * @param out a {@link PrintStream} where output messages will be redirected
 	 * @param err a {@link PrintStream} where error messages will be redirected
 	 * @param in a {@link InputStream} from which user input will be selected
 	 */
 	public ConsoleView(InputStream in, PrintStream out, PrintStream err) {
-		super(new StringEntityRepresentationFactory());
+		super(new StringEntityRepresentationFactory(), null);
 		this.in = new Scanner(in);
 		this.out = new PrintStream(out);
 		this.err = new PrintStream(err);

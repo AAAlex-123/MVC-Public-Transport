@@ -30,25 +30,13 @@ abstract class AbstractView<E> implements IView {
 	 * construct its graphics. The factory can be changed to provide different
 	 * graphics while maintaining the same layout.
 	 *
-	 * @param factory the factory that will be used to construct its graphics
-	 */
-	public <A> AbstractView(
-	        AbstractEntityRepresentationFactory<E> factory) {
-		this.factory = factory;
-	}
-
-	/**
-	 * Constructs the view initialising its UI and providing a factory with which to
-	 * construct its graphics. The factory can be changed to provide different
-	 * graphics while maintaining the same layout.
-	 *
 	 * @param factory         the factory that will be used to construct its
 	 *                        graphics
 	 * @param imageController the controller that will be used to load its images
 	 */
 	public AbstractView(AbstractEntityRepresentationFactory<E> factory,
 	        IImageController imageController) {
-		this(factory);
+		this.factory = factory;
 		registerImageController(imageController);
 	}
 
