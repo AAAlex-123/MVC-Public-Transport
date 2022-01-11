@@ -107,6 +107,12 @@ public class Controller implements IController {
 
 	@Override
 	public void insertTown(Requirements reqs) {
+		// TODO: copy this to every insert method
+		if (!reqs.fulfilled()) {
+			view.updateViewWithError(new RuntimeException("Not all Requirements are fulfilled!"));
+			return;
+		}
+
 		final ETown newTown = new ETown(-1, reqs.getValue(ControllerStrings.NAME, String.class));
 		try {
 			model.insertTown(newTown);

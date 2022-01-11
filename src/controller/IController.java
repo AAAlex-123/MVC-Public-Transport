@@ -2,7 +2,6 @@ package controller;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
 import entity.ETown;
 import model.IModel;
 import requirement.util.Requirements;
@@ -10,10 +9,13 @@ import view.IView;
 
 /**
  * An interface for the {@code Controller} of the {@code MVC architecture}. The
- * controller handles the communication between the {@link view.IView View} and
- * the underlying {@link model.IModel Model}. It receives requests from the
- * {@code View} using this interface, retrieves data using the {@code Model}'s
- * interface and returns them to the {@code View} using its interface.
+ * controller handles the communication between the {@link IView} and the
+ * underlying {@link IModel}. It receives requests from the {@code View} using
+ * this interface, retrieves data using the {@code Model}'s interface and
+ * returns them to the {@code View} using its interface.
+ * <p>
+ * Classes of the {@link entity} package are used to transfer the requested data
+ * and {@link Requirements} objects are used to encapsulate that request.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
@@ -21,162 +23,175 @@ import view.IView;
 public interface IController {
 
 	/**
-	 * Orders the {@link IView view} to display all
-	 * lines registered in the system.
+	 * Fetches all Line data from the {@code IModel} and requests that the
+	 * {@code IView} display it. If an error occurs, the {@code IView} displays that
+	 * instead.
 	 */
 	void getAllLines();
 
 	/**
-	 * Orders the {@link IView view} to display all
-	 * towns registered in the system.
+	 * Fetches all Town data from the {@code IModel} and requests that the
+	 * {@code IView} display it. If an error occurs, the {@code IView} displays that
+	 * instead.
 	 */
 	void getAllTowns();
 
 	/**
-	 * Orders the {@link IView view} to display all
-	 * stations belonging to the given town.
+	 * Fetches all Station data from the {@code IModel}, filtered by Town, and
+	 * requests that the {@code IView} display it. If an error occurs, the
+	 * {@code IView} displays that instead.
 	 *
-	 * @param town the town whose stations will be displayed
+	 * @param town the Town whose Stations will be displayed
 	 */
 	void getStationsByTown(ETown town);
 
 	/**
-	 * Orders the {@link IView view} to display all
-	 * lines going through the given town.
+	 * Fetches all Station data from the {@code IModel}, filtered by Town, and
+	 * requests that the {@code IView} display it. If an error occurs, the
+	 * {@code IView} displays that instead.
 	 *
-	 * @param town the town whose lines will be displayed
+	 * @param town the Town whose Stations will be displayed
 	 */
 	void getLinesByTown(ETown town);
 
 	/**
-	 * Orders the {@link IView view} to display all
-	 * stations belonging to the given line.
+	 * Fetches all Station data from the {@code IModel}, filtered by Line, and
+	 * requests that the {@code IView} display it. If an error occurs, the
+	 * {@code IView} displays that instead.
 	 *
-	 * @param line the line whose stations will be displayed
+	 * @param line the Line whose Stations will be displayed
 	 */
 	void getStationsByLine(ELine line);
 
 	/**
-	 * Orders the {@link IView view} to display all the
-	 * time tables of the given line.
+	 * Fetches all Timetable data from the {@code IModel}, filtered by Line, and
+	 * requests that the {@code IView} display it. If an error occurs, the
+	 * {@code IView} displays that instead.
 	 *
-	 * @param line the line whose time tables will be displayed
+	 * @param line the Line whose Timetables will be displayed
 	 */
 	void getTimetablesByLine(ELine line);
 
 	/**
-	 * Orders the {@link IView view} to display all the
-	 * towns which the given line services.
+	 * Fetches all Town data from the {@code IModel}, filtered by Line, and requests
+	 * that the {@code IView} display it. If an error occurs, the {@code IView}
+	 * displays that instead.
 	 *
-	 * @param line the line whose towns will be displayed
+	 * @param line the Line whose Towns will be displayed
 	 */
 	void getTownsByLine(ELine line);
 
 	/**
-	 * Orders the {@link IView view} to display all the
-	 * lines going through the given station.
+	 * Fetches all Line data from the {@code IModel}, filtered by Station, and
+	 * requests that the {@code IView} display it. If an error occurs, the
+	 * {@code IView} displays that instead.
 	 *
-	 * @param station the station whose lines will be displayed
+	 * @param station the Station whose Lines will be displayed
 	 */
 	void getLinesByStation(EStation station);
 
 	/**
-	 * Inserts a new {@link ETown town} to the {@link IModel model}.
-	 * This method should be supplied by the requirements constructed by #getInsertTownRequirements()
+	 * Inserts a new Town to the {@code IModel}. If the Requirements are not
+	 * fulfilled, the {@code IView} is updated with an error.
 	 *
-	 * @param reqs the <b>fulfilled</b> {@link Requirements requirements} for the creation of the town instance
-	 * @see #getInsertTownRequirements()
+	 * @param reqs the Requirements for the creation of the Town, ideally obtained
+	 *             from the {@link #getInsertTownRequirements()} method.
 	 */
 	void insertTown(Requirements reqs);
 
 	/**
-	 * Inserts a new {@link ELine line} to the {@link IModel model}.
-	 * This method should be supplied by the requirements constructed by #getInsertLineRequirements()
+	 * Inserts a new Line to the {@code IModel}. If the Requirements are not
+	 * fulfilled, the {@code IView} is updated with an error.
 	 *
-	 * @param reqs the <b>fulfilled</b> {@link Requirements requirements} for the creation of the line instance
-	 * @see #getInsertLineRequirements()
+	 * @param reqs the Requirements for the creation of the Line, ideally obtained
+	 *             from the {@link #getInsertLineRequirements()} method.
 	 */
 	void insertLine(Requirements reqs);
 
 	/**
-	 * Inserts a new {@link EStation station} to the {@link IModel model}.
-	 * This method should be supplied by the requirements constructed by #getInsertStationRequirements()
+	 * Inserts a new Station to the {@code IModel}. If the Requirements are not
+	 * fulfilled, the {@code IView} is updated with an error.
 	 *
-	 * @param reqs the <b>fulfilled</b> {@link Requirements requirements} for the creation of the station instance
-	 * @see #getInsertStationRequirements()
+	 * @param reqs the Requirements for the creation of the Station, ideally
+	 *             obtained from the {@link #getInsertStationRequirements()} method.
 	 */
 	void insertStation(Requirements reqs);
 
 	/**
-	 * Assigns a pre-existing {@link EStation station} to a {@link ELine line} in the {@link IModel model}.
-	 * This method should be supplied by the requirements constructed by #getInsertStationToLineRequirements()
+	 * Assigns an existing Station to a Line in the {@code IModel}. If the
+	 * Requirements are not fulfilled, the {@code IView} is updated with an error.
 	 *
-	 * @param reqs the <b>fulfilled</b> {@link Requirements requirements} for the assignment of the station instance
-	 * @see #getInsertStationToLineRequirements()
+	 * @param reqs the Requirements for the creation of the Town, ideally obtained
+	 *             from the {@link #getInsertStationToLineRequirements()} method.
 	 */
 	void insertStationToLine(Requirements reqs);
 
 	/**
-	 * Assigns a pre-existing {@link ETimetable time table} to a {@link ELine line} in the {@link IModel model}.
-	 * This method should be supplied by the requirements constructed by #getInsertTimetableToLineRequirements()
+	 * Assigns a new Timetable to a Line in the {@code IModel}. If the Requirements
+	 * are not fulfilled, the {@code IView} is updated with an error.
 	 *
-	 * @param reqs the <b>fulfilled</b> {@link Requirements requirements} for the assignment of the time table instance
-	 * @see #getInsertTimetableToLineRequirements()
+	 * @param reqs the Requirements for the creation of the Town, ideally obtained
+	 *             from the {@link #getInsertStationToLineRequirements()} method.
 	 */
 	void insertTimetableToLine(Requirements reqs);
 
 	/**
-	 * Get a {@link Requirements requirements} instance containing all the necessary fields
-	 * for a {@link ETown town} instance to be created.
+	 * Returns a {@code Requirements} object containing all the necessary fields for
+	 * a {@code Town} to be inserted. It must be fulfilled before being used to
+	 * insert a Town.
 	 *
-	 * Each {@link Requirement requirement} needs to be {@link Requirements#fulfil(String, Object) fulfilled}
-	 * before being used in {@link #insertTown(Requirements)}
+	 * @return a Requirements object with all the necessary fields
 	 *
-	 * @return a requirements instance with all the necessary fields
+	 * @see #insertTown(Requirements)
+	 * @see Requirements#fulfil(String, Object)
 	 */
 	Requirements getInsertTownRequirements();
 
 	/**
-	 * Get a {@link Requirements requirements} instance containing all the necessary fields
-	 * for a {@link ELine line} instance to be created.
+	 * Returns a {@code Requirements} object containing all the necessary fields for
+	 * a {@code Line} to be inserted. It must be fulfilled before being used to
+	 * insert a Town.
 	 *
-	 * Each {@link Requirement requirement} needs to be {@link Requirements#fulfil(String, Object) fulfilled}
-	 * before being used in {@link #insertLine(Requirements)}
+	 * @return a Requirements object with all the necessary fields
 	 *
-	 * @return a requirements instance with all the necessary fields
+	 * @see #insertLine(Requirements)
+	 * @see Requirements#fulfil(String, Object)
 	 */
 	Requirements getInsertLineRequirements();
 
 	/**
-	 * Get a {@link Requirements requirements} instance containing all the necessary fields
-	 * for a {@link EStation station} instance to be created.
+	 * Returns a {@code Requirements} object containing all the necessary fields for
+	 * a {@code Station} to be inserted. It must be fulfilled before being used to
+	 * insert a Town.
 	 *
-	 * Each {@link Requirement requirement} needs to be {@link Requirements#fulfil(String, Object) fulfilled}
-	 * before being used in {@link #insertStation(Requirements)}
+	 * @return a Requirements object with all the necessary fields
 	 *
-	 * @return a requirements instance with all the necessary fields
+	 * @see #insertStation(Requirements)
+	 * @see Requirements#fulfil(String, Object)
 	 */
 	Requirements getInsertStationRequirements();
 
 	/**
-	 * Get a {@link Requirements requirements} instance containing all the necessary fields
-	 * for an existing {@link EStation station} instance to be assigned to an {@link ELine line}.
+	 * Returns a {@code Requirements} object containing all the necessary fields for
+	 * a {@code Station} to be inserted in a Line. It must be fulfilled before being
+	 * used to insert a Town.
 	 *
-	 * Each {@link Requirement requirement} needs to be {@link Requirements#fulfil(String, Object) fulfilled}
-	 * before being used in {@link #insertStationToLine(Requirements)}
+	 * @return a Requirements object with all the necessary fields
 	 *
-	 * @return a requirements instance with all the necessary fields
+	 * @see #insertStationToLine(Requirements)
+	 * @see Requirements#fulfil(String, Object)
 	 */
 	Requirements getInsertStationToLineRequirements();
 
 	/**
-	 * Get a {@link Requirements requirements} instance containing all the necessary fields
-	 * for an existing {@link ETimetable time table} instance to be assigned to an {@link ELine line}.
+	 * Returns a {@code Requirements} object containing all the necessary fields for
+	 * a {@code Timetable} to be inserted in a Line. It must be fulfilled before
+	 * being used to insert a Town.
 	 *
-	 * Each {@link Requirement requirement} needs to be {@link Requirements#fulfil(String, Object) fulfilled}
-	 * before being used in {@link #insertTimetableToLine(Requirements)}
+	 * @return a Requirements object with all the necessary fields
 	 *
-	 * @return a requirements instance with all the necessary fields
+	 * @see #insertTimetableToLine(Requirements)
+	 * @see Requirements#fulfil(String, Object)
 	 */
 	Requirements getInsertTimetableToLineRequirements();
 }

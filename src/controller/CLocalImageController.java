@@ -23,7 +23,7 @@ public class CLocalImageController implements IImageController {
 		public final int    width, height;
 
 		/**
-		 * TODO
+		 * Constructs an ImageInfo record using the necessary data.
 		 *
 		 * @param name   the Image's filename
 		 * @param width  the Image's width
@@ -46,7 +46,7 @@ public class CLocalImageController implements IImageController {
 				return true;
 			if (!(obj instanceof ImageInfo))
 				return false;
-			ImageInfo other = (ImageInfo) obj;
+			final ImageInfo other = (ImageInfo) obj;
 			return (height == other.height) && Objects.equals(name, other.name)
 			        && (width == other.width);
 		}
@@ -84,7 +84,7 @@ public class CLocalImageController implements IImageController {
 		if (maxHeight <= 0)
 			throw new IllegalArgumentException("maxHeight must be positive"); //$NON-NLS-1$
 
-		ImageInfo iinfo = new ImageInfo(name, maxWidth, maxHeight);
+		final ImageInfo iinfo = new ImageInfo(name, maxWidth, maxHeight);
 
 		final Image cachedSprite = imageCache.get(iinfo);
 		if (cachedSprite != null)
