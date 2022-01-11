@@ -148,35 +148,71 @@ abstract class AbstractView<E> implements IView {
 	 *               user
 	 */
 	protected abstract void fulfilRequirements(Requirements reqs, String prompt);
-
+	
+	/**
+	 * Gets the {@link Requirements} from the {@link IController},
+	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the user created {@link ETown town}.
+	 * 
+	 * @see IController#insertTown(Requirements)
+	 */
 	protected final void insertTown() {
 		Requirements reqs = controller.getInsertTownRequirements();
 		fulfilRequirements(reqs, Languages.getString("AbstractView.0")); //$NON-NLS-1$
 		if (reqs.fulfilled())
 			controller.insertTown(reqs);
 	}
-
+	
+	/**
+	 * Gets the {@link Requirements} from the {@link IController},
+	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the user created {@link ELine line}.
+	 * 
+	 * @see IController#insertLine(Requirements)
+	 */
 	protected final void insertLine() {
 		Requirements reqs = controller.getInsertLineRequirements();
 		fulfilRequirements(reqs, Languages.getString("AbstractView.1")); //$NON-NLS-1$
 		if (reqs.fulfilled())
 			controller.insertLine(reqs);
 	}
-
+	
+	/**
+	 * Gets the {@link Requirements} from the {@link IController},
+	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the user created {@link EStation station}.
+	 * 
+	 * @see IController#insertStation(Requirements)
+	 */
 	protected final void insertStation() {
 		Requirements reqs = controller.getInsertStationRequirements();
 		fulfilRequirements(reqs, Languages.getString("AbstractView.2")); //$NON-NLS-1$
 		if (reqs.fulfilled())
 			controller.insertStation(reqs);
 	}
-
+	
+	/**
+	 * Gets the {@link Requirements} from the {@link IController},
+	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the newly assigned {@link EStation station} to the existing {@link ELine line}.
+	 * 
+	 * @see IController#insertStationToLine(Requirements)
+	 */
 	protected final void insertStationToLine() {
 		Requirements reqs = controller.getInsertStationToLineRequirements();
 		fulfilRequirements(reqs, Languages.getString("AbstractView.3")); //$NON-NLS-1$
 		if (reqs.fulfilled())
 			controller.insertStationToLine(reqs);
 	}
-
+	
+	/**
+	 * Gets the {@link Requirements} from the {@link IController},
+	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the newly assigned {@link ETimetable time table} 
+	 * to the existing {@link ELine line}.
+	 * 
+	 * @see IController#insertTimetableToLine(Requirements)
+	 */
 	protected final void insertTimetableToLine() {
 		Requirements reqs = controller.getInsertTimetableToLineRequirements();
 		fulfilRequirements(reqs, Languages.getString("AbstractView.4")); //$NON-NLS-1$
