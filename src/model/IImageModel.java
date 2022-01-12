@@ -4,21 +4,20 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 /**
- * An interface for the Model responsible for loading images from the local
- * disk, and specifically from the resources file of the application.
+ * An interface for the Model responsible for loading images from the disk.
  *
  * @author Dimitris Tsirmpas
  */
 public interface IImageModel {
 
 	/**
-	 * Loads an image from a file.
+	 * Loads an Image from a file.
 	 *
-	 * @param filename the name of the Image's file
+	 * @param filename the Image's filename
 	 *
-	 * @return a BufferedImage containing the image from that file
+	 * @return a BufferedImage containing the Image from that file
 	 *
-	 * @throws IOException if the image couldn't be loaded
+	 * @throws IOException if the Image couldn't be loaded
 	 */
 	BufferedImage loadImage(String filename) throws IOException;
 }

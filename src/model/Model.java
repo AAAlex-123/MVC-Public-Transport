@@ -28,11 +28,11 @@ import entity.Position;
 public class Model implements IModel {
 
 	/**
-	 * Constructs a Model for a {@code user} that communicates with the live
-	 * underlying database hosted on another {@code host} to retrieve and return
-	 * data using objects from the {@link entity} package.
+	 * Constructs a Model for a {@code user} that communicates with the underlying
+	 * database hosted on another {@code host} to retrieve and return data using
+	 * objects from the {@link entity} package.
 	 *
-	 * @param host     the ip address of the database's host
+	 * @param host     the IP address of the database's host
 	 * @param user     the database use on whose behalf the connection is being made
 	 * @param password the user's password
 	 *
@@ -43,7 +43,7 @@ public class Model implements IModel {
 	}
 
 	/**
-	 * Constructs a Model for the {@code root} user that communicates with the live
+	 * Constructs a Model for the {@code root} user that communicates with the
 	 * underlying database hosted on {@code localhost} to retrieve and return data
 	 * using objects from the {@link entity} package.
 	 *
@@ -147,7 +147,7 @@ public class Model implements IModel {
 		        + "WHERE LS.line_id = @1 "
 		        + "ORDER BY LS.station_index;";
 
-		doWithConnection((Connection conn) -> {
+		doWithStatement((Statement stmt) -> {
 
 			for (final ELine line : linesFromDatabase) {
 
@@ -156,8 +156,7 @@ public class Model implements IModel {
 				final String lineID = String.valueOf(line.getId());
 				final String query  = qSelectStationsForLine.replace("@1", lineID);
 
-				try (Statement stmt = conn.createStatement();
-				        ResultSet rs = stmt.executeQuery(query)) {
+				try (ResultSet rs = stmt.executeQuery(query)) {
 
 					while (rs.next()) {
 						final ETown    newTown = new ETown(rs.getInt("C.id"),
@@ -179,7 +178,7 @@ public class Model implements IModel {
 		        + "WHERE LT.line_id = @1 "
 		        + "ORDER BY LT.departure_time;";
 
-		doWithConnection((Connection conn) -> {
+		doWithStatement((Statement stmt) -> {
 
 			for (final ELine line : linesFromDatabase) {
 
@@ -188,8 +187,8 @@ public class Model implements IModel {
 				final String lineID = String.valueOf(line.getId());
 				final String query  = qSelectTimetablesForLine.replace("@1", lineID);
 
-				try (Statement stmt = conn.createStatement();
-				        ResultSet rs = stmt.executeQuery(query)) {
+
+				try (ResultSet rs = stmt.executeQuery(query)) {
 
 					while (rs.next()) {
 						final Time     time    = rs.getTime("departure_time");
@@ -233,9 +232,9 @@ public class Model implements IModel {
 		        + "ORDER BY S.name";
 
 		final String qFinalisedQuery;
-		if (town == null) {
+		if (town == null)
 			qFinalisedQuery = qSelectAllStations;
-		} else {
+		else {
 			final String id = String.valueOf(town.getId());
 			qFinalisedQuery = qSelectStationsByTown.replaceAll("@1", id);
 		}
@@ -246,7 +245,7 @@ public class Model implements IModel {
 			try (ResultSet rs = stmt.executeQuery(qFinalisedQuery)) {
 				while (rs.next()) {
 
-					Position newPosition = new Position(rs.getDouble("S.x_coord"),
+					final Position newPosition = new Position(rs.getDouble("S.x_coord"),
 					        rs.getDouble("S.y_coord"));
 
 					ETown newTown = town;
@@ -330,13 +329,11 @@ public class Model implements IModel {
 		final List<EStation> stationsToAdd = new ArrayList<>(line.getStations());
 		stationsToAdd.add(index, station);
 
-		doWithConnection((Connection conn) -> {
+		doWithStatement((Statement stmt) -> {
 			for (int i = 0; i < stationsToAdd.size(); i++)
-				try (Statement stmt = conn.createStatement()) {
-					stmt.execute(qInsertToLineStation.replace("@1", lineID)
-					        .replace("@2", String.valueOf(stationsToAdd.get(i).getId()))
-					        .replace("@3", String.valueOf(i)));
-				}
+				stmt.execute(qInsertToLineStation.replace("@1", lineID)
+				        .replace("@2", String.valueOf(stationsToAdd.get(i).getId()))
+				        .replace("@3", String.valueOf(i)));
 		});
 	}
 
@@ -360,16 +357,11 @@ public class Model implements IModel {
 		void execute(S statement) throws SQLException;
 	}
 
-	private interface ExecutableWithConnection<C extends Connection> {
-		void execute(C connection) throws SQLException;
-	}
-
 	/**
 	 * Creates a new {@code Connection} that executes an instance of an
 	 * {@code ExecutableWithStatement}. A {@code Statement} is created from that
-	 * Connection and is passed as a parameter to the ExecutableWithStatement.
-	 * <p>
-	 * Use to execute a single Statement with a single Statement.
+	 * Connection and is passed as a parameter to the ExecutableWithStatement. The
+	 * Statement can be used to execute multiple Queries.
 	 *
 	 * @param executable the instance of {@code ExecutableWithStatement} to run
 	 *
@@ -382,22 +374,4 @@ public class Model implements IModel {
 			executable.execute(stmt);
 		}
 	}
-
-	/**
-	 * Creates a new {@code Connection} that is passed as a parameter to the
-	 * {@code ExecutableWithConnection}, which is then executed.
-	 * <p>
-	 * Use to execute many Statements with a single Connection.
-	 *
-	 * @param executable the instance of {@code ExecutableWithConnection} to run
-	 *
-	 * @throws SQLException if the executable throws an SQLException
-	 */
-	private void doWithConnection(ExecutableWithConnection<Connection> executable)
-	        throws SQLException {
-		try (Connection conn = DriverManager.getConnection(url, user, password)) {
-			executable.execute(conn);
-		}
-	}
-
 }

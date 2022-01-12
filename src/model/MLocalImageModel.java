@@ -26,13 +26,15 @@ public class MLocalImageModel implements IImageModel {
 	}
 
 	/**
-	 * Constructs a Model that loads images from a given directory.
+	 * Constructs a Model that loads images from the given directory. The directory
+	 * is formed by concatenating the user directory and all the sub-directories
+	 * provided as arguments.
 	 *
 	 * @param subdirectories the sub-directories, starting from the user directory,
 	 *                       where the images are located
 	 */
 	public MLocalImageModel(String... subdirectories) {
-		final String curr_dir = System.getProperty("user.dir"); //$NON-NLS-1$
+		final String curr_dir = System.getProperty("user.dir");       //$NON-NLS-1$
 		final String fs       = System.getProperty("file.separator"); //$NON-NLS-1$
 		resourceDirectory = curr_dir + fs + String.join(fs, subdirectories) + fs;
 	}

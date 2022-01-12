@@ -21,89 +21,89 @@ import entity.ETown;
 public interface IModel {
 
 	/**
-	 * Get all {@link ETown} in the system.
+	 * Returns all {@link ETown} data from the database.
 	 *
-	 * @param line the line by which to filter the towns ({@code null} if not
+	 * @param line the Line by which to filter the Towns ({@code null} if not
 	 *             applicable).
 	 *
-	 * @throws SQLException if the database can't satisfy the request
+	 * @throws SQLException if an SQLException is thrown
 	 *
-	 * @return a list of all towns
+	 * @return a List of all the Towns in the database
 	 */
 	List<ETown> getTowns(ELine line) throws SQLException;
 
 	/**
-	 * Get all {@link ELine} registered in the system.
+	 * Returns all {@link ELine} data from the database.
 	 *
-	 * @param town    the town by which to filter the lines ({@code null} if not
+	 * @param town    the Town by which to filter the Towns ({@code null} if not
 	 *                applicable).
-	 * @param station the station by which to filter the lines ({@code null} if not
+	 * @param station the Station by which to filter the Towns ({@code null} if not
 	 *                applicable).
 	 *
-	 * @throws SQLException if the database can't satisfy the request
+	 * @throws SQLException if an SQLException is thrown
 	 *
-	 * @return a list of all lines
+	 * @return a List of all the Lines in the database
 	 */
 	List<ELine> getLines(ETown town, EStation station) throws SQLException;
 
 	/**
-	 * Get all {@link EStation} registered in the system.
+	 * Returns all {@link EStation} data from the database.
 	 *
-	 * @param town the town by which to filter the stations ({@code null} if not
+	 * @param town the Town by which to filter the Towns ({@code null} if not
 	 *             applicable).
 	 *
-	 * @throws SQLException if the database can't satisfy the request
+	 * @throws SQLException if an SQLException is thrown
 	 *
-	 * @return a list of all stations
+	 * @return a List of all the Stations in the database
 	 */
 	List<EStation> getStations(ETown town) throws SQLException;
 
 
 	/**
-	 * Insert a new {@link ELine} in the database.
+	 * Inserts a new {@link ELine} in the database.
 	 *
-	 * @param line the line to be added
+	 * @param line the Line to be added
 	 *
-	 * @throws SQLException if the database couldn't be updated
+	 * @throws SQLException if an SQLException is thrown
 	 */
 	void insertLine(ELine line) throws SQLException;
 
 	/**
-	 * Insert a new {@link ETown} in the database.
+	 * Inserts a new {@link ETown} in the database.
 	 *
-	 * @param town the town to be added
+	 * @param town the Town to be added
 	 *
-	 * @throws SQLException if the database couldn't be updated
+	 * @throws SQLException if an SQLException is thrown
 	 */
 	void insertTown(ETown town) throws SQLException;
 
 	/**
-	 * Insert a new {@link EStation} in the database.
+	 * Inserts a new {@link EStation} in the database.
 	 *
-	 * @param station the station to be added
+	 * @param station the Station to be added
 	 *
-	 * @throws SQLException if the database couldn't be updated
+	 * @throws SQLException if an SQLException is thrown
 	 */
 	void insertStation(EStation station) throws SQLException;
 
 	/**
-	 * Insert an existing {@link EStation} into an existing {@link ELine}.
+	 * Inserts an existing {@link EStation} to an existing {@link ELine}.
 	 *
-	 * @param line    the line to which the station will be added
-	 * @param station the station to be added
-	 * @param index   the index of the station in that line
+	 * @param line    the Line to which the Station will be added
+	 * @param station the Station to be added
+	 * @param index   the index of the Station in that Line
 	 *
-	 * @throws SQLException if the database couldn't be updated
+	 * @throws SQLException if an SQLException is thrown
 	 */
 	void insertStationToLine(ELine line, EStation station, int index) throws SQLException;
 
 	/**
-	 * Insert a new {@link ETimetable} into an existing {@link ELine}.
+	 * Inserts a new {@link ETimetable} to an existing {@link ELine}.
 	 *
-	 * @param line      the line to which the timetable will be added
-	 * @param timetable the timetable to be added
+	 * @param line      the Line to which the Timetable will be added
+	 * @param timetable the Timetable to be added
 	 *
-	 * @throws SQLException if the database couldn't be updated
+	 * @throws SQLException if an SQLException is thrown
 	 */
 	void insertTimetableToLine(ELine line, ETimetable timetable) throws SQLException;
 }
