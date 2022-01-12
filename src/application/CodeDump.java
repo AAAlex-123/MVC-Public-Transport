@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import controller.Controller;
 import entity.ELine;
 import entity.ETown;
+import localisation.Languages;
 import model.IModel;
 import requirement.requirements.StringType;
 import view.IView;
@@ -26,13 +27,42 @@ import view.IView;
 @SuppressWarnings({ "nls", "javadoc", "null", "resource", "unused", "static-method", "hiding" })
 abstract class CodeDump {
 
+	public void updateViewWithTowns(List<ETown> towns) {
+		if (towns.isEmpty())
+			goToHomepage(TOWNS);
+
+		printSource();
+
+		final FormatBuffer buffer = new FormatBuffer("%s %s: %n", PLEASE_SELECT, //$NON-NLS-1$
+		        A_TOWN);
+
+		for (final ETown town : towns)
+			buffer.format(factory.getETownRepresentation(town));
+
+		out.print(buffer);
+
+		final ETown selected = towns.get(getAnswer(1, towns.size()) - 1);
+
+		sourceEntityDescription = factory.getETownRepresentation(selected);
+
+		printMenu(new String[] {
+		        String.format(Languages.getString("ConsoleView.6"), SHOW_ALL), //$NON-NLS-1$
+		        String.format(Languages.getString("ConsoleView.7"), SHOW_ALL), //$NON-NLS-1$
+		        RETURN_TO_HOME,
+		}, String.format("%s %s: %s%n", SELECT_ACCESS, //$NON-NLS-1$
+		        THE_TOWN, "%s"), selected.getName()); //$NON-NLS-1$
+
+		doWithAnswer(() -> super.getLinesByTown(selected), () -> super.getStationsByTown(selected),
+		        this::updateViewWithHomepage);
+	}
+
 	// OASAView.java
 	public void updateViewWithTowns(List<ETown> towns) {
 		final JPanel contentPanel = getContentPanel();
 
 		final JPanel townPanel = getDisplayPanel();
 		for (final ETown town : towns)
-			townPanel.add(factory.getETownGraphic(town));
+			townPanel.add(factory.getETownRepresentation(town));
 
 		contentPanel.add(getCenteredLabel("Towns"), BorderLayout.NORTH);
 		contentPanel.add(getJSPForPanel(townPanel), BorderLayout.CENTER);
@@ -65,22 +95,22 @@ abstract class CodeDump {
 	}
 
 	// AbstractView.java
-	protected void AVgetAllTowns() {
-		controller.CgetAllTowns();
+	protected void getAllTowns() {
+		controller.getAllTowns();
 	}
 
-	protected final void AVinsertTown() {
-		Parameters params = controller.CgetInsertTownRequirements();
-		AVfulfillParameters(params, "Insert Town Parameters");
+	protected final void insertTown() {
+		Requirements params = controller.getInsertTownRequirements();
+		fulfillRequirements(params, "Insert Town Parameters");
 		if (params.fulfilled())
-			controller.CinsertTown(params);
+			controller.insertTown(params);
 	}
 
 	// maybe not include this ???
-	protected abstract void AVfulfillParameters(Parameters params, String prompt);
+	protected abstract void fulfillRequirements(Requirements params, String prompt);
 
 	// Controller.java
-	public void CgetTowns(ELine line) {
+	public void getTowns(ELine line) {
 		try {
 			final List<ETown> towns = model.getTowns(line);
 			view.updateViewWithTowns(towns);
@@ -89,7 +119,7 @@ abstract class CodeDump {
 		}
 	}
 
-	public void CinsertTown(Parameters params) {
+	public void insertTown(Requirements params) {
 		final ETown newTown = new ETown(-1, params.getValue("Name", String.class));
 		try {
 			model.insertTown(newTown);
@@ -98,14 +128,14 @@ abstract class CodeDump {
 		}
 	}
 
-	public Parameters CgetInsertTownRequirements() {
-		final Parameters params = new Parameters();
-		params.add("name", StringType.NON_EMPTY);
+	public Requirements getInsertTownRequirements() {
+		final Requirements params = new Requirements();
+		params.add("Name", StringType.NON_EMPTY);
 		return params;
 	}
 
 	// Model.java
-	public List<ETown> MgetTowns(ELine line) throws SQLException {
+	public List<ETown> getTowns(ELine line) throws SQLException {
 		final String qSelectAllTowns    = "SELECT C.* FROM City AS C";
 		final String qSelectTownsByLine = "SELECT DISTINCT C.id, C.name FROM City AS C "
 		        + "JOIN Station AS S ON S.city_id = C.id "
@@ -143,13 +173,12 @@ abstract class CodeDump {
 		return townsFromDatabase;
 	}
 
-	public void MinsertTown(ETown town) throws SQLException {
+	public void insertTown(ETown town) throws SQLException {
 
 		final String qInsertToCity = "INSERT INTO City(name) VALUES ('@2')";
 
 		Connection conn = null;
 		Statement  stmt = null;
-		ResultSet  rs   = null;
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
@@ -158,31 +187,21 @@ abstract class CodeDump {
 			stmt.execute(qInsertToCity.replace("@2", town.getName()));
 
 		} finally {
-			rs.close(); stmt.close(); conn.close();
+			stmt.close();
+			conn.close();
 		}
 	}
 
-	// AbstractEntity.java
-	abstract class AbstractEntity {
-
-		private final int id;
-
-		protected AbstractEntity(int id) {
-			this.id = id;
-		}
-
-		public final int getId() {
-			return id;
-		}
-	}
+	public abstract class AbstractEntity {}
 
 	// ETown.java
 	public class Town extends AbstractEntity {
 
+		private final int id;
 		private final String name;
 
 		public Town(int id, String name) {
-			super(id);
+			this.id = id;
 			this.name = name;
 		}
 
@@ -205,7 +224,9 @@ abstract class CodeDump {
 	private static JScrollPane getJSPForPanel(JPanel p) { return null; }
 
 	private class Factory {
-		public JPanel getETownGraphic(ETown town) { return null; }
+		public <T> T getETownRepresentation(ETown town) {
+			return null;
+		}
 	}
 
 	private static class MyController extends Controller {
@@ -213,19 +234,51 @@ abstract class CodeDump {
 			super(model, view);
 		}
 
-		private void CinsertTown(Parameters params) {}
+		private void insertTown(Requirements params) {}
 
-		private Parameters CgetInsertTownRequirements() { return null; }
+		@Override
+		private Requirements getInsertTownRequirements() { return null; }
 
-		private void CgetAllTowns() {}
+		@Override
+		private void getAllTowns() {}
 	}
 
-	private static class Parameters {
+	private static class Requirements {
 		private <T> T getValue(String key, Class<T> clazz) { return null; }
 
 		private void add(String key, StringType type) {}
 
 		private boolean fulfilled() { return false; }
+	}
+
+	private static class FormatBuffer {
+
+		private final StringBuffer buffer;
+		private int                count;
+
+		public FormatBuffer() {
+			this("");
+		}
+
+		public FormatBuffer(String initial) {
+			buffer = new StringBuffer(System.lineSeparator() + initial);
+			count = 1;
+		}
+
+		public FormatBuffer(String format, Object... args) {
+			this(String.format(format, args));
+		}
+
+		public void format(String format, Object... args) {
+			final String preparedString = String.format("%d: %s%n", count, format); //$NON-NLS-1$
+			buffer.append(String.format(preparedString, args));
+			count++;
+		}
+
+		@Override
+		public String toString() {
+			return buffer.toString();
+		}
 	}
 
 }
