@@ -132,13 +132,13 @@ public class ConsoleView extends AbstractView<String> {
 		        A_TOWN);
 
 		for (final ETown town : towns)
-			buffer.format(factory.getETownGraphic(town));
+			buffer.format(factory.getETownRepresentation(town));
 
 		out.print(buffer);
 
 		final ETown selected = towns.get(getAnswer(1, towns.size()) - 1);
 
-		sourceEntityDescription = factory.getETownGraphic(selected);
+		sourceEntityDescription = factory.getETownRepresentation(selected);
 
 		printMenu(new String[] {
 		        String.format(Languages.getString("ConsoleView.6"), SHOW_ALL), //$NON-NLS-1$
@@ -161,13 +161,13 @@ public class ConsoleView extends AbstractView<String> {
 		        A_LINE);
 
 		for (final ELine line : lines)
-			buffer.format(factory.getELineGraphic(line));
+			buffer.format(factory.getELineRepresentation(line));
 
 		out.print(buffer);
 
 		final ELine selected = lines.get(getAnswer(1, lines.size()) - 1);
 
-		sourceEntityDescription = factory.getELineGraphic(selected);
+		sourceEntityDescription = factory.getELineRepresentation(selected);
 
 		printMenu(new String[] {
 		        String.format(Languages.getString("ConsoleView.10"), SHOW_ALL), //$NON-NLS-1$
@@ -194,13 +194,13 @@ public class ConsoleView extends AbstractView<String> {
 		        A_STATION);
 
 		for (final EStation station : stations)
-			buffer.format(factory.getEStationGraphic(station));
+			buffer.format(factory.getEStationRepresentation(station));
 
 		out.print(buffer);
 
 		final EStation selected = stations.get(getAnswer(1, stations.size()) - 1);
 
-		sourceEntityDescription = factory.getEStationGraphic(selected);
+		sourceEntityDescription = factory.getEStationRepresentation(selected);
 
 		printMenu(new String[] {
 		        String.format(Languages.getString("ConsoleView.15"), SHOW_ALL), //$NON-NLS-1$
@@ -222,7 +222,7 @@ public class ConsoleView extends AbstractView<String> {
 		final FormatBuffer buffer = new FormatBuffer();
 
 		for (final ETimetable timetable : timetables)
-			buffer.format(factory.getETimetableGraphic(timetable));
+			buffer.format(factory.getETimetableRepresentatino(timetable));
 
 		out.print(buffer);
 

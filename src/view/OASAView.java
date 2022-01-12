@@ -220,7 +220,7 @@ public class OASAView extends AbstractGUIView {
 
 		final JPanel townPanel = OASAView.getDisplayPanel();
 		for (final ETown town : towns)
-			townPanel.add(factory.getETownGraphic(town));
+			townPanel.add(factory.getETownRepresentation(town));
 
 		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.15")), //$NON-NLS-1$
 		        BorderLayout.NORTH);
@@ -235,7 +235,7 @@ public class OASAView extends AbstractGUIView {
 
 		final JPanel linePanel = OASAView.getDisplayPanel();
 		for (final ELine line : lines)
-			linePanel.add(factory.getELineGraphic(line));
+			linePanel.add(factory.getELineRepresentation(line));
 
 		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.16")), //$NON-NLS-1$
 		        BorderLayout.NORTH);
@@ -250,7 +250,7 @@ public class OASAView extends AbstractGUIView {
 
 		final JPanel stationPanel = OASAView.getDisplayPanel();
 		for (final EStation station : stations)
-			stationPanel.add(factory.getEStationGraphic(station));
+			stationPanel.add(factory.getEStationRepresentation(station));
 
 		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.17")), //$NON-NLS-1$
 		        BorderLayout.NORTH);
@@ -265,7 +265,7 @@ public class OASAView extends AbstractGUIView {
 
 		final JPanel timetablePanel = OASAView.getDisplayPanel();
 		for (final ETimetable timetable : timetables)
-			timetablePanel.add(factory.getETimetableGraphic(timetable));
+			timetablePanel.add(factory.getETimetableRepresentatino(timetable));
 
 		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.18")), //$NON-NLS-1$
 		        BorderLayout.NORTH);

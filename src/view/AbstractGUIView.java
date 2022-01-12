@@ -205,7 +205,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getStationsByTown(ETown town) {
-		updateHeaderPanel(factory.getETownGraphic(town));
+		updateHeaderPanel(factory.getETownRepresentation(town));
 		super.getStationsByTown(town);
 	}
 
@@ -219,7 +219,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getLinesByTown(ETown town) {
-		updateHeaderPanel(factory.getETownGraphic(town));
+		updateHeaderPanel(factory.getETownRepresentation(town));
 		super.getLinesByTown(town);
 	}
 
@@ -233,7 +233,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getStationsByLine(ELine line) {
-		updateHeaderPanel(factory.getELineGraphic(line));
+		updateHeaderPanel(factory.getELineRepresentation(line));
 		super.getStationsByLine(line);
 	}
 
@@ -247,7 +247,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getTimetablesByLine(ELine line) {
-		updateHeaderPanel(factory.getELineGraphic(line));
+		updateHeaderPanel(factory.getELineRepresentation(line));
 		super.getTimetablesByLine(line);
 	}
 
@@ -261,7 +261,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getTownsByLine(ELine line) {
-		updateHeaderPanel(factory.getELineGraphic(line));
+		updateHeaderPanel(factory.getELineRepresentation(line));
 		super.getTownsByLine(line);
 	}
 
@@ -275,7 +275,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 */
 	@Override
 	protected void getLinesByStation(EStation station) {
-		updateHeaderPanel(factory.getEStationGraphic(station));
+		updateHeaderPanel(factory.getEStationRepresentation(station));
 		super.getLinesByStation(station);
 	}
 

@@ -17,38 +17,38 @@ import entity.ETown;
 interface AbstractEntityRepresentationFactory<E> {
 
 	/**
-	 * Returns a Graphic for a {@link ETown}.
+	 * Returns a Representation for an {@link ETown}.
 	 *
-	 * @param town the town
+	 * @param town the Town
 	 *
-	 * @return a Graphic for the town
+	 * @return the Representation for the Town
 	 */
-	E getETownGraphic(ETown town);
+	E getETownRepresentation(ETown town);
 
 	/**
-	 * Returns a Graphic for a {@link ELine}.
+	 * Returns a Representation for an {@link ELine}.
 	 *
-	 * @param line the town
+	 * @param line the Line
 	 *
-	 * @return a Graphic for the line
+	 * @return the Representation for the Line
 	 */
-	E getELineGraphic(ELine line);
+	E getELineRepresentation(ELine line);
 
 	/**
-	 * Returns a Graphic for a {@link EStation}.
+	 * Returns a Representation for an {@link EStation}.
 	 *
-	 * @param station the town
+	 * @param station the Station
 	 *
-	 * @return a Graphic for the station
+	 * @return the Representation for the Station
 	 */
-	E getEStationGraphic(EStation station);
+	E getEStationRepresentation(EStation station);
 
 	/**
-	 * Returns a Graphic for a {@link ETimetable}.
+	 * Returns a Representation for an {@link ETimetable}.
 	 *
-	 * @param timetable the timetable
+	 * @param timetable the Timetable
 	 *
-	 * @return a Graphic for the timetable
+	 * @return the Representation for the Timetable
 	 */
-	E getETimetableGraphic(ETimetable timetable);
+	E getETimetableRepresentatino(ETimetable timetable);
 }

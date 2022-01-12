@@ -57,7 +57,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getETownGraphic(ETown town) {
+	public JPanel getETownRepresentation(ETown town) {
 		final JPanel graphic = prepareGraphic();
 
 		final ImageIcon icon = view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE); //$NON-NLS-1$
@@ -98,7 +98,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getELineGraphic(ELine line) {
+	public JPanel getELineRepresentation(ELine line) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		final ImageIcon icon = view.getImageIcon(line.getType().getSpriteName(), ICON_SIZE,
@@ -152,7 +152,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getEStationGraphic(EStation station) {
+	public JPanel getEStationRepresentation(EStation station) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		graphic.add(new JLabel(view.getImageIcon("station.png", ICON_SIZE, ICON_SIZE))); //$NON-NLS-1$
@@ -194,7 +194,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getETimetableGraphic(ETimetable timetable) {
+	public JPanel getETimetableRepresentatino(ETimetable timetable) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		final JLabel nameLabel = new JLabel(timetable.getFormattedTime());

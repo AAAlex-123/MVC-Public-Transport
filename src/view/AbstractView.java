@@ -4,8 +4,10 @@ import controller.IController;
 import controller.IImageController;
 import entity.ELine;
 import entity.EStation;
+import entity.ETimetable;
 import entity.ETown;
 import localisation.Languages;
+import model.IModel;
 import requirement.util.Requirements;
 
 /**
@@ -136,12 +138,13 @@ abstract class AbstractView<E> implements IView {
 	 *               user
 	 */
 	protected abstract void fulfilRequirements(Requirements reqs, String prompt);
-	
+
 	/**
-	 * Gets the {@link Requirements} from the {@link IController},
-	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
-	 * method and updates the {@link IModel} with the user created {@link ETown town}.
-	 * 
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the user created {@link ETown
+	 * town}.
+	 *
 	 * @see IController#insertTown(Requirements)
 	 */
 	protected final void insertTown() {
@@ -150,12 +153,13 @@ abstract class AbstractView<E> implements IView {
 		if (reqs.fulfilled())
 			controller.insertTown(reqs);
 	}
-	
+
 	/**
-	 * Gets the {@link Requirements} from the {@link IController},
-	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
-	 * method and updates the {@link IModel} with the user created {@link ELine line}.
-	 * 
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the user created {@link ELine
+	 * line}.
+	 *
 	 * @see IController#insertLine(Requirements)
 	 */
 	protected final void insertLine() {
@@ -164,12 +168,13 @@ abstract class AbstractView<E> implements IView {
 		if (reqs.fulfilled())
 			controller.insertLine(reqs);
 	}
-	
+
 	/**
-	 * Gets the {@link Requirements} from the {@link IController},
-	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
-	 * method and updates the {@link IModel} with the user created {@link EStation station}.
-	 * 
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the user created {@link EStation
+	 * station}.
+	 *
 	 * @see IController#insertStation(Requirements)
 	 */
 	protected final void insertStation() {
@@ -178,12 +183,13 @@ abstract class AbstractView<E> implements IView {
 		if (reqs.fulfilled())
 			controller.insertStation(reqs);
 	}
-	
+
 	/**
-	 * Gets the {@link Requirements} from the {@link IController},
-	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
-	 * method and updates the {@link IModel} with the newly assigned {@link EStation station} to the existing {@link ELine line}.
-	 * 
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the newly assigned {@link EStation
+	 * station} to the existing {@link ELine line}.
+	 *
 	 * @see IController#insertStationToLine(Requirements)
 	 */
 	protected final void insertStationToLine() {
@@ -192,13 +198,13 @@ abstract class AbstractView<E> implements IView {
 		if (reqs.fulfilled())
 			controller.insertStationToLine(reqs);
 	}
-	
+
 	/**
-	 * Gets the {@link Requirements} from the {@link IController},
-	 * fulfills them through the {@link AbstractView#fulfilRequirements(Requirements, String)}
-	 * method and updates the {@link IModel} with the newly assigned {@link ETimetable time table} 
-	 * to the existing {@link ELine line}.
-	 * 
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the newly assigned
+	 * {@link ETimetable time table} to the existing {@link ELine line}.
+	 *
 	 * @see IController#insertTimetableToLine(Requirements)
 	 */
 	protected final void insertTimetableToLine() {

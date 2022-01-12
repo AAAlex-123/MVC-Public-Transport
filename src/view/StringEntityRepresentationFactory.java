@@ -17,17 +17,17 @@ public class StringEntityRepresentationFactory
         implements AbstractEntityRepresentationFactory<String> {
 
 	@Override
-	public String getETownGraphic(ETown town) {
+	public String getETownRepresentation(ETown town) {
 		return town.getName();
 	}
 
 	@Override
-	public String getELineGraphic(ELine line) {
+	public String getELineRepresentation(ELine line) {
 		return String.format("%s (%s): %s", line.getName(), line.getType(), line.getDescription()); //$NON-NLS-1$
 	}
 
 	@Override
-	public String getEStationGraphic(EStation station) {
+	public String getEStationRepresentation(EStation station) {
 		Position     pos  = station.getPosition();
 
 		StringBuffer buff = new StringBuffer(
@@ -43,7 +43,7 @@ public class StringEntityRepresentationFactory
 	}
 
 	@Override
-	public String getETimetableGraphic(ETimetable timetable) {
+	public String getETimetableRepresentatino(ETimetable timetable) {
 		return timetable.getFormattedTime();
 	}
 }
