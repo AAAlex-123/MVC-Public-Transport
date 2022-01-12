@@ -85,14 +85,44 @@ public class Controller implements IController {
 
 	@Override
 	public void getStationsByLine(ELine line) {
-		final List<EStation> stations = line.getStations();
-		view.updateViewWithStations(stations);
+
+		final List<ELine> lines;
+		try {
+			lines = model.getLines(null, null);
+		} catch (final SQLException e) {
+			view.updateViewWithError(e);
+			return;
+		}
+
+		for (ELine fetchedLine : lines)
+			if (fetchedLine.getId() == line.getId()) {
+				view.updateViewWithStations(fetchedLine.getStations());
+				return;
+			}
+
+		view.updateViewWithError(new RuntimeException(
+		        String.format(ControllerStrings.NO_LINE_FOUND, line.getName())));
 	}
 
 	@Override
 	public void getTimetablesByLine(ELine line) {
-		final List<ETimetable> timetables = line.getTimetables();
-		view.updateViewWithTimetables(timetables);
+
+		final List<ELine> lines;
+		try {
+			lines = model.getLines(null, null);
+		} catch (final SQLException e) {
+			view.updateViewWithError(e);
+			return;
+		}
+
+		for (ELine fetchedLine : lines)
+			if (fetchedLine.getId() == line.getId()) {
+				view.updateViewWithTimetables(fetchedLine.getTimetables());
+				return;
+			}
+
+		view.updateViewWithError(new RuntimeException(
+		        String.format(ControllerStrings.NO_LINE_FOUND, line.getName())));
 	}
 
 	@Override
@@ -107,9 +137,8 @@ public class Controller implements IController {
 
 	@Override
 	public void insertTown(Requirements reqs) {
-		// TODO: copy this to every insert method
 		if (!reqs.fulfilled()) {
-			view.updateViewWithError(new RuntimeException("Not all Requirements are fulfilled!"));
+			view.updateViewWithError(new RuntimeException(ControllerStrings.PLEASE_FILL));
 			return;
 		}
 
@@ -123,6 +152,11 @@ public class Controller implements IController {
 
 	@Override
 	public void insertLine(Requirements reqs) {
+		if (!reqs.fulfilled()) {
+			view.updateViewWithError(new RuntimeException(ControllerStrings.PLEASE_FILL));
+			return;
+		}
+
 		final String   name        = reqs.getValue(ControllerStrings.NAME, String.class);
 		final LineType type        = reqs.getValue(ControllerStrings.TYPE, LineType.class);
 		final String   description = reqs.getValue(ControllerStrings.DESCRIPTION, String.class);
@@ -137,6 +171,11 @@ public class Controller implements IController {
 
 	@Override
 	public void insertStation(Requirements reqs) {
+		if (!reqs.fulfilled()) {
+			view.updateViewWithError(new RuntimeException(ControllerStrings.PLEASE_FILL));
+			return;
+		}
+
 		final Function<String, Double> dtoi = Double::parseDouble;
 
 		final double   x_coord  = dtoi
@@ -158,6 +197,11 @@ public class Controller implements IController {
 
 	@Override
 	public void insertStationToLine(Requirements reqs) {
+		if (!reqs.fulfilled()) {
+			view.updateViewWithError(new RuntimeException(ControllerStrings.PLEASE_FILL));
+			return;
+		}
+
 		final Function<String, Integer> stoi = Integer::parseInt;
 
 		final ELine    line    = reqs.getValue(ControllerStrings.LINE, ELine.class);
@@ -173,6 +217,11 @@ public class Controller implements IController {
 
 	@Override
 	public void insertTimetableToLine(Requirements reqs) {
+		if (!reqs.fulfilled()) {
+			view.updateViewWithError(new RuntimeException(ControllerStrings.PLEASE_FILL));
+			return;
+		}
+
 		final Function<String, Integer> stoi = Integer::parseInt;
 
 		final ELine      line      = reqs.getValue(ControllerStrings.LINE, ELine.class);

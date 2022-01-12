@@ -22,6 +22,7 @@ import entity.ETown;
 import localisation.Languages;
 import model.IModel;
 import requirement.requirements.StringType;
+import requirement.util.Requirements;
 import view.IView;
 
 @SuppressWarnings({ "nls", "javadoc", "null", "resource", "unused", "static-method", "hiding" })
@@ -83,8 +84,8 @@ abstract class CodeDump {
 		m_insert.add(i_town);
 		// ... other JMenu Items
 
-		menuBar.add(home);
-		menuBar.add(m_insert);
+		menubar.add(home);
+		menubar.add(m_insert);
 		// ... other JMenus
 
 		home.addActionListener(e -> OASAView.super.changeToHomePanel());
@@ -234,22 +235,25 @@ abstract class CodeDump {
 			super(model, view);
 		}
 
-		private void insertTown(Requirements params) {}
+		@Override
+		public void insertTown(Requirements params) {}
 
 		@Override
-		private Requirements getInsertTownRequirements() { return null; }
+		public Requirements getInsertTownRequirements() {
+			return null;
+		}
 
 		@Override
-		private void getAllTowns() {}
+		public void getAllTowns() {}
 	}
 
-	private static class Requirements {
-		private <T> T getValue(String key, Class<T> clazz) { return null; }
-
-		private void add(String key, StringType type) {}
-
-		private boolean fulfilled() { return false; }
-	}
+	//	private static class Requirements {
+	//		private <T> T getValue(String key, Class<T> clazz) { return null; }
+	//
+	//		private void add(String key, StringType type) {}
+	//
+	//		private boolean fulfilled() { return false; }
+	//	}
 
 	private static class FormatBuffer {
 

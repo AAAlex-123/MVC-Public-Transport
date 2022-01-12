@@ -52,4 +52,10 @@ public final class ControllerStrings {
 
 	/** String for literal {@code 'towns'} */
 	public static final String TOWNS = Languages.getString("ControllerStrings.14"); //$NON-NLS-1$
+
+	/** String for literal {@code 'No Line found with ID %d'} */
+	public static final String NO_LINE_FOUND = Languages.getString("ControllerStrings.15"); //$NON-NLS-1$
+
+	/** String for literal {@code 'Please fill in all the fields'} */
+	public static final String PLEASE_FILL = Languages.getString("ControllerStrings.16"); //$NON-NLS-1$
 }
