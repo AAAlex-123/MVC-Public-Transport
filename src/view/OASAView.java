@@ -72,20 +72,20 @@ public class OASAView extends AbstractGUIView {
 		final JMenuItem home, prev, next, i_town, i_station, i_line, i_station_to_line,
 		        i_timetable_to_line, /* p_settings, */ p_language;
 
-		home = new JMenuItem("Home");
-		prev = new JMenuItem("Previous");
-		next = new JMenuItem("Next");
+		home = new JMenuItem(Languages.getString("OASAView.0")); //$NON-NLS-1$
+		prev = new JMenuItem(Languages.getString("OASAView.1")); //$NON-NLS-1$
+		next = new JMenuItem(Languages.getString("OASAView.2")); //$NON-NLS-1$
 
 		home.setFont(globalFont);
 		prev.setFont(globalFont);
 		next.setFont(globalFont);
 
-		m_insert = new JMenu(Languages.getString("OASAView.3")); //$NON-NLS-1$
-		i_town = new JMenuItem(Languages.getString("OASAView.4")); //$NON-NLS-1$
-		i_station = new JMenuItem(Languages.getString("OASAView.5")); //$NON-NLS-1$
-		i_line = new JMenuItem(Languages.getString("OASAView.6")); //$NON-NLS-1$
-		i_station_to_line = new JMenuItem(Languages.getString("OASAView.7")); //$NON-NLS-1$
-		i_timetable_to_line = new JMenuItem(Languages.getString("OASAView.8")); //$NON-NLS-1$
+		m_insert = new JMenu(Languages.getString("OASAView.3"));  //$NON-NLS-1$
+		i_town = new JMenuItem(Languages.getString("OASAView.4"));  //$NON-NLS-1$
+		i_station = new JMenuItem(Languages.getString("OASAView.5"));  //$NON-NLS-1$
+		i_line = new JMenuItem(Languages.getString("OASAView.6"));  //$NON-NLS-1$
+		i_station_to_line = new JMenuItem(Languages.getString("OASAView.7"));  //$NON-NLS-1$
+		i_timetable_to_line = new JMenuItem(Languages.getString("OASAView.8"));  //$NON-NLS-1$
 
 		m_insert.setFont(globalFont);
 		i_town.setFont(globalFont);
@@ -100,9 +100,9 @@ public class OASAView extends AbstractGUIView {
 		m_insert.add(i_station_to_line);
 		m_insert.add(i_timetable_to_line);
 
-		m_preferences = new JMenu(Languages.getString("OASAView.9")); //$NON-NLS-1$
+		m_preferences = new JMenu(Languages.getString("OASAView.9"));  //$NON-NLS-1$
 		// p_settings = new JMenuItem(Languages.getString("OASAView.10")); //$NON-NLS-1$
-		p_language = new JMenuItem(Languages.getString("OASAView.11")); //$NON-NLS-1$
+		p_language = new JMenuItem(Languages.getString("OASAView.10"));  //$NON-NLS-1$
 		// m_preferences.add(p_settings);
 		m_preferences.add(p_language);
 
@@ -129,13 +129,13 @@ public class OASAView extends AbstractGUIView {
 
 		p_language.addActionListener(e -> OASAView.this.changeLanguage());
 
-		home.setIcon(getImageIcon("home_button.jpg", 25, 25)); //$NON-NLS-1$
-		prev.setIcon(getImageIcon("prev_button_small.png", 25, 25)); //$NON-NLS-1$
-		next.setIcon(getImageIcon("next_button_small.png", 25, 25)); //$NON-NLS-1$
-		i_town.setIcon(getImageIcon("town.png", 18, 18)); //$NON-NLS-1$
-		i_station.setIcon(getImageIcon("station.png", 18, 18)); //$NON-NLS-1$
-		i_line.setIcon(getImageIcon("bus.png", 18, 18)); //$NON-NLS-1$
-		p_language.setIcon(getImageIcon("language.png", 18, 18)); //$NON-NLS-1$
+		home.setIcon(getImageIcon("home_button.jpg", 25, 25));  //$NON-NLS-1$
+		prev.setIcon(getImageIcon("prev_button_small.png", 25, 25));  //$NON-NLS-1$
+		next.setIcon(getImageIcon("next_button_small.png", 25, 25));  //$NON-NLS-1$
+		i_town.setIcon(getImageIcon("town.png", 18, 18));  //$NON-NLS-1$
+		i_station.setIcon(getImageIcon("station.png", 18, 18));  //$NON-NLS-1$
+		i_line.setIcon(getImageIcon("bus.png", 18, 18));  //$NON-NLS-1$
+		p_language.setIcon(getImageIcon("language.png", 18, 18));  //$NON-NLS-1$
 
 		return menuBar;
 	}
@@ -167,9 +167,9 @@ public class OASAView extends AbstractGUIView {
 		infoPanel.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 3));
 		infoPanel.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT / 15));
 
-		JLabel phoneLabel = getCenteredLabel(Languages.getString("OASAView.0")); //$NON-NLS-1$
+		JLabel phoneLabel = getCenteredLabel(Languages.getString("OASAView.18"));  //$NON-NLS-1$
 		phoneLabel.setFont(footerFont);
-		JLabel emailLabel = getCenteredLabel(Languages.getString("OASAView.1")); //$NON-NLS-1$
+		JLabel emailLabel = getCenteredLabel(Languages.getString("OASAView.19"));  //$NON-NLS-1$
 		emailLabel.setFont(footerFont);
 
 		infoPanel.add(phoneLabel);
@@ -186,14 +186,14 @@ public class OASAView extends AbstractGUIView {
 			contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 
 			final JPanel imagePanel = new JPanel();
-			imagePanel.add(new JLabel(super.getImageIcon("oasa_home.jpg"))); //$NON-NLS-1$
+			imagePanel.add(new JLabel(super.getImageIcon("oasa_home.jpg")));  //$NON-NLS-1$
 
 			final JPanel buttonPanel = new JPanel();
 			buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));
 			buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 30, 30, 30));
 
-			final JButton button1 = new JButton(Languages.getString("OASAView.13")); //$NON-NLS-1$
-			final JButton button2 = new JButton(Languages.getString("OASAView.14")); //$NON-NLS-1$
+			final JButton button1 = new JButton(Languages.getString("OASAView.21"));  //$NON-NLS-1$
+			final JButton button2 = new JButton(Languages.getString("OASAView.22"));  //$NON-NLS-1$
 
 			button1.setFont(globalFont);
 			button2.setFont(globalFont);
@@ -222,7 +222,7 @@ public class OASAView extends AbstractGUIView {
 		for (final ETown town : towns)
 			townPanel.add(factory.getETownRepresentation(town));
 
-		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.15")), //$NON-NLS-1$
+		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.23")),  //$NON-NLS-1$
 		        BorderLayout.NORTH);
 		contentPanel.add(OASAView.getJSPForPanel(townPanel), BorderLayout.CENTER);
 
@@ -237,7 +237,7 @@ public class OASAView extends AbstractGUIView {
 		for (final ELine line : lines)
 			linePanel.add(factory.getELineRepresentation(line));
 
-		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.16")), //$NON-NLS-1$
+		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.24")),  //$NON-NLS-1$
 		        BorderLayout.NORTH);
 		contentPanel.add(OASAView.getJSPForPanel(linePanel), BorderLayout.CENTER);
 
@@ -252,7 +252,7 @@ public class OASAView extends AbstractGUIView {
 		for (final EStation station : stations)
 			stationPanel.add(factory.getEStationRepresentation(station));
 
-		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.17")), //$NON-NLS-1$
+		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.25")),  //$NON-NLS-1$
 		        BorderLayout.NORTH);
 		contentPanel.add(OASAView.getJSPForPanel(stationPanel), BorderLayout.CENTER);
 
@@ -267,7 +267,7 @@ public class OASAView extends AbstractGUIView {
 		for (final ETimetable timetable : timetables)
 			timetablePanel.add(factory.getETimetableRepresentatino(timetable));
 
-		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.18")), //$NON-NLS-1$
+		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.26")),  //$NON-NLS-1$
 		        BorderLayout.NORTH);
 		contentPanel.add(OASAView.getJSPForPanel(timetablePanel), BorderLayout.CENTER);
 
@@ -277,7 +277,7 @@ public class OASAView extends AbstractGUIView {
 	@Override
 	public void updateViewWithError(Exception e) {
 		JOptionPane.showMessageDialog(frame, e.getLocalizedMessage(),
-		        Languages.getString("OASAView.19"), //$NON-NLS-1$
+		        Languages.getString("OASAView.27"),  //$NON-NLS-1$
 		        JOptionPane.ERROR_MESSAGE);
 	}
 
@@ -315,13 +315,13 @@ public class OASAView extends AbstractGUIView {
 		final int    messageType;
 
 		if (e == null) {
-			messageString = Languages.getString("OASAView.20"); //$NON-NLS-1$
-			titleString = Languages.getString("OASAView.21"); //$NON-NLS-1$
+			messageString = Languages.getString("OASAView.28");  //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.29");  //$NON-NLS-1$
 			messageType = JOptionPane.INFORMATION_MESSAGE;
 
 		} else {
-			messageString = Languages.getString("OASAView.22"); //$NON-NLS-1$
-			titleString = Languages.getString("OASAView.23"); //$NON-NLS-1$
+			messageString = Languages.getString("OASAView.30");  //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.31");  //$NON-NLS-1$
 			messageType = JOptionPane.ERROR_MESSAGE;
 		}
 
