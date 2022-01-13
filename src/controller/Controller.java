@@ -295,8 +295,8 @@ public class Controller implements IController {
 		}
 
 		final Requirements reqs = new Requirements();
-		reqs.add(ControllerStrings.LINE, lines);
-		reqs.add(ControllerStrings.STATION, stations);
+		reqs.add(ControllerStrings.LINE, lines, l -> l.getName());
+		reqs.add(ControllerStrings.STATION, stations, s -> s.getName());
 		reqs.add(ControllerStrings.INDEX, StringType.NON_NEG_INTEGER);
 		return reqs;
 	}
@@ -314,7 +314,7 @@ public class Controller implements IController {
 		}
 
 		final Requirements reqs = new Requirements();
-		reqs.add(ControllerStrings.LINE, lines);
+		reqs.add(ControllerStrings.LINE, lines, l -> l.getName());
 		reqs.add(ControllerStrings.HOURS, StringType.HOUR_24);
 		reqs.add(ControllerStrings.MINUTES, StringType.MINUTE);
 		return reqs;
