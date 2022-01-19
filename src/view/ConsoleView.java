@@ -365,12 +365,12 @@ public class ConsoleView extends AbstractView<String> {
 		final PrintStream output;
 
 		if (e == null) {
-			messageString = Languages.getString("OASAView.20"); //$NON-NLS-1$
-			titleString = Languages.getString("OASAView.21"); //$NON-NLS-1$
+			messageString = Languages.getString("OASAView.28"); //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.29"); //$NON-NLS-1$
 			output = out;
 		} else {
-			messageString = Languages.getString("OASAView.22"); //$NON-NLS-1$
-			titleString = Languages.getString("OASAView.23"); //$NON-NLS-1$
+			messageString = Languages.getString("OASAView.30"); //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.31"); //$NON-NLS-1$
 			output = err;
 		}
 
