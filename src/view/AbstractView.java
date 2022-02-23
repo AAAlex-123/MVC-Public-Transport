@@ -1,32 +1,45 @@
 package view;
 
-import java.awt.Container;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
 import controller.IController;
+import controller.IImageController;
+import entity.ELine;
+import entity.EStation;
+import entity.ETimetable;
+import entity.ETown;
+import localisation.Languages;
+import model.IModel;
+import requirement.util.Requirements;
 
 /**
- * An implementation of the {@link IView} interface.
+ * An abstract implementation of the {@link IView} interface which defines
+ * delegate methods to the View's registered {@link IController}, which the
+ * concrete implementations will call.
+ *
+ * @param <E> the type of the representation of the Entities
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-abstract class AbstractView extends JFrame implements IView {
+abstract class AbstractView<E> implements IView {
 
 	private IController controller;
-	protected final AbstractEntityGraphicFactory factory;
 
-	private JPanel panel;
+	/** The factory that constructs graphics for the Entities this View displays */
+	protected final AbstractEntityRepresentationFactory<E> factory;
 
-	public AbstractView(AbstractEntityGraphicFactory factory) {
+	/**
+	 * Constructs the view initialising its UI and providing a factory with which to
+	 * construct its graphics. The factory can be changed to provide different
+	 * graphics while maintaining the same layout.
+	 *
+	 * @param factory         the factory that will be used to construct its
+	 *                        graphics
+	 * @param imageController the controller that will be used to load its images
+	 */
+	public AbstractView(AbstractEntityRepresentationFactory<E> factory,
+	        IImageController imageController) {
 		this.factory = factory;
-	}
-
-	@Override
-	public final void start() {
-		setVisible(true);
+		registerImageController(imageController);
 	}
 
 	@Override
@@ -34,42 +47,170 @@ abstract class AbstractView extends JFrame implements IView {
 		controller = newController;
 	}
 
+	@Override
+	public void registerImageController(IImageController newImageController) {}
+
+	protected abstract void changeLanguage();
+
+	// ---------- AbstractView Commands ---------- //
+
 	/**
-	 * Replaces the panel inside this JFrame with a new one.
+	 * A wrapper method for {@link IController#getStationsByTown(ETown)} that also
+	 * updates the source panel of the view.
 	 *
-	 * @param newPanel the new panel
+	 * @param town the town from which the stations will be selected
 	 */
-	protected final void updatePanel(JPanel newPanel) {
-		final Container contentPane = getContentPane();
-		contentPane.remove(panel);
-		contentPane.add(newPanel);
-		panel = newPanel;
-		invalidate();
-		repaint();
+	protected void getStationsByTown(ETown town) {
+		controller.getStationsByTown(town);
 	}
 
-	// TODO: define the actions that a view may take
-
-	/*
-	Example AbstractAction that will be called by the concrete view and the graphics inside of it
-
-	@foff
-	protected final class StationsByTownListener extends AbstractAction {
-
-		// the entity associated with that graphic
-		// it will be used as context for the controller
-		private ETown town;
-
-		public StationsByTownListener(ETown town) {
-			this.town = town;
-		}
-
-		// call a method of the controller interface
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			controller.getStationsByTown(this.town);
-		}
+	/**
+	 * A wrapper method for {@link IController#getLinesByTown(ETown)} that also
+	 * updates the source panel of the view.
+	 *
+	 * @param town the town from which the lines will be selected
+	 */
+	protected void getLinesByTown(ETown town) {
+		controller.getLinesByTown(town);
 	}
-	@fon
-	*/
+
+	/**
+	 * A wrapper method for {@link IController#getStationsByLine(ELine)} that also
+	 * updates the source panel of the view.
+	 *
+	 * @param line the line from which the stations will be selected
+	 */
+	protected void getStationsByLine(ELine line) {
+		controller.getStationsByLine(line);
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getTimetablesByLine(ELine)} that also
+	 * updates the source panel of the view.
+	 *
+	 * @param line the line from which the timetables will be selected
+	 */
+	protected void getTimetablesByLine(ELine line) {
+		controller.getTimetablesByLine(line);
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getTownsByLine(ELine)} that also
+	 * updates the source panel of the view.
+	 *
+	 * @param line the line from which the timetables will be selected
+	 */
+	protected void getTownsByLine(ELine line) {
+		controller.getTownsByLine(line);
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getLinesByStation(EStation)} that
+	 * also updates the source panel of the view.
+	 *
+	 * @param station the station from which the timetables will be selected
+	 */
+	protected void getLinesByStation(EStation station) {
+		controller.getLinesByStation(station);
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getAllTowns()} that also resets the
+	 * source panel of the view.
+	 */
+	protected void getAllTowns() {
+		controller.getAllTowns();
+	}
+
+	/**
+	 * A wrapper method for {@link IController#getAllLines()} that also resets the
+	 * source panel of the view.
+	 */
+	protected void getAllLines() {
+		controller.getAllLines();
+	}
+
+	/**
+	 * Allows each subclass to define how to fulfil a {@link Requirements}.
+	 *
+	 * @param reqs   the Requirements object to fulfil
+	 * @param prompt the prompt for the fulfilment, which may be displayed to the
+	 *               user
+	 */
+	protected abstract void fulfilRequirements(Requirements reqs, String prompt);
+
+	/**
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the user created {@link ETown
+	 * town}.
+	 *
+	 * @see IController#insertTown(Requirements)
+	 */
+	protected final void insertTown() {
+		Requirements reqs = controller.getInsertTownRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.0")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertTown(reqs);
+	}
+
+	/**
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the user created {@link ELine
+	 * line}.
+	 *
+	 * @see IController#insertLine(Requirements)
+	 */
+	protected final void insertLine() {
+		Requirements reqs = controller.getInsertLineRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.1")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertLine(reqs);
+	}
+
+	/**
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the user created {@link EStation
+	 * station}.
+	 *
+	 * @see IController#insertStation(Requirements)
+	 */
+	protected final void insertStation() {
+		Requirements reqs = controller.getInsertStationRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.2")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertStation(reqs);
+	}
+
+	/**
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the newly assigned {@link EStation
+	 * station} to the existing {@link ELine line}.
+	 *
+	 * @see IController#insertStationToLine(Requirements)
+	 */
+	protected final void insertStationToLine() {
+		Requirements reqs = controller.getInsertStationToLineRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.3")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertStationToLine(reqs);
+	}
+
+	/**
+	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
+	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
+	 * method and updates the {@link IModel} with the newly assigned
+	 * {@link ETimetable time table} to the existing {@link ELine line}.
+	 *
+	 * @see IController#insertTimetableToLine(Requirements)
+	 */
+	protected final void insertTimetableToLine() {
+		Requirements reqs = controller.getInsertTimetableToLineRequirements();
+		fulfilRequirements(reqs, Languages.getString("AbstractView.4")); //$NON-NLS-1$
+		if (reqs.fulfilled())
+			controller.insertTimetableToLine(reqs);
+	}
 }

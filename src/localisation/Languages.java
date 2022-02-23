@@ -36,7 +36,8 @@ public final class Languages {
 	/** The file containing information about the current Locale */
 	public static final String FILE = "program_data\\languages.properties"; //$NON-NLS-1$
 
-	private static final String LANGUAGES_DIRECTORY = "src\\localisation"; //$NON-NLS-1$
+	/** The directory containing the .properties language files */
+	public static final String LANGUAGES_DIRECTORY = "src\\localisation"; //$NON-NLS-1$
 
 	private static final Properties properties = new OrderedProperties();
 
@@ -62,7 +63,7 @@ public final class Languages {
 			System.exit(0);
 		} catch (final IOException e) {
 			System.err.printf(
-			        "Error while reading from file %s. Inform the developer about 'Settings.static-IO'%", //$NON-NLS-1$
+			        "Error while reading from file %s. Inform the developer about 'Languages.static-IO'%", //$NON-NLS-1$
 			        Languages.FILE);
 			System.exit(0);
 		}
@@ -84,6 +85,57 @@ public final class Languages {
 		} catch (final MissingResourceException e) {
 			return '!' + key + '!';
 		}
+	}
+
+	public static Requirements getLanguageRequirements() {
+
+		final List<Locale> locales = new ArrayList<>();
+
+		final File directory = new File(Languages.LANGUAGES_DIRECTORY);
+		for (File file : directory.listFiles()) {
+
+			final String fname = file.getName();
+
+			if (Languages.isLanguageFile(fname)) {
+				final Matcher m = Languages.pattern.matcher(fname);
+				if (!m.find())
+					throw new RuntimeException(
+					        String.format("Invalid language file name: %s", fname)); //$NON-NLS-1$
+
+				final Function<String, String> f = (s -> s == null ? "" : s); //$NON-NLS-1$
+
+				final String language = f.apply(m.group(Languages.LANGUAGE_LITERAL));
+				final String country  = f.apply(m.group(Languages.COUNTRY_LITERAL));
+				final String variant  = f.apply(m.group(Languages.VARIANT_LITERAL));
+				locales.add(new Locale(language, country, variant));
+			}
+		}
+
+		if (locales.isEmpty()) {
+			return null;
+		}
+
+		final Requirements reqWrapper = new Requirements();
+		reqWrapper.add(Languages.getString("MyMenu.1"), locales); //$NON-NLS-1$
+		return reqWrapper;
+	}
+
+	public static boolean updateLanguageWithReqs(Requirements reqs) throws IOException {
+		final Locale chosen  = reqs.getValue(Languages.getString("MyMenu.1"), Locale.class); //$NON-NLS-1$
+		final Locale current = Languages.currentLocale();
+
+		if ((chosen == null) || chosen.equals(current))
+			return false;
+
+		Languages.set(Languages.LANGUAGE_LITERAL, chosen.getLanguage());
+		Languages.set(Languages.COUNTRY_LITERAL, chosen.getCountry());
+		Languages.set(Languages.VARIANT_LITERAL, chosen.getVariant());
+
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(Languages.FILE))) {
+			Languages.properties.store(writer, null);
+		}
+
+		return true;
 	}
 
 	/**

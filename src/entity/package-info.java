@@ -1,6 +1,6 @@
 /**
- * The entity package contains the application's Entity classes as well as other
- * record files used by them.
+ * Contains the application's Entity classes as well as other utility classes
+ * used by them.
  *
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
