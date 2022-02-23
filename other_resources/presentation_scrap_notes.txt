@@ -1,9 +1,0 @@
-powerpoint with:
-er
-diagramma klasewn
-activity diagram for 2-3 activities (PCE for VCM)
-very sinoptika o kwdikas
-
-presentation:
-leitoyrgikothta -> arxitektonikh
-er -> model ->

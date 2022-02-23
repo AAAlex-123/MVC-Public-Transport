@@ -22,7 +22,7 @@ public class MLocalImageModel implements IImageModel {
 	 * {@code other_resources\resources} directory.
 	 */
 	public MLocalImageModel() {
-		this("other_resources", "resources"); //$NON-NLS-1$ //$NON-NLS-2$
+		this("resources", "assets"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
