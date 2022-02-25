@@ -245,6 +245,22 @@ public class OASAView extends AbstractGUIView {
 	}
 
 	@Override
+	public void updateViewWithLineArrivalTimes(List<ELine> lines, EStation station) {
+		final JPanel contentPanel = OASAView.getContentPanel();
+
+		final JPanel linePanel = OASAView.getDisplayPanel();
+		for (final ELine line : lines)
+			linePanel.add(factory.getDetailedELineRepresentation(line, station));
+
+		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.24")), //$NON-NLS-1$
+		        BorderLayout.NORTH);
+		contentPanel.add(OASAView.getJSPForPanel(linePanel), BorderLayout.CENTER);
+
+		super.updatePanel(contentPanel);
+	}
+
+
+	@Override
 	public void updateViewWithStations(List<EStation> stations) {
 		final JPanel contentPanel = OASAView.getContentPanel();
 

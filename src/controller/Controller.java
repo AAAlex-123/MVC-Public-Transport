@@ -49,18 +49,14 @@ public class Controller implements IController {
 		}
 	}
 
-	private void getLines(ETown town, EStation station) {
+	@Override
+	public void getAllLines() {
 		try {
-			final List<ELine> lines = model.getLines(town, station);
+			final List<ELine> lines = model.getLines(null, null);
 			view.updateViewWithLines(lines);
 		} catch (final SQLException e) {
 			view.updateViewWithError(e);
 		}
-	}
-
-	@Override
-	public void getAllLines() {
-		getLines(null, null);
 	}
 
 	@Override
@@ -80,7 +76,12 @@ public class Controller implements IController {
 
 	@Override
 	public void getLinesByTown(ETown town) {
-		getLines(town, null);
+		try {
+			final List<ELine> lines = model.getLines(town, null);
+			view.updateViewWithLines(lines);
+		} catch (final SQLException e) {
+			view.updateViewWithError(e);
+		}
 	}
 
 	@Override
@@ -132,7 +133,12 @@ public class Controller implements IController {
 
 	@Override
 	public void getLinesByStation(EStation station) {
-		getLines(null, station);
+		try {
+			final List<ELine> lines = model.getLines(null, station);
+			view.updateViewWithLineArrivalTimes(lines, station);
+		} catch (final SQLException e) {
+			view.updateViewWithError(e);
+		}
 	}
 
 	@Override

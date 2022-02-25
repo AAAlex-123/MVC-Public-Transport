@@ -55,6 +55,15 @@ public interface IView {
 	void updateViewWithLines(List<ELine> lines);
 
 	/**
+	 * Request that the view switched to show a list of lines and their arrival time
+	 * given a station
+	 *
+	 * @param lines   the list of lines
+	 * @param station the station for which to show the arrival times
+	 */
+	void updateViewWithLineArrivalTimes(List<ELine> lines, EStation station);
+
+	/**
 	 * Request that the view switched to show a list of stations.
 	 *
 	 * @param stations the list of stations

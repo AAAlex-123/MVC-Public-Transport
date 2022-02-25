@@ -185,6 +185,40 @@ public class ConsoleView extends AbstractView<String> {
 	}
 
 	@Override
+	public void updateViewWithLineArrivalTimes(List<ELine> lines, EStation station) {
+		if (lines.isEmpty())
+			goToHomepage(LINES);
+
+		printSource();
+		final FormatBuffer buffer = new FormatBuffer("%s %s: %n", PLEASE_SELECT, //$NON-NLS-1$
+		        A_LINE);
+
+		for (final ELine line : lines)
+			buffer.format(factory.getDetailedELineRepresentation(line, station));
+
+		out.print(buffer);
+
+		final ELine selected = lines.get(getAnswer(1, lines.size()) - 1);
+
+		sourceEntityDescription = factory.getELineRepresentation(selected);
+
+		printMenu(new String[] {
+		        String.format(Languages.getString("ConsoleView.10"), SHOW_ALL), //$NON-NLS-1$
+		        String.format(Languages.getString("ConsoleView.11"), SHOW_ALL), //$NON-NLS-1$
+		        String.format(Languages.getString("ConsoleView.12"), SHOW_ALL), //$NON-NLS-1$
+		        RETURN_TO_HOME,
+		}, String.format("%s %s: %s%n", SELECT_ACCESS, //$NON-NLS-1$
+		        THE_LINE, "%s"), selected.getName()); //$NON-NLS-1$
+
+		doWithAnswer(
+		        () -> super.getTownsByLine(selected),
+		        () -> super.getStationsByLine(selected),
+		        () -> super.getTimetablesByLine(selected),
+		        this::updateViewWithHomepage);
+	}
+
+
+	@Override
 	public void updateViewWithStations(List<EStation> stations) {
 		if (stations.isEmpty())
 			goToHomepage(STATIONS);
