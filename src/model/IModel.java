@@ -5,7 +5,7 @@ import java.util.List;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 
 /**
@@ -98,12 +98,12 @@ public interface IModel {
 	void insertStationToLine(ELine line, EStation station, int index) throws SQLException;
 
 	/**
-	 * Inserts a new {@link ETimetable} to an existing {@link ELine}.
+	 * Inserts a new {@link ETimestamp} to an existing {@link ELine}.
 	 *
 	 * @param line      the Line to which the Timetable will be added
 	 * @param timetable the Timetable to be added
 	 *
 	 * @throws SQLException if an SQLException is thrown
 	 */
-	void insertTimetableToLine(ELine line, ETimetable timetable) throws SQLException;
+	void insertTimetableToLine(ELine line, ETimestamp timetable) throws SQLException;
 }

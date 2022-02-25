@@ -4,7 +4,7 @@ import controller.IController;
 import controller.IImageController;
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 import localisation.Languages;
 import model.IModel;
@@ -203,7 +203,7 @@ abstract class AbstractView<E> implements IView {
 	 * Gets the {@link Requirements} from the {@link IController}, fulfils them
 	 * through the {@link AbstractView#fulfilRequirements(Requirements, String)}
 	 * method and updates the {@link IModel} with the newly assigned
-	 * {@link ETimetable time table} to the existing {@link ELine line}.
+	 * {@link ETimestamp timestamp} to the existing {@link ELine line}.
 	 *
 	 * @see IController#insertTimetableToLine(Requirements)
 	 */

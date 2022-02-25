@@ -6,7 +6,7 @@ import controller.IController;
 import controller.IImageController;
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 
 /**
@@ -62,11 +62,11 @@ public interface IView {
 	void updateViewWithStations(List<EStation> stations);
 
 	/**
-	 * Request that the view switched to show a list of timetables.
+	 * Request that the view switched to show a list of timestamps.
 	 *
-	 * @param timetables the list of timetables
+	 * @param timestamps the list of timestamps
 	 */
-	void updateViewWithTimetables(List<ETimetable> timetables);
+	void updateViewWithTimestamps(List<ETimestamp> timestamps);
 
 	/**
 	 * Request that the view switched to show an error.

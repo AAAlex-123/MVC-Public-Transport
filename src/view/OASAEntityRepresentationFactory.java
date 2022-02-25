@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 import localisation.Languages;
 
@@ -194,10 +194,10 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getETimetableRepresentatino(ETimetable timetable) {
+	public JPanel getETimestampRepresentation(ETimestamp timestamp) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
-		final JLabel nameLabel = new JLabel(timetable.getFormattedTime());
+		final JLabel nameLabel = new JLabel(timestamp.getFormattedTime());
 		nameLabel.setFont(largeFont);
 		nameLabel.setForeground(textColor);
 		nameLabel.setBackground(backgroundColor);

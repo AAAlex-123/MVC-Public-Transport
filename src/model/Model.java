@@ -14,7 +14,7 @@ import java.util.Map;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 import entity.LineType;
 import entity.Position;
@@ -126,7 +126,7 @@ public class Model implements IModel {
 
 		final List<ELine>                    linesFromDatabase      = new LinkedList<>();
 		final Map<Integer, List<EStation>>   stationsFromDatabase   = new HashMap<>();
-		final Map<Integer, List<ETimetable>> timetablesFromDatabase = new HashMap<>();
+		final Map<Integer, List<ETimestamp>> timetablesFromDatabase = new HashMap<>();
 
 		doWithStatement((Statement stmt) -> {
 			try (ResultSet rs = stmt.executeQuery(qSelectAllLines)) {
@@ -182,7 +182,7 @@ public class Model implements IModel {
 
 			for (final ELine line : linesFromDatabase) {
 
-				final List<ETimetable> newTimetables = new LinkedList<>();
+				final List<ETimestamp> newTimetables = new LinkedList<>();
 
 				final String lineID = String.valueOf(line.getId());
 				final String query  = qSelectTimetablesForLine.replace("@1", lineID);
@@ -196,7 +196,7 @@ public class Model implements IModel {
 						final int      hours   = Integer.parseInt(parts[0]);
 						final int      minutes = Integer.parseInt(parts[1]);
 
-						newTimetables.add(new ETimetable(hours, minutes));
+						newTimetables.add(new ETimestamp(hours, minutes));
 					}
 				}
 
@@ -209,7 +209,7 @@ public class Model implements IModel {
 		for (final ELine line : linesFromDatabase) {
 			final int              lineId            = line.getId();
 			final List<EStation>   stationsForLine   = stationsFromDatabase.get(lineId);
-			final List<ETimetable> timetablesForLine = timetablesFromDatabase.get(lineId);
+			final List<ETimestamp> timetablesForLine = timetablesFromDatabase.get(lineId);
 
 			final ELine newLine = new ELine(lineId, line.getName(), line.getType(),
 			        line.getDescription(), stationsForLine, timetablesForLine);
@@ -338,7 +338,7 @@ public class Model implements IModel {
 	}
 
 	@Override
-	public void insertTimetableToLine(ELine line, ETimetable timetable) throws SQLException {
+	public void insertTimetableToLine(ELine line, ETimestamp timetable) throws SQLException {
 		if (line == null)
 			throw new IllegalArgumentException("line can't be null");
 		if (timetable == null)

@@ -2,7 +2,7 @@ package view;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 
 /**
@@ -44,11 +44,11 @@ interface AbstractEntityRepresentationFactory<E> {
 	E getEStationRepresentation(EStation station);
 
 	/**
-	 * Returns a Representation for an {@link ETimetable}.
+	 * Returns a Representation for an {@link ETimestamp}.
 	 *
 	 * @param timetable the Timetable
 	 *
 	 * @return the Representation for the Timetable
 	 */
-	E getETimetableRepresentatino(ETimetable timetable);
+	E getETimestampRepresentation(ETimestamp timetable);
 }

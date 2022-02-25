@@ -27,7 +27,7 @@ import javax.swing.SwingConstants;
 import controller.IImageController;
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 import localisation.Languages;
 import requirement.util.Requirements;
@@ -260,16 +260,16 @@ public class OASAView extends AbstractGUIView {
 	}
 
 	@Override
-	public void updateViewWithTimetables(List<ETimetable> timetables) {
+	public void updateViewWithTimestamps(List<ETimestamp> timestamps) {
 		final JPanel contentPanel = OASAView.getContentPanel();
 
-		final JPanel timetablePanel = OASAView.getDisplayPanel();
-		for (final ETimetable timetable : timetables)
-			timetablePanel.add(factory.getETimetableRepresentatino(timetable));
+		final JPanel timestampPanel = OASAView.getDisplayPanel();
+		for (final ETimestamp timestamp : timestamps)
+			timestampPanel.add(factory.getETimestampRepresentation(timestamp));
 
 		contentPanel.add(OASAView.getCenteredLabel(Languages.getString("OASAView.26")),  //$NON-NLS-1$
 		        BorderLayout.NORTH);
-		contentPanel.add(OASAView.getJSPForPanel(timetablePanel), BorderLayout.CENTER);
+		contentPanel.add(OASAView.getJSPForPanel(timestampPanel), BorderLayout.CENTER);
 
 		super.updatePanel(contentPanel);
 	}

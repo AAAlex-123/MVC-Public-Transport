@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 import entity.LineType;
 import entity.Position;
@@ -117,7 +117,7 @@ public class Controller implements IController {
 
 		for (ELine fetchedLine : lines)
 			if (fetchedLine.getId() == line.getId()) {
-				view.updateViewWithTimetables(fetchedLine.getTimetables());
+				view.updateViewWithTimestamps(fetchedLine.getTimetables());
 				return;
 			}
 
@@ -229,7 +229,7 @@ public class Controller implements IController {
 		        .apply(reqs.getValue(ControllerStrings.HOURS, String.class));
 		final int        minutes   = stoi
 		        .apply(reqs.getValue(ControllerStrings.MINUTES, String.class));
-		final ETimetable timetable = new ETimetable(hours, minutes);
+		final ETimestamp timetable = new ETimestamp(hours, minutes);
 
 		try {
 			model.insertTimetableToLine(line, timetable);

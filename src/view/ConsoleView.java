@@ -24,7 +24,7 @@ import java.util.Scanner;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 import localisation.Languages;
 import requirement.requirements.AbstractRequirement;
@@ -214,15 +214,15 @@ public class ConsoleView extends AbstractView<String> {
 	}
 
 	@Override
-	public void updateViewWithTimetables(List<ETimetable> timetables) {
-		if (timetables.isEmpty())
+	public void updateViewWithTimestamps(List<ETimestamp> timestamps) {
+		if (timestamps.isEmpty())
 			goToHomepage(TIMETABLES);
 
 		printSource();
 		final FormatBuffer buffer = new FormatBuffer();
 
-		for (final ETimetable timetable : timetables)
-			buffer.format(factory.getETimetableRepresentatino(timetable));
+		for (final ETimestamp timestamp : timestamps)
+			buffer.format(factory.getETimestampRepresentation(timestamp));
 
 		out.print(buffer);
 

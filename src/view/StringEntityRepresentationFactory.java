@@ -2,7 +2,7 @@ package view;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 import entity.Position;
 import localisation.Languages;
@@ -43,7 +43,7 @@ public class StringEntityRepresentationFactory
 	}
 
 	@Override
-	public String getETimetableRepresentatino(ETimetable timetable) {
-		return timetable.getFormattedTime();
+	public String getETimestampRepresentation(ETimestamp timestamp) {
+		return timestamp.getFormattedTime();
 	}
 }

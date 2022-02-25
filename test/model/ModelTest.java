@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import entity.ELine;
 import entity.EStation;
-import entity.ETimetable;
+import entity.ETimestamp;
 import entity.ETown;
 import entity.LineType;
 import entity.Position;
@@ -44,7 +44,7 @@ class ModelTest {
 	        sPlateia, sPapandreou, sSyntagma, sAerodromio, sMonasthraki;
 	private static final ELine            l305, l421, lB9, l3;
 	private static final List<EStation>   sl305, sl421, slB9, sl3;
-	private static final List<ETimetable> tl305, tl421, tlB9, tl3;
+	private static final List<ETimestamp> tl305, tl421, tlB9, tl3;
 
 	static {
 		tSpata = new ETown(1, "spata");
@@ -68,18 +68,18 @@ class ModelTest {
 		slB9 = List.of(sPapandreou, sPlateia, sSyntagma);
 		sl3 = List.of(sAerodromio, sAgia_paraskevi, sNomismatokopeio, sSyntagma, sMonasthraki);
 
-		tl305 = List.of(new ETimetable(12, 00), new ETimetable(13, 00), new ETimetable(14, 00),
-		        new ETimetable(15, 00), new ETimetable(16, 00), new ETimetable(17, 00),
-		        new ETimetable(18, 00));
-		tl421 = List.of(new ETimetable(9, 00), new ETimetable(9, 30), new ETimetable(10, 00),
-		        new ETimetable(10, 30), new ETimetable(11, 00), new ETimetable(11, 30),
-		        new ETimetable(12, 00));
-		tlB9 = List.of(new ETimetable(17, 00), new ETimetable(18, 00), new ETimetable(19, 00),
-		        new ETimetable(20, 00), new ETimetable(21, 00), new ETimetable(22, 00),
-		        new ETimetable(23, 00));
-		tl3 = List.of(new ETimetable(5, 00), new ETimetable(8, 00), new ETimetable(11, 00),
-		        new ETimetable(14, 00), new ETimetable(17, 00), new ETimetable(20, 00),
-		        new ETimetable(23, 00));
+		tl305 = List.of(new ETimestamp(12, 00), new ETimestamp(13, 00), new ETimestamp(14, 00),
+		        new ETimestamp(15, 00), new ETimestamp(16, 00), new ETimestamp(17, 00),
+		        new ETimestamp(18, 00));
+		tl421 = List.of(new ETimestamp(9, 00), new ETimestamp(9, 30), new ETimestamp(10, 00),
+		        new ETimestamp(10, 30), new ETimestamp(11, 00), new ETimestamp(11, 30),
+		        new ETimestamp(12, 00));
+		tlB9 = List.of(new ETimestamp(17, 00), new ETimestamp(18, 00), new ETimestamp(19, 00),
+		        new ETimestamp(20, 00), new ETimestamp(21, 00), new ETimestamp(22, 00),
+		        new ETimestamp(23, 00));
+		tl3 = List.of(new ETimestamp(5, 00), new ETimestamp(8, 00), new ETimestamp(11, 00),
+		        new ETimestamp(14, 00), new ETimestamp(17, 00), new ETimestamp(20, 00),
+		        new ETimestamp(23, 00));
 
 		l305 = new ELine(1, "305", LineType.BUS, "spata-nomismatokopeio", sl305, tl305);
 		l421 = new ELine(2, "421", LineType.BUS, "agia paraskevi-nea filadelfia", sl421, tl421);
@@ -492,12 +492,12 @@ class ModelTest {
 
 	/**
 	 * Test method for
-	 * {@link model.Model#insertTimetableToLine(entity.ELine, entity.ETimetable)}.
+	 * {@link model.Model#insertTimetableToLine(entity.ELine, entity.ETimestamp)}.
 	 */
 	@Test
 	final void testInsertTimetableToLine() {
 		assertThrows(IllegalArgumentException.class, () -> {
-		    model.insertTimetableToLine(null, new ETimetable(0, 0));
+		    model.insertTimetableToLine(null, new ETimestamp(0, 0));
 		});
 
 		assertThrows(IllegalArgumentException.class, () -> {
@@ -510,10 +510,10 @@ class ModelTest {
 		assertEquals(el421, al421);
 
 
-		ETimetable newTimetable = new ETimetable(0, 30);
+		ETimestamp newTimetable = new ETimestamp(0, 30);
 		assertDoesNotThrow(() -> model.insertTimetableToLine(l421, newTimetable));
 
-		List<ETimetable> timetables = new ArrayList<>(l421.getTimetables());
+		List<ETimestamp> timetables = new ArrayList<>(l421.getTimetables());
 		timetables.add(0, newTimetable);
 		el421 = new ELine(l421.getId(), l421.getName(), l421.getType(),
 		        l421.getDescription(), l421.getStations(), timetables);
