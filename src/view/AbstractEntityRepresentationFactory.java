@@ -34,6 +34,18 @@ interface AbstractEntityRepresentationFactory<E> {
 	 */
 	E getELineRepresentation(ELine line);
 
+
+	/**
+	 * Returns a detailed Representation for an {@link ELine} consisting
+	 * additionally of arrival information about a specific Station.
+	 *
+	 * @param line    the Line
+	 * @param station the Station for which to provide detailed information
+	 *
+	 * @return the detailed Representation for the Line
+	 */
+	E getDetailedELineRepresentation(ELine line, EStation station);
+
 	/**
 	 * Returns a Representation for an {@link EStation}.
 	 *

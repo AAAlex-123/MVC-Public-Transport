@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Calendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -13,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import entity.ELine;
 import entity.EStation;
@@ -152,6 +154,83 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
+	public JPanel getDetailedELineRepresentation(ELine line, EStation station) {
+		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
+
+		final ImageIcon icon = view.getImageIcon(line.getType().getSpriteName(), ICON_SIZE,
+		        ICON_SIZE);
+
+		graphic.add(new JLabel(icon));
+		graphic.add(Box.createHorizontalBox());
+
+		final JPanel namePanel = new JPanel();
+		namePanel.setBackground(backgroundColor);
+		namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.Y_AXIS));
+
+		final JLabel numLabel = new JLabel(line.getName());
+		numLabel.setFont(largeFont);
+		numLabel.setForeground(textColor);
+
+		final JLabel descrLabel = new JLabel(line.getDescription());
+		descrLabel.setFont(standardFont);
+		descrLabel.setForeground(textColor);
+
+		namePanel.add(numLabel);
+		namePanel.add(descrLabel);
+
+		final JPanel timePanel = new JPanel();
+		timePanel.setBackground(backgroundColor);
+		Calendar  instance = Calendar.getInstance();
+		final int hours    = instance.get(Calendar.HOUR_OF_DAY);
+		final int minutes  = instance.get(Calendar.MINUTE);
+
+		final ETimestamp now         = new ETimestamp(hours, minutes);
+		final ETimestamp arrivalTime = line.getNextArrival(station, now);
+
+		final JLabel timeLabel = new JLabel();
+		timeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		timeLabel.setFont(standardFont);
+		timeLabel.setForeground(textColor);
+		// timeLabel.setBorder(BorderFactory.createLineBorder(Color.RED));
+		if (arrivalTime == null)
+			timeLabel.setText("--:--"); //$NON-NLS-1$
+		else
+			timeLabel.setText(arrivalTime.sub(now).getFormattedTime());
+		timePanel.add(timeLabel);
+
+		graphic.add(namePanel);
+		graphic.add(Box.createHorizontalGlue());
+		graphic.add(timePanel);
+
+		graphic.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				final String   msg     = String
+				        .format(Languages.getString("OASAEntityGraphicFactory.6"),          //$NON-NLS-1$
+				                line.getDescription());
+				final String   title   = Languages.getString("OASAEntityGraphicFactory.7"); //$NON-NLS-1$
+				final String[] options = { FIND_TIMES, FIND_STATIONS, FIND_TOWNS };
+				final String   initial = FIND_TIMES;
+
+				final String res = (String) JOptionPane.showInputDialog(view.frame,
+				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
+
+				if (res == null)
+					;
+				else if (res.equals(FIND_TIMES))
+					view.getTimetablesByLine(line);
+				else if (res.equals(FIND_STATIONS))
+					view.getStationsByLine(line);
+				else if (res.equals(FIND_TOWNS))
+					view.getTownsByLine(line);
+			}
+		});
+
+		return graphic;
+	}
+
+	@Override
 	public JPanel getEStationRepresentation(EStation station) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
@@ -210,6 +289,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	private static JPanel prepareGraphic() {
 		final JPanel graphic = new JPanel();
 		graphic.setLayout(new BoxLayout(graphic, BoxLayout.X_AXIS));
+		// graphic.setLayout(new GridLayout(1, 0, 0, 10));
 		graphic.setBackground(backgroundColor);
 		graphic.setBorder(BorderFactory.createLineBorder(textColor, 2));
 		graphic.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
