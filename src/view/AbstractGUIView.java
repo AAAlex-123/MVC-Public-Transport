@@ -2,11 +2,15 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
@@ -24,7 +28,7 @@ import localisation.Languages;
  * @author Alex Mandelias
  * @author Dimitris Tsirmpas
  */
-abstract class AbstractGUIView extends AbstractView<JPanel> {
+abstract class AbstractGUIView extends AbstractView<JComponent> {
 
 	private final int width, height;
 
@@ -35,7 +39,8 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	/** The frame that will display the UI */
 	protected final JFrame frame;
 
-	private JPanel mainPanel, headerPanel;
+	private JPanel     mainPanel;
+	private JComponent headerPanel;
 
 	/**
 	 * Constructs the view initialising its UI and providing a factory with which to
@@ -68,7 +73,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 		mainPanel.add(headerPanel, BorderLayout.NORTH);
 		mainPanel.add(new JPanel(), BorderLayout.CENTER);
 
-		frame.setJMenuBar(constructJMenuBar());
+		frame.setJMenuBar(constructJMenuBar(new Font(Font.SANS_SERIF, Font.PLAIN, 22)));
 		frame.add(mainPanel, BorderLayout.CENTER);
 		frame.add(constructFooter(), BorderLayout.SOUTH);
 
@@ -93,9 +98,84 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	/**
 	 * Constructs a JMenuBar for this View.
 	 *
+	 * @param font the font used for the text on the JMenuBar
+	 *
 	 * @return the JMenuBar
 	 */
-	protected abstract JMenuBar constructJMenuBar();
+	protected JMenuBar constructJMenuBar(Font font) {
+		final JMenuBar menuBar = new JMenuBar();
+
+		final JMenu     m_insert, m_preferences;
+		final JMenuItem home, prev, next, i_town, i_station, i_line, i_station_to_line,
+		        i_timetable_to_line, /* p_settings, */ p_language;
+
+		home = new JMenuItem(Languages.getString("OASAView.0")); //$NON-NLS-1$
+		prev = new JMenuItem(Languages.getString("OASAView.1")); //$NON-NLS-1$
+		next = new JMenuItem(Languages.getString("OASAView.2")); //$NON-NLS-1$
+
+		home.setFont(font);
+		prev.setFont(font);
+		next.setFont(font);
+
+		m_insert = new JMenu(Languages.getString("OASAView.3")); //$NON-NLS-1$
+		i_town = new JMenuItem(Languages.getString("OASAView.4")); //$NON-NLS-1$
+		i_station = new JMenuItem(Languages.getString("OASAView.5")); //$NON-NLS-1$
+		i_line = new JMenuItem(Languages.getString("OASAView.6")); //$NON-NLS-1$
+		i_station_to_line = new JMenuItem(Languages.getString("OASAView.7")); //$NON-NLS-1$
+		i_timetable_to_line = new JMenuItem(Languages.getString("OASAView.8")); //$NON-NLS-1$
+
+		m_insert.setFont(font);
+		i_town.setFont(font);
+		i_station.setFont(font);
+		i_line.setFont(font);
+		i_station_to_line.setFont(font);
+		i_timetable_to_line.setFont(font);
+
+		m_insert.add(i_town);
+		m_insert.add(i_station);
+		m_insert.add(i_line);
+		m_insert.add(i_station_to_line);
+		m_insert.add(i_timetable_to_line);
+
+		m_preferences = new JMenu(Languages.getString("OASAView.9")); //$NON-NLS-1$
+		// p_settings = new JMenuItem(Languages.getString("OASAView.10")); //$NON-NLS-1$
+		p_language = new JMenuItem(Languages.getString("OASAView.10")); //$NON-NLS-1$
+		// m_preferences.add(p_settings);
+		m_preferences.add(p_language);
+
+		m_preferences.setFont(font);
+		// p_settings.setFont(font);
+		p_language.setFont(font);
+
+		menuBar.add(home);
+		menuBar.add(prev);
+		menuBar.add(next);
+		menuBar.add(m_insert);
+		menuBar.add(m_preferences);
+
+
+		home.addActionListener(e -> AbstractGUIView.this.changeToHomePanel());
+		prev.addActionListener(e -> AbstractGUIView.this.changeToPreviousPanel());
+		next.addActionListener(e -> AbstractGUIView.this.changeToNextPanel());
+
+		i_town.addActionListener(e -> AbstractGUIView.this.insertTown());
+		i_station.addActionListener(e -> AbstractGUIView.this.insertStation());
+		i_line.addActionListener(e -> AbstractGUIView.this.insertLine());
+		i_station_to_line.addActionListener(e -> AbstractGUIView.this.insertStationToLine());
+		i_timetable_to_line.addActionListener(e -> AbstractGUIView.this.insertTimetableToLine());
+
+		p_language.addActionListener(e -> AbstractGUIView.this.changeLanguage());
+
+		home.setIcon(getImageIcon("home_button.jpg", 25, 25)); //$NON-NLS-1$
+		prev.setIcon(getImageIcon("prev_button_small.png", 25, 25)); //$NON-NLS-1$
+		next.setIcon(getImageIcon("next_button_small.png", 25, 25)); //$NON-NLS-1$
+		i_town.setIcon(getImageIcon("town.png", 18, 18)); //$NON-NLS-1$
+		i_station.setIcon(getImageIcon("station.png", 18, 18)); //$NON-NLS-1$
+		i_line.setIcon(getImageIcon("bus.png", 18, 18)); //$NON-NLS-1$
+		p_language.setIcon(getImageIcon("language.png", 18, 18)); //$NON-NLS-1$
+
+		return menuBar;
+	}
 
 	/**
 	 * Constructs a JPanel that will be used as a footer for this View, meaning that
@@ -189,7 +269,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 * @param newHeaderPanel null to remove the header panel, a JPanel to update it
 	 *                       with a new one
 	 */
-	private void updateHeaderPanel(JPanel newHeaderPanel) {
+	private void updateHeaderPanel(JComponent newHeaderPanel) {
 		headerPanel = newHeaderPanel;
 		if (headerPanel == null)
 			headerPanel = new JPanel();
@@ -201,7 +281,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 *
 	 * @param town the town from which the stations will be selected
 	 *
-	 * @see #updateHeaderPanel(JPanel)
+	 * @see #updateHeaderPanel(JComponent)
 	 */
 	@Override
 	protected void getStationsByTown(ETown town) {
@@ -215,7 +295,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 *
 	 * @param town the town from which the lines will be selected
 	 *
-	 * @see #updateHeaderPanel(JPanel)
+	 * @see #updateHeaderPanel(JComponent)
 	 */
 	@Override
 	protected void getLinesByTown(ETown town) {
@@ -229,7 +309,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 *
 	 * @param line the line from which the stations will be selected
 	 *
-	 * @see #updateHeaderPanel(JPanel)
+	 * @see #updateHeaderPanel(JComponent)
 	 */
 	@Override
 	protected void getStationsByLine(ELine line) {
@@ -243,7 +323,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 *
 	 * @param line the line from which the timetables will be selected
 	 *
-	 * @see #updateHeaderPanel(JPanel)
+	 * @see #updateHeaderPanel(JComponent)
 	 */
 	@Override
 	protected void getTimetablesByLine(ELine line) {
@@ -257,7 +337,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 *
 	 * @param line the line from which the timetables will be selected
 	 *
-	 * @see #updateHeaderPanel(JPanel)
+	 * @see #updateHeaderPanel(JComponent)
 	 */
 	@Override
 	protected void getTownsByLine(ELine line) {
@@ -271,7 +351,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 *
 	 * @param station the station from which the timetables will be selected
 	 *
-	 * @see #updateHeaderPanel(JPanel)
+	 * @see #updateHeaderPanel(JComponent)
 	 */
 	@Override
 	protected void getLinesByStation(EStation station) {
@@ -283,7 +363,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 * A wrapper method for {@link IController#getAllTowns()} that also resets the
 	 * source panel of the view.
 	 *
-	 * @see #updateHeaderPanel(JPanel)
+	 * @see #updateHeaderPanel(JComponent)
 	 */
 	@Override
 	protected void getAllTowns() {
@@ -295,7 +375,7 @@ abstract class AbstractGUIView extends AbstractView<JPanel> {
 	 * A wrapper method for {@link IController#getAllLines()} that also resets the
 	 * source panel of the view.
 	 *
-	 * @see #updateHeaderPanel(JPanel)
+	 * @see #updateHeaderPanel(JComponent)
 	 */
 	@Override
 	protected void getAllLines() {

@@ -11,6 +11,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -59,7 +60,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getETownRepresentation(ETown town) {
+	public JComponent getETownRepresentation(ETown town) {
 		final JPanel graphic = prepareGraphic();
 
 		final ImageIcon icon = view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE); //$NON-NLS-1$
@@ -100,7 +101,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getELineRepresentation(ELine line) {
+	public JComponent getELineRepresentation(ELine line) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		final ImageIcon icon = view.getImageIcon(line.getType().getSpriteName(), ICON_SIZE,
@@ -154,7 +155,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getDetailedELineRepresentation(ELine line, EStation station) {
+	public JComponent getDetailedELineRepresentation(ELine line, EStation station) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		final ImageIcon icon = view.getImageIcon(line.getType().getSpriteName(), ICON_SIZE,
@@ -231,7 +232,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getEStationRepresentation(EStation station) {
+	public JComponent getEStationRepresentation(EStation station) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		graphic.add(new JLabel(view.getImageIcon("station.png", ICON_SIZE, ICON_SIZE))); //$NON-NLS-1$
@@ -273,7 +274,7 @@ class OASAEntityRepresentationFactory<V extends AbstractGUIView>
 	}
 
 	@Override
-	public JPanel getETimestampRepresentation(ETimestamp timestamp) {
+	public JComponent getETimestampRepresentation(ETimestamp timestamp) {
 		final JPanel graphic = OASAEntityRepresentationFactory.prepareGraphic();
 
 		final JLabel nameLabel = new JLabel(timestamp.getFormattedTime());

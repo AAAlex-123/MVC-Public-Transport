@@ -15,9 +15,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -62,82 +59,6 @@ public class OASAView extends AbstractGUIView {
 		        WINDOW_HEIGHT);
 
 		((OASAEntityRepresentationFactory<AbstractGUIView>) factory).initializeView(this);
-	}
-
-	@Override
-	protected JMenuBar constructJMenuBar() {
-		final JMenuBar menuBar = new JMenuBar();
-
-		final JMenu     m_insert, m_preferences;
-		final JMenuItem home, prev, next, i_town, i_station, i_line, i_station_to_line,
-		        i_timetable_to_line, /* p_settings, */ p_language;
-
-		home = new JMenuItem(Languages.getString("OASAView.0")); //$NON-NLS-1$
-		prev = new JMenuItem(Languages.getString("OASAView.1")); //$NON-NLS-1$
-		next = new JMenuItem(Languages.getString("OASAView.2")); //$NON-NLS-1$
-
-		home.setFont(globalFont);
-		prev.setFont(globalFont);
-		next.setFont(globalFont);
-
-		m_insert = new JMenu(Languages.getString("OASAView.3"));  //$NON-NLS-1$
-		i_town = new JMenuItem(Languages.getString("OASAView.4"));  //$NON-NLS-1$
-		i_station = new JMenuItem(Languages.getString("OASAView.5"));  //$NON-NLS-1$
-		i_line = new JMenuItem(Languages.getString("OASAView.6"));  //$NON-NLS-1$
-		i_station_to_line = new JMenuItem(Languages.getString("OASAView.7"));  //$NON-NLS-1$
-		i_timetable_to_line = new JMenuItem(Languages.getString("OASAView.8"));  //$NON-NLS-1$
-
-		m_insert.setFont(globalFont);
-		i_town.setFont(globalFont);
-		i_station.setFont(globalFont);
-		i_line.setFont(globalFont);
-		i_station_to_line.setFont(globalFont);
-		i_timetable_to_line.setFont(globalFont);
-
-		m_insert.add(i_town);
-		m_insert.add(i_station);
-		m_insert.add(i_line);
-		m_insert.add(i_station_to_line);
-		m_insert.add(i_timetable_to_line);
-
-		m_preferences = new JMenu(Languages.getString("OASAView.9"));  //$NON-NLS-1$
-		// p_settings = new JMenuItem(Languages.getString("OASAView.10")); //$NON-NLS-1$
-		p_language = new JMenuItem(Languages.getString("OASAView.10"));  //$NON-NLS-1$
-		// m_preferences.add(p_settings);
-		m_preferences.add(p_language);
-
-		m_preferences.setFont(globalFont);
-		// p_settings.setFont(globalFont);
-		p_language.setFont(globalFont);
-
-		menuBar.add(home);
-		menuBar.add(prev);
-		menuBar.add(next);
-		menuBar.add(m_insert);
-		menuBar.add(m_preferences);
-
-
-		home.addActionListener(e -> OASAView.super.changeToHomePanel());
-		prev.addActionListener(e -> OASAView.super.changeToPreviousPanel());
-		next.addActionListener(e -> OASAView.super.changeToNextPanel());
-
-		i_town.addActionListener(e -> OASAView.super.insertTown());
-		i_station.addActionListener(e -> OASAView.super.insertStation());
-		i_line.addActionListener(e -> OASAView.super.insertLine());
-		i_station_to_line.addActionListener(e -> OASAView.super.insertStationToLine());
-		i_timetable_to_line.addActionListener(e -> OASAView.super.insertTimetableToLine());
-
-		p_language.addActionListener(e -> OASAView.this.changeLanguage());
-
-		home.setIcon(getImageIcon("home_button.jpg", 25, 25));  //$NON-NLS-1$
-		prev.setIcon(getImageIcon("prev_button_small.png", 25, 25));  //$NON-NLS-1$
-		next.setIcon(getImageIcon("next_button_small.png", 25, 25));  //$NON-NLS-1$
-		i_town.setIcon(getImageIcon("town.png", 18, 18));  //$NON-NLS-1$
-		i_station.setIcon(getImageIcon("station.png", 18, 18));  //$NON-NLS-1$
-		i_line.setIcon(getImageIcon("bus.png", 18, 18));  //$NON-NLS-1$
-		p_language.setIcon(getImageIcon("language.png", 18, 18));  //$NON-NLS-1$
-
-		return menuBar;
 	}
 
 	@Override

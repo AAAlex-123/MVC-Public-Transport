@@ -1,6 +1,6 @@
 package view;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
 /**
  * An abstract factory used to create graphical representations of Entities.
@@ -12,7 +12,7 @@ import javax.swing.JPanel;
  * @author Alex Mandelias
  */
 abstract class AbstractGraphicalEntityRepresentationFactory<V extends AbstractGUIView>
-        implements AbstractEntityRepresentationFactory<JPanel> {
+        implements AbstractEntityRepresentationFactory<JComponent> {
 
 	/**
 	 * Sets the View of this factory, if not already set.
