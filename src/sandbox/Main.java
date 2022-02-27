@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 @SuppressWarnings({ "nls", "javadoc" })
@@ -61,7 +62,12 @@ public class Main {
 		}
 	}
 
+
 	public static void main(String[] args) {
+		SwingUtilities.invokeLater(() -> doTheThing());
+	}
+
+	private static void doTheThing() {
 		final String imgname = "37.97066403382808_23.903633118641128_37.95683671311368_23.9314925592738.png";
 
 		final String[] coords = imgname.split("_");
@@ -69,8 +75,7 @@ public class Main {
 
 		final BufferedImage img;
 		try {
-			File file = new File(System.getProperty("user.dir")
-			        + "\\src\\sandbox\\" + imgname);
+			File file = new File(System.getProperty("user.dir") + "\\src\\sandbox\\" + imgname);
 			System.out.println(file);
 			img = ImageIO.read(file);
 		} catch (IOException e) {
