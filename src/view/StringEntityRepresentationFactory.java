@@ -2,11 +2,11 @@ package view;
 
 import java.util.Calendar;
 
+import entity.Coordinates;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimestamp;
 import entity.ETown;
-import entity.Position;
 import localisation.Languages;
 
 /**
@@ -51,16 +51,14 @@ public class StringEntityRepresentationFactory
 
 	@Override
 	public String getEStationRepresentation(EStation station) {
-		Position     pos  = station.getPosition();
+		Coordinates pos = station.getCoordinates();
 
 		StringBuffer buff = new StringBuffer(
 		        String.format(Languages.getString("StringEntityRepresentationFactory.0"), station.getName())); //$NON-NLS-1$
 
-		buff.append(Math.abs(pos.getX()));
-		buff.append(pos.getX() > 0 ? 'N' : 'S');
-		buff.append(' ');
-		buff.append(Math.abs(pos.getY()));
-		buff.append(pos.getY() > 0 ? 'W' : 'E');
+		buff.append(pos.toString());
+		buff.deleteCharAt(0);
+		buff.deleteCharAt(buff.length() - 1);
 
 		return buff.toString();
 	}

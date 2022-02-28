@@ -13,22 +13,22 @@ import localisation.Languages;
  */
 public class EStation extends AbstractEntity {
 
-	private final String   name;
-	private final Position position;
-	private final ETown    town;
+	private final String      name;
+	private final Coordinates coords;
+	private final ETown       town;
 
 	/**
 	 * Constructs a Station.
 	 *
-	 * @param id       the id of this Station
-	 * @param name     the name of this Station
-	 * @param position the Position of this Station, its geographical location
-	 * @param town     the Town of this Station, where it is located
+	 * @param id          the id of this Station
+	 * @param name        the name of this Station
+	 * @param coordinates the Coordinates of this Station, its geographical location
+	 * @param town        the Town of this Station, where it is located
 	 */
-	public EStation(int id, String name, Position position, ETown town) {
+	public EStation(int id, String name, Coordinates coordinates, ETown town) {
 		super(id);
 		this.name = name;
-		this.position = position;
+		this.coords = coordinates;
 		this.town = town;
 	}
 
@@ -42,12 +42,12 @@ public class EStation extends AbstractEntity {
 	}
 
 	/**
-	 * Returns the geographical {@link Position} of this Station.
+	 * Returns the geographical {@link Coordinates} of this Station.
 	 *
-	 * @return this Station's position
+	 * @return this Station's coordinates
 	 */
-	public Position getPosition() {
-		return position;
+	public Coordinates getCoordinates() {
+		return coords;
 	}
 
 	/**
@@ -61,15 +61,15 @@ public class EStation extends AbstractEntity {
 
 	@Override
 	public String toString() {
-		return String.format(Languages.getString("EStation.0"), super.toString(), getName(), getPosition(), //$NON-NLS-1$
-		        getTown());
+		return String.format(Languages.getString("EStation.0"), super.toString(), getName(), //$NON-NLS-1$
+		        getCoordinates(), getTown());
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime  = 31;
 		int       result = super.hashCode();
-		result = (prime * result) + Objects.hash(name, position, town);
+		result = (prime * result) + Objects.hash(name, coords, town);
 		return result;
 	}
 
@@ -82,7 +82,7 @@ public class EStation extends AbstractEntity {
 		if (!(obj instanceof EStation))
 			return false;
 		EStation other = (EStation) obj;
-		return Objects.equals(name, other.name) && Objects.equals(position, other.position)
+		return Objects.equals(name, other.name) && Objects.equals(coords, other.coords)
 		        && Objects.equals(town, other.town);
 	}
 

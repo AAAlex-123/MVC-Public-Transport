@@ -27,11 +27,11 @@ class ELineTest {
 		final ETown b = new ETown(-2, "Town B");
 
 		stations = new LinkedList<>();
-		stations.add(new EStation(-1, "Station A", new Position(1, 1), a));
-		stations.add(new EStation(-2, "Station B", new Position(1, 4), a));
-		stations.add(new EStation(-3, "Station C", new Position(5, 4), b));
-		stations.add(new EStation(-4, "Station D", new Position(9, 7), b));
-		stations.add(new EStation(-5, "Station E", new Position(4, 19), b));
+		stations.add(new EStation(-1, "Station A", new Coordinates(1, 1), a));
+		stations.add(new EStation(-2, "Station B", new Coordinates(1, 4), a));
+		stations.add(new EStation(-3, "Station C", new Coordinates(5, 4), b));
+		stations.add(new EStation(-4, "Station D", new Coordinates(9, 7), b));
+		stations.add(new EStation(-5, "Station E", new Coordinates(4, 19), b));
 
 		timetables = new LinkedList<>();
 		timetables.add(new ETimestamp(10, 0));

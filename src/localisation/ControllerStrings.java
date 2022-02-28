@@ -17,11 +17,11 @@ public final class ControllerStrings {
 	/** String for literal {@code 'description'} */
 	public static final String DESCRIPTION = Languages.getString("ControllerStrings.2"); //$NON-NLS-1$
 
-	/** String for literal {@code 'x coord'} */
-	public static final String X_COORD = Languages.getString("ControllerStrings.3"); //$NON-NLS-1$
+	/** String for literal {@code 'latitude'} */
+	public static final String LATITUDE = Languages.getString("ControllerStrings.3"); //$NON-NLS-1$
 
-	/** String for literal {@code 'y coord'} */
-	public static final String Y_COORD = Languages.getString("ControllerStrings.4"); //$NON-NLS-1$
+	/** String for literal {@code 'longitude'} */
+	public static final String LONGITUDE = Languages.getString("ControllerStrings.4"); //$NON-NLS-1$
 
 	/** String for literal {@code 'city'} */
 	public static final String CITY = Languages.getString("ControllerStrings.5"); //$NON-NLS-1$

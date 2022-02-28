@@ -117,7 +117,7 @@ public class ELine extends AbstractEntity {
 		EStation prev = iter.next();
 
 		for (EStation curr = iter.next();; prev = curr, curr = iter.next()) {
-			totalDistance += curr.getPosition().distanceFrom(prev.getPosition());
+			totalDistance += curr.getCoordinates().greatCircleDistanceFrom(prev.getCoordinates());
 
 			if (curr.equals(station))
 				break;

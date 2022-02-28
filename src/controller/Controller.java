@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import entity.Coordinates;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimestamp;
 import entity.ETown;
 import entity.LineType;
-import entity.Position;
 import localisation.ControllerStrings;
 import model.IModel;
 import requirement.requirements.StringType;
@@ -182,17 +182,16 @@ public class Controller implements IController {
 			return;
 		}
 
-		final Function<String, Double> dtoi = Double::parseDouble;
+		final Function<Object, Double> dtoi = (o) -> Double.parseDouble((String) o);
 
-		final double   x_coord  = dtoi
-		        .apply(reqs.getValue(ControllerStrings.X_COORD, String.class));
-		final double   y_coord  = dtoi
-		        .apply(reqs.getValue(ControllerStrings.Y_COORD, String.class));
-		final Position position = new Position(x_coord, y_coord);
+		final double latitude  = reqs.getValue(ControllerStrings.LATITUDE, dtoi);
+		final double longitude = reqs.getValue(ControllerStrings.LONGITUDE, dtoi);
+
+		final Coordinates coords = new Coordinates(latitude, longitude);
 
 		final EStation newStation = new EStation(-1,
 		        reqs.getValue(ControllerStrings.NAME, String.class),
-		        position,
+		        coords,
 		        reqs.getValue(ControllerStrings.CITY, ETown.class));
 		try {
 			model.insertStation(newStation);
@@ -273,8 +272,8 @@ public class Controller implements IController {
 
 		final Requirements reqs = new Requirements();
 		reqs.add(ControllerStrings.NAME, StringType.NON_EMPTY);
-		reqs.add(ControllerStrings.X_COORD, StringType.NON_NEG_INTEGER);
-		reqs.add(ControllerStrings.Y_COORD, StringType.NON_NEG_INTEGER);
+		reqs.add(ControllerStrings.LATITUDE, StringType.NON_NEG_INTEGER);
+		reqs.add(ControllerStrings.LONGITUDE, StringType.NON_NEG_INTEGER);
 		reqs.add(ControllerStrings.CITY, availableTowns);
 		return reqs;
 	}

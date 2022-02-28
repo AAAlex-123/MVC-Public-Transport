@@ -12,12 +12,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import entity.Coordinates;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimestamp;
 import entity.ETown;
 import entity.LineType;
-import entity.Position;
 
 /**
  * An implementation of the {@link IModel} interface.
@@ -159,12 +159,12 @@ public class Model implements IModel {
 				try (ResultSet rs = stmt.executeQuery(query)) {
 
 					while (rs.next()) {
-						final ETown    newTown = new ETown(rs.getInt("C.id"),
+						final ETown       newTown = new ETown(rs.getInt("C.id"),
 						        rs.getString("C.name"));
-						final int      id      = rs.getInt("S.id");
-						final String   name    = rs.getString("S.name");
-						final Position pos     = new Position(rs.getDouble("S.x_coord"),
-						        rs.getDouble("S.y_coord"));
+						final int         id      = rs.getInt("S.id");
+						final String      name    = rs.getString("S.name");
+						final Coordinates pos     = new Coordinates(rs.getDouble("S.latitude"),
+						        rs.getDouble("S.longitude"));
 
 						newStations.add(new EStation(id, name, pos, newTown));
 					}
@@ -245,15 +245,15 @@ public class Model implements IModel {
 			try (ResultSet rs = stmt.executeQuery(qFinalisedQuery)) {
 				while (rs.next()) {
 
-					final Position newPosition = new Position(rs.getDouble("S.x_coord"),
-					        rs.getDouble("S.y_coord"));
+					final Coordinates newCoords = new Coordinates(rs.getDouble("S.latitude"),
+					        rs.getDouble("S.longitude"));
 
 					ETown newTown = town;
 					if (newTown == null)
 						newTown = new ETown(rs.getInt("C.id"), rs.getString("C.name"));
 
 					sationsFromDatabase.add(new EStation(rs.getInt("S.id"), rs.getString("S.name"),
-					        newPosition, newTown));
+					        newCoords, newTown));
 				}
 			}
 		});
@@ -292,14 +292,14 @@ public class Model implements IModel {
 		if (station == null)
 			throw new IllegalArgumentException("station can't be null");
 
-		final String   qInsertToStation = "INSERT INTO Station(name, x_coord, y_coord, city_id) VALUES ('@2', @3, @4, @5)";
-		final Position position         = station.getPosition();
+		final String      qInsertToStation = "INSERT INTO Station(name, latitude, longitude, city_id) VALUES ('@2', @3, @4, @5)";
+		final Coordinates coords           = station.getCoordinates();
 
 		doWithStatement((Statement stmt) -> {
 			stmt.execute(
 			        qInsertToStation.replace("@2", station.getName())
-			                .replace("@3", String.valueOf(position.getX()))
-			                .replace("@4", String.valueOf(position.getY()))
+			                .replace("@3", String.valueOf(coords.latitude))
+			                .replace("@4", String.valueOf(coords.longitude))
 			                .replace("@5", String.valueOf(station.getTown().getId())));
 		});
 	}

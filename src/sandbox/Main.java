@@ -20,19 +20,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import entity.Coordinates;
+
 @SuppressWarnings({ "nls", "javadoc" })
 public class Main {
 
 	private static final double EQUATORIAL_RADIUS      = 6_378_137;
 	private static final double VOLUMETRIC_MEAN_RADIUS = 6_371_000;
 	private static final double LATITUDE_AT_CENTER     = 37.97543985747732;
-
-	private static double hav(double theta) {
-		return (1 - Math.cos(Math.toRadians(theta))) / 2;
-
-		// alternative:
-		// return Math.pow(Math.sin(Math.toRadians(theta) / 2), 2);
-	}
 
 	private static double lonToX(double lon) {
 		return VOLUMETRIC_MEAN_RADIUS * lon * Math.cos(LATITUDE_AT_CENTER);
@@ -41,27 +36,6 @@ public class Main {
 	private static double latToY(double lat) {
 		return VOLUMETRIC_MEAN_RADIUS * lat;
 	}
-
-	private static double sphereDistanceInMeters(double r, double lat1, double lon1, double lat2,
-	        double lon2) {
-
-		double dlat = lat2 - lat1;
-		double dlon = lon2 - lon1;
-		double h    = hav(dlat) + ((1 - hav(-dlat) - hav(lat1 + lat2)) * hav(dlon));
-
-		double d = r * 2 * Math.asin(Math.sqrt(h));
-		return d;
-	}
-
-	private static class LatLon {
-		public final double latitude, longitude;
-
-		public LatLon(double latitude, double longitude) {
-			this.latitude = latitude;
-			this.longitude = longitude;
-		}
-	}
-
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> doTheThing());
@@ -97,8 +71,8 @@ public class Main {
 
 		final Function<Object, Double> func = s -> Double.parseDouble((String) s);
 
-		LatLon ul = new LatLon(func.apply(coords[0]), func.apply(coords[1]));
-		LatLon br = new LatLon(func.apply(coords[2]), func.apply(coords[3]));
+		Coordinates ul = new Coordinates(func.apply(coords[0]), func.apply(coords[1]));
+		Coordinates br = new Coordinates(func.apply(coords[2]), func.apply(coords[3]));
 
 		final Mapper m = new Mapper(ul, br, dim);
 
@@ -119,11 +93,11 @@ public class Main {
 			String[] in = tf.getText().replace("\\s+", "").split(",");
 			System.out.println(tf.getText());
 			tf.setText("");
-			double   x  = func.apply(in[0]);
-			double   y  = func.apply(in[1]);
+			double lat = func.apply(in[0]);
+			double lon = func.apply(in[1]);
 
-			LatLon old    = new LatLon(x, y);
-			Point mapped = m.map(old);
+			Coordinates old    = new Coordinates(lat, lon);
+			Point       mapped = m.map(old);
 
 			Graphics g = p.getGraphics();
 			g.setColor(Color.YELLOW);
@@ -142,20 +116,21 @@ public class Main {
 	}
 
 	private static class Mapper {
-		public final LatLon    ul, br;
+		public final Coordinates  tl, br;
 		public final Dimension dim;
 
-		public Mapper(LatLon ul, LatLon br, Dimension dim) {
-			this.ul = ul;
+		public Mapper(Coordinates tl, Coordinates br, Dimension dim) {
+			this.tl = tl;
 			this.br = br;
 			this.dim = dim;
 		}
 
-		public Point map(LatLon p) {
-			double dx = (p.longitude - ul.longitude) / (br.longitude - ul.longitude);
-			double dy = (p.latitude - ul.latitude) / (br.latitude - ul.latitude);
 
-			return new Point((int) (dx * dim.getWidth()), (int) (dy * dim.getHeight()));
+		public Point map(Coordinates p) {
+			double dx = (p.longitude - tl.longitude) / (br.longitude - tl.longitude);
+			double dy = (p.latitude - br.latitude) / (tl.latitude - br.latitude);
+
+			return new Point((int) (dx * dim.getWidth()), (int) ((1 - dy) * dim.getHeight()));
 		}
 	}
 

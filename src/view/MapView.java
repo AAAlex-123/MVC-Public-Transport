@@ -15,11 +15,11 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import controller.IImageController;
+import entity.Coordinates;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimestamp;
 import entity.ETown;
-import entity.Position;
 import requirement.util.Requirements;
 
 /**
@@ -73,26 +73,23 @@ public class MapView extends AbstractGUIView {
 	public void updateViewWithStations(List<EStation> stations) {
 		// TODO Auto-generated method stub
 
-		// get positions and bounds from positions
-		double m = Double.MAX_VALUE;
-		double t = -m, l = m, b = m, r = -m;
+		// Mapper.test();
 
-		for (EStation station : stations) {
-			Position pos = station.getPosition();
-			t = Math.max(t, pos.getY());
-			l = Math.min(l, pos.getX());
-			b = Math.min(b, pos.getY());
-			r = Math.max(r, pos.getX());
-		}
-
-		Position new_tl = new Position(l, t);
-		Position new_br = new Position(r, b);
-
-		// create jpanel - map with these bounds
 		final String imgname = "37.97066403382808_23.903633118641128_37.95683671311368_23.9314925592738.png";
 
-		final String[] coords = imgname.split("_");
-		coords[3] = coords[3].substring(0, coords[3].lastIndexOf("."));
+		assert imgname.equals(
+		        "37.97066403382808_23.903633118641128_37.95683671311368_23.9314925592738.png");
+
+		Coordinates img_tl, img_br;
+		{
+			final String[] coords = imgname.split("_");
+			coords[3] = coords[3].substring(0, coords[3].lastIndexOf("."));
+
+			final Function<Object, Double> f = s -> Double.parseDouble((String) s);
+
+			img_tl = new Coordinates(f.apply(coords[0]), f.apply(coords[1]));
+			img_br = new Coordinates(f.apply(coords[2]), f.apply(coords[3]));
+		}
 
 		final BufferedImage img;
 		try {
@@ -104,24 +101,41 @@ public class MapView extends AbstractGUIView {
 			return;
 		}
 
+		Dimension img_dim = new Dimension(img.getWidth(), img.getHeight());
 
-		Dimension dim = new Dimension(img.getWidth(), img.getHeight());
+		final Mapper mapper = new Mapper(img_tl, img_br, img_dim);
 
-		final Function<Object, Double> func = s -> Double.parseDouble((String) s);
+		Coordinates cropped_tl, cropped_br;
 
-		Position original_tl = new Position(func.apply(coords[1]), func.apply(coords[0]));
-		Position original_br = new Position(func.apply(coords[3]), func.apply(coords[2]));
+		{
+			// get positions and bounds from positions
+			double m = Double.MAX_VALUE;
+			double t = -m, l = m, b = m, r = -m;
 
-		final Mapper mapper = new Mapper(original_tl, original_br, dim);
+			for (EStation station : stations) {
+				Coordinates pos = station.getCoordinates();
+				t = Math.max(t, pos.latitude);
+				l = Math.min(l, pos.longitude);
+				b = Math.min(b, pos.latitude);
+				r = Math.max(r, pos.longitude);
+			}
 
-		Point mapped_n_tl = mapper.map(new_tl);
-		Point mapped_n_br = mapper.map(new_br);
-		Point mapped_o_tl = mapper.map(original_tl);
-		int   x           = (int) Math.max(mapped_o_tl.getX(), mapped_n_tl.getX() - 30);
-		int   y           = (int) Math.max(mapped_o_tl.getY(), mapped_n_tl.getY() - 30);
-		int   w           = (int) Math.min((mapped_n_br.getX() - x) + 30, dim.width - x);
-		int   h           = (int) Math.min((mapped_n_br.getY() - y) + 30, dim.height - y);
+			cropped_tl = new Coordinates(t, l);
+			cropped_br = new Coordinates(b, r);
+		}
+
+		// create jpanel - map with these bounds
+
+		Point mapped_n_tl = mapper.map(cropped_tl);
+		Point mapped_n_br = mapper.map(cropped_br);
+		Point mapped_o_tl = mapper.map(img_tl);
+
+		int x = (int) Math.max(mapped_o_tl.getX(), mapped_n_tl.getX() - 30);
+		int y = (int) Math.max(mapped_o_tl.getY(), mapped_n_tl.getY() - 30);
+		int w = (int) Math.min((mapped_n_br.getX() - x) + 30, img_dim.width - x);
+		int h = (int) Math.min((mapped_n_br.getY() - y) + 30, img_dim.height - y);
 		System.out.printf("%d-%d-%d-%d%n", x, y, w, h);
+
 		final BufferedImage cropped = img.getSubimage(x, y, w, h);
 
 		JPanel p = new JPanel(null) {
@@ -140,8 +154,8 @@ public class MapView extends AbstractGUIView {
 			}
 		};
 
-		Position final_n_tl = mapper.invmap(new Point(x, y));
-		Position final_n_br = mapper.invmap(new Point(x + w, y + h));
+		Coordinates final_n_tl = mapper.invmap(new Point(x, y));
+		Coordinates final_n_br = mapper.invmap(new Point(x + w, y + h));
 
 		System.out.printf("%s - %s%n", final_n_tl, final_n_br);
 
@@ -150,7 +164,7 @@ public class MapView extends AbstractGUIView {
 
 		// plot every station with factory
 		for (EStation station : stations) {
-			Position pos    = station.getPosition();
+			Coordinates pos    = station.getCoordinates();
 			Point    mapped = new_mapper.map(pos);
 
 			JComponent stationG = factory.getEStationRepresentation(station);
@@ -162,40 +176,40 @@ public class MapView extends AbstractGUIView {
 	}
 
 	private static class Mapper {
-		public final Position  tl, br;
+		public final Coordinates  tl, br;
 		public final Dimension dim;
 
-		public Mapper(Position tl, Position br, Dimension dim) {
+		public Mapper(Coordinates tl, Coordinates br, Dimension dim) {
 			this.tl = tl;
 			this.br = br;
 			this.dim = dim;
 		}
 
 		public static void test() {
-			Mapper m = new Mapper(new Position(0, 50), new Position(50, 0),
+			Mapper m = new Mapper(new Coordinates(0, 50), new Coordinates(50, 0),
 			        new Dimension(100, 100));
 
-			Position pos    = new Position(20, 30);
+			Coordinates pos    = new Coordinates(20, 30);
 			Point    mapped = m.map(pos);
-			Position orig   = m.invmap(mapped);
+			Coordinates orig   = m.invmap(mapped);
 		}
 
-		public Point map(Position p) {
-			double dx = (p.getX() - tl.getX()) / (br.getX() - tl.getX());
-			double dy = (p.getY() - br.getY()) / (tl.getY() - br.getY());
+		public Point map(Coordinates p) {
+			double dx = (p.longitude - tl.longitude) / (br.longitude - tl.longitude);
+			double dy = (p.latitude - br.latitude) / (tl.latitude - br.latitude);
 
 			return new Point((int) (dx * dim.getWidth()), (int) ((1 - dy) * dim.getHeight()));
 		}
 
-		public Position invmap(Point p) {
+		public Coordinates invmap(Point p) {
 
 			double dx = p.getX() / dim.getWidth();
 			double dy = (dim.getHeight() - p.getY()) / dim.getHeight();
 
-			double dposx = br.getX() - tl.getX();
-			double dposy = tl.getY() - br.getY();
+			double dlat = tl.latitude - br.latitude;
+			double dlon = br.longitude - tl.longitude;
 
-			return new Position((dx * dposx) + tl.getX(), (dy * dposy) + br.getY());
+			return new Coordinates((dy * dlat) + br.latitude, (dx * dlon) + tl.longitude);
 		}
 	}
 

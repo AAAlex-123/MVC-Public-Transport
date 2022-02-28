@@ -17,12 +17,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import entity.Coordinates;
 import entity.ELine;
 import entity.EStation;
 import entity.ETimestamp;
 import entity.ETown;
 import entity.LineType;
-import entity.Position;
 
 /**
  * Unit tests for the {@link Model} class.
@@ -53,15 +53,15 @@ class ModelTest {
 		tMetamorfwsh = new ETown(4, "metamorfwsh");
 		tAthina = new ETown(5, "athina");
 
-		sSpata = new EStation(1, "spata", new Position(18, 5), tSpata);
-		sAgia_paraskevi = new EStation(2, "agia paraskevi", new Position(14, 5), tAgia_paraskevi);
-		sNomismatokopeio = new EStation(3, "nomismatokopeio", new Position(12, 6), tAgia_paraskevi);
-		sNea_ionia = new EStation(4, "nea ionia", new Position(13, 17), tNea_filadelfia);
-		sPlateia = new EStation(5, "plateia", new Position(14, 19), tNea_filadelfia);
-		sPapandreou = new EStation(6, "papandreou", new Position(17, 25), tMetamorfwsh);
-		sSyntagma = new EStation(7, "syntagma", new Position(3, 10), tAthina);
-		sAerodromio = new EStation(8, "aerodromio", new Position(20, 3), tSpata);
-		sMonasthraki = new EStation(9, "monasthraki", new Position(0, 12), tAthina);
+		sSpata = new EStation(1, "spata", new Coordinates(18, 5), tSpata);
+		sAgia_paraskevi = new EStation(2, "agia paraskevi", new Coordinates(14, 5), tAgia_paraskevi);
+		sNomismatokopeio = new EStation(3, "nomismatokopeio", new Coordinates(12, 6), tAgia_paraskevi);
+		sNea_ionia = new EStation(4, "nea ionia", new Coordinates(13, 17), tNea_filadelfia);
+		sPlateia = new EStation(5, "plateia", new Coordinates(14, 19), tNea_filadelfia);
+		sPapandreou = new EStation(6, "papandreou", new Coordinates(17, 25), tMetamorfwsh);
+		sSyntagma = new EStation(7, "syntagma", new Coordinates(3, 10), tAthina);
+		sAerodromio = new EStation(8, "aerodromio", new Coordinates(20, 3), tSpata);
+		sMonasthraki = new EStation(9, "monasthraki", new Coordinates(0, 12), tAthina);
 
 		sl305 = List.of(sSpata, sAgia_paraskevi, sNomismatokopeio);
 		sl421 = List.of(sAgia_paraskevi, sNea_ionia, sPlateia);
@@ -97,7 +97,7 @@ class ModelTest {
 
 		final String[] qCreateTables = {
 		        "CREATE TABLE IF NOT EXISTS City ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(31));",
-		        "CREATE TABLE IF NOT EXISTS Station ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(63), x_coord DOUBLE, y_coord DOUBLE, city_id INT, FOREIGN KEY (city_id) REFERENCES City (id));",
+		        "CREATE TABLE IF NOT EXISTS Station ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(63), latitude DOUBLE, longitude DOUBLE, city_id INT, FOREIGN KEY (city_id) REFERENCES City (id));",
 		        "CREATE TABLE IF NOT EXISTS Line ( id INT AUTO_INCREMENT PRIMARY KEY, lineNo VARCHAR(7), description VARCHAR(255), type VARCHAR(15));",
 		        "CREATE TABLE IF NOT EXISTS LineStation ( line_id INT, station_id INT, station_index INT, PRIMARY KEY (line_id, station_id), FOREIGN KEY (line_id) REFERENCES Line(id), FOREIGN KEY (station_id) REFERENCES Station(id));",
 		        "CREATE TABLE IF NOT EXISTS LineTimetable ( line_id INT, departure_time TIME, PRIMARY KEY (line_id, departure_time), FOREIGN KEY (line_id) REFERENCES Line(id));",
@@ -148,7 +148,7 @@ class ModelTest {
 		final String[] qInsertIntoTables = {
 		        "INSERT INTO City (name) VALUES ('spata'), ('agia paraskevi'), ('nea filadelfia'), ('metamorfwsh'), ('athina');",
 
-		        "INSERT INTO Station (name, x_coord, y_coord, city_id) VALUES "
+		        "INSERT INTO Station (name, latitude, longitude, city_id) VALUES "
 		                + "('spata', 18, 5, 1),"
 		                + "('agia paraskevi', 14, 5, 2),"
 		                + "('nomismatokopeio', 12, 6, 2),"
@@ -407,8 +407,8 @@ class ModelTest {
 		assertIterableEquals(eStationsByAthina, aStationsByAthina);
 
 
-		EStation sEvangelismos = new EStation(10, "evangelismos", new Position(5, 9), tAthina);
-		EStation sAmpelokhpoi  = new EStation(11, "amplokhpoi", new Position(7, 12), tAthina);
+		EStation sEvangelismos = new EStation(10, "evangelismos", new Coordinates(5, 9), tAthina);
+		EStation sAmpelokhpoi  = new EStation(11, "amplokhpoi", new Coordinates(7, 12), tAthina);
 		assertDoesNotThrow(() -> {
 			model.insertStation(sEvangelismos);
 			model.insertStation(sAmpelokhpoi);
@@ -428,8 +428,8 @@ class ModelTest {
 		    return model.getStations(tAthina);
 		});
 
-		EStation sGefyra = new EStation(12, "gefyra", new Position(16, 5), tAgia_paraskevi);
-		EStation sIka    = new EStation(13, "IKA", new Position(15, 5), tAgia_paraskevi);
+		EStation sGefyra = new EStation(12, "gefyra", new Coordinates(16, 5), tAgia_paraskevi);
+		EStation sIka    = new EStation(13, "IKA", new Coordinates(15, 5), tAgia_paraskevi);
 		assertDoesNotThrow(() -> {
 			model.insertStation(sGefyra);
 			model.insertStation(sIka);

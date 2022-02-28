@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Alex Mandelias
  */
+@SuppressWarnings("nls")
 class EStationTest {
 
 	private EStation defaultStation;
@@ -17,10 +18,10 @@ class EStationTest {
 	/** Sets up a defaultStation object that will be used to test getter methods */
 	@BeforeEach
 	void setUp() {
-		Position position = new Position(5, 10);
-		ETown    town     = new ETown(-2, "athens"); //$NON-NLS-1$
+		final Coordinates coords = new Coordinates(5, 10);
+		final ETown       town   = new ETown(-2, "athens");
 
-		defaultStation = new EStation(-1, "panepisthmio", position, town); //$NON-NLS-1$
+		defaultStation = new EStation(-1, "panepisthmio", coords, town);
 	}
 
 	/**
@@ -28,15 +29,15 @@ class EStationTest {
 	 */
 	@Test
 	final void testGetName() {
-		assertEquals("panepisthmio", defaultStation.getName()); //$NON-NLS-1$
+		assertEquals("panepisthmio", defaultStation.getName());
 	}
 
 	/**
-	 * Test method for {@link entity.EStation#getPosition()}.
+	 * Test method for {@link entity.EStation#getCoordinates()}.
 	 */
 	@Test
 	final void testGetPosition() {
-		assertEquals(new Position(5, 10), defaultStation.getPosition());
+		assertEquals(new Coordinates(5, 10), defaultStation.getCoordinates());
 	}
 
 	/**
@@ -44,6 +45,6 @@ class EStationTest {
 	 */
 	@Test
 	final void testGetTown() {
-		assertEquals(new ETown(-2, "athens"), defaultStation.getTown()); //$NON-NLS-1$
+		assertEquals(new ETown(-2, "athens"), defaultStation.getTown());
 	}
 }

@@ -11,14 +11,13 @@ import controller.CLocalImageController;
 import controller.Controller;
 import controller.IController;
 import controller.IImageController;
+import entity.Coordinates;
 import entity.EStation;
-import entity.Position;
 import localisation.Languages;
 import model.IImageModel;
 import model.IModel;
 import model.MLocalImageModel;
 import model.Model;
-import view.ConsoleView;
 import view.IView;
 import view.MapView;
 
@@ -84,7 +83,8 @@ public class App {
 		IImageModel      imageModel      = new MLocalImageModel();
 		IImageController imageController = new CLocalImageController(imageModel);
 
-		IView view = oasa ? new MapView(imageController) : new ConsoleView();
+		// IView view = oasa ? new OASAView(imageController) : new ConsoleView();
+		IView view = new MapView(imageController);
 
 		IModel model;
 		if (ip.equals("localhost")) //$NON-NLS-1$
@@ -118,7 +118,7 @@ public class App {
 
 		List<EStation> stations = new LinkedList<>();
 		for (double[] pos : USE) {
-			stations.add(new EStation(-1, null, new Position(pos[1], pos[0]), null));
+			stations.add(new EStation(-1, null, new Coordinates(pos[0], pos[1]), null));
 		}
 
 		view.updateViewWithStations(stations);
@@ -135,79 +135,80 @@ public class App {
 	 * @throws SQLException if an SQLException is thrown while resetting the
 	 *                      database
 	 */
+	@SuppressWarnings("nls")
 	private static void resetDatabase() throws SQLException {
 		final String[] qDropTables = {
-		        "DROP TABLE IF EXISTS LineTimetable", //$NON-NLS-1$
-		        "DROP TABLE IF EXISTS LineStation", //$NON-NLS-1$
-		        "DROP TABLE IF EXISTS Line", //$NON-NLS-1$
-		        "DROP TABLE IF EXISTS Station", //$NON-NLS-1$
-		        "DROP TABLE IF EXISTS City", //$NON-NLS-1$
+		        "DROP TABLE IF EXISTS LineTimetable",
+		        "DROP TABLE IF EXISTS LineStation",
+		        "DROP TABLE IF EXISTS Line",
+		        "DROP TABLE IF EXISTS Station",
+		        "DROP TABLE IF EXISTS City",
 		};
 
 		final String[] qCreateTables = {
-		        "CREATE TABLE IF NOT EXISTS City ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(31));", //$NON-NLS-1$
-		        "CREATE TABLE IF NOT EXISTS Station ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(63), x_coord DOUBLE, y_coord DOUBLE, city_id INT, FOREIGN KEY (city_id) REFERENCES City (id));", //$NON-NLS-1$
-		        "CREATE TABLE IF NOT EXISTS Line ( id INT AUTO_INCREMENT PRIMARY KEY, lineNo VARCHAR(7), description VARCHAR(255), type VARCHAR(15));", //$NON-NLS-1$
-		        "CREATE TABLE IF NOT EXISTS LineStation ( line_id INT, station_id INT, station_index INT, PRIMARY KEY (line_id, station_id), FOREIGN KEY (line_id) REFERENCES Line(id), FOREIGN KEY (station_id) REFERENCES Station(id));", //$NON-NLS-1$
-		        "CREATE TABLE IF NOT EXISTS LineTimetable ( line_id INT, departure_time TIME, PRIMARY KEY (line_id, departure_time), FOREIGN KEY (line_id) REFERENCES Line(id));", //$NON-NLS-1$
+		        "CREATE TABLE IF NOT EXISTS City ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(31));",
+		        "CREATE TABLE IF NOT EXISTS Station ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(63), latitude DOUBLE, longitude DOUBLE, city_id INT, FOREIGN KEY (city_id) REFERENCES City (id));",
+		        "CREATE TABLE IF NOT EXISTS Line ( id INT AUTO_INCREMENT PRIMARY KEY, lineNo VARCHAR(7), description VARCHAR(255), type VARCHAR(15));",
+		        "CREATE TABLE IF NOT EXISTS LineStation ( line_id INT, station_id INT, station_index INT, PRIMARY KEY (line_id, station_id), FOREIGN KEY (line_id) REFERENCES Line(id), FOREIGN KEY (station_id) REFERENCES Station(id));",
+		        "CREATE TABLE IF NOT EXISTS LineTimetable ( line_id INT, departure_time TIME, PRIMARY KEY (line_id, departure_time), FOREIGN KEY (line_id) REFERENCES Line(id));",
 		};
 
 		final String[] qInsertIntoTables = {
-		        "INSERT INTO City (name) VALUES ('spata'), ('agia paraskevi'), ('nea filadelfia'), ('metamorfwsh'), ('athina');", //$NON-NLS-1$
+		        "INSERT INTO City (name) VALUES ('spata'), ('agia paraskevi'), ('nea filadelfia'), ('metamorfwsh'), ('athina');",
 
-		        "INSERT INTO Station (name, x_coord, y_coord, city_id) VALUES " //$NON-NLS-1$
-		                + "('spata', 18, 5, 1)," //$NON-NLS-1$
-		                + "('agia paraskevi', 14, 5, 2)," //$NON-NLS-1$
-		                + "('nomismatokopeio', 12, 6, 2)," //$NON-NLS-1$
+		        "INSERT INTO Station (name, latitude, longitude, city_id) VALUES "
+		                + "('spata', 18, 5, 1),"
+		                + "('agia paraskevi', 14, 5, 2),"
+		                + "('nomismatokopeio', 12, 6, 2),"
 
 						// agia paraskevi
-		                + "('nea ionia', 13, 17, 3)," //$NON-NLS-1$
-		                + "('plateia', 14, 19, 3)," //$NON-NLS-1$
+		                + "('nea ionia', 13, 17, 3),"
+		                + "('plateia', 14, 19, 3),"
 
-		                + "('papandreou', 17, 25, 4)," //$NON-NLS-1$
+		                + "('papandreou', 17, 25, 4),"
 						// plateia
-		                + "('syntagma', 3, 10, 5)," //$NON-NLS-1$
+		                + "('syntagma', 3, 10, 5),"
 
-		                + "('aerodromio', 20, 3, 1)," //$NON-NLS-1$
+		                + "('aerodromio', 20, 3, 1),"
 						// agia paraskevi
 						// nomismatokopeio
 						// syntagma
-		                + "('monasthraki', 0, 12, 5);", //$NON-NLS-1$
+		                + "('monasthraki', 0, 12, 5);",
 
-		        "INSERT INTO Line (lineNo, description, type) VALUES " //$NON-NLS-1$
-		                + "('305', 'spata-nomismatokopeio', 'BUS')," //$NON-NLS-1$
-		                + "('421', 'agia paraskevi-nea filadelfia', 'BUS')," //$NON-NLS-1$
-		                + "('B9', 'metamorfwsi-athina', 'BUS')," //$NON-NLS-1$
-		                + "('3', 'aerodromio-syntagma', 'SUBWAY');", //$NON-NLS-1$
+		        "INSERT INTO Line (lineNo, description, type) VALUES "
+		                + "('305', 'spata-nomismatokopeio', 'BUS'),"
+		                + "('421', 'agia paraskevi-nea filadelfia', 'BUS'),"
+		                + "('B9', 'metamorfwsi-athina', 'BUS'),"
+		                + "('3', 'aerodromio-syntagma', 'SUBWAY');",
 
-		        "INSERT INTO LineStation (line_id, station_id, station_index) VALUES " //$NON-NLS-1$
-		                + "(1, 1, 0)," //$NON-NLS-1$
-		                + "(1, 2, 1)," //$NON-NLS-1$
-		                + "(1, 3, 2)," //$NON-NLS-1$
+		        "INSERT INTO LineStation (line_id, station_id, station_index) VALUES "
+		                + "(1, 1, 0),"
+		                + "(1, 2, 1),"
+		                + "(1, 3, 2),"
 
-		                + "(2, 2, 0)," //$NON-NLS-1$
-		                + "(2, 4, 1)," //$NON-NLS-1$
-		                + "(2, 5, 2)," //$NON-NLS-1$
+		                + "(2, 2, 0),"
+		                + "(2, 4, 1),"
+		                + "(2, 5, 2),"
 
-		                + "(3, 6, 0)," //$NON-NLS-1$
-		                + "(3, 5, 1)," //$NON-NLS-1$
-		                + "(3, 7, 2)," //$NON-NLS-1$
+		                + "(3, 6, 0),"
+		                + "(3, 5, 1),"
+		                + "(3, 7, 2),"
 
-		                + "(4, 8, 0)," //$NON-NLS-1$
-		                + "(4, 2, 1)," //$NON-NLS-1$
-		                + "(4, 3, 2)," //$NON-NLS-1$
-		                + "(4, 7, 3)," //$NON-NLS-1$
-		                + "(4, 9, 4);", //$NON-NLS-1$
+		                + "(4, 8, 0),"
+		                + "(4, 2, 1),"
+		                + "(4, 3, 2),"
+		                + "(4, 7, 3),"
+		                + "(4, 9, 4);",
 
-		        "INSERT INTO LineTimetable (line_id, departure_time) VALUES " //$NON-NLS-1$
-		                + "(1, '12:00'), (1, '13:00'), (1, '14:00'), (1, '15:00'), (1, '16:00'), (1, '17:00'), (1, '18:00')," //$NON-NLS-1$
-		                + "(2, '9:00'), (2, '9:30'), (2, '10:00'), (2, '10:30'), (2, '11:00'), (2, '11:30'), (2, '12:00')," //$NON-NLS-1$
-		                + "(3, '17:00'), (3, '18:00'), (3, '19:00'), (3, '20:00'), (3, '21:00'), (3, '22:00'), (3, '23:00')," //$NON-NLS-1$
-		                + "(4, '5:00'), (4, '8:00'), (4, '11:00'), (4, '14:00'), (4, '17:00'), (4, '20:00'), (4, '23:00');", //$NON-NLS-1$
+		        "INSERT INTO LineTimetable (line_id, departure_time) VALUES "
+		                + "(1, '12:00'), (1, '13:00'), (1, '14:00'), (1, '15:00'), (1, '16:00'), (1, '17:00'), (1, '18:00'),"
+		                + "(2, '9:00'), (2, '9:30'), (2, '10:00'), (2, '10:30'), (2, '11:00'), (2, '11:30'), (2, '12:00'),"
+		                + "(3, '17:00'), (3, '18:00'), (3, '19:00'), (3, '20:00'), (3, '21:00'), (3, '22:00'), (3, '23:00'),"
+		                + "(4, '5:00'), (4, '8:00'), (4, '11:00'), (4, '14:00'), (4, '17:00'), (4, '20:00'), (4, '23:00');",
 		};
 
-		try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/oasaripoff", //$NON-NLS-1$
-		        "root", "localhostMVCMy$QL")) { //$NON-NLS-1$ //$NON-NLS-2$
+		try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/oasaripoff",
+		        "root", "localhostMVCMy$QL")) {
 			for (String qDropTable : qDropTables) {
 				try (Statement stmt = conn.createStatement()) {
 					stmt.executeUpdate(qDropTable);
