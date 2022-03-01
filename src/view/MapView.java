@@ -1,14 +1,15 @@
 package view;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -33,15 +34,21 @@ public class MapView extends AbstractGUIView {
 	/**
 	 * TODO
 	 *
-	 * @param factory
 	 * @param imageController
-	 * @param width
-	 * @param height
 	 */
 	public MapView(IImageController imageController) {
 		super(new MapEntityRepresentationFactory(), imageController, 850, 650);
 
 		((MapEntityRepresentationFactory) factory).initializeView(this);
+
+		final String imgname  = "37.97066403382808_23.903633118641128_37.95683671311368_23.9314925592738.png"; //$NON-NLS-1$
+		final String fullPath = System.getProperty("user.dir") + "\\src\\sandbox\\" + imgname;                 //$NON-NLS-1$
+
+		try {
+			ImageInfo.init(fullPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -69,148 +76,27 @@ public class MapView extends AbstractGUIView {
 	}
 
 	@Override
-	@SuppressWarnings("nls")
 	public void updateViewWithStations(List<EStation> stations) {
-		// TODO Auto-generated method stub
 
-		// Mapper.test();
+		List<Coordinates> coordinates = extractCoords(stations, (s) -> s.getCoordinates());
 
-		final String imgname = "37.97066403382808_23.903633118641128_37.95683671311368_23.9314925592738.png";
+		final ImageInfo iinfo = ImageInfo.getCroppedInstance(coordinates);
 
-		assert imgname.equals(
-		        "37.97066403382808_23.903633118641128_37.95683671311368_23.9314925592738.png");
-
-		Coordinates img_tl, img_br;
-		{
-			final String[] coords = imgname.split("_");
-			coords[3] = coords[3].substring(0, coords[3].lastIndexOf("."));
-
-			final Function<Object, Double> f = s -> Double.parseDouble((String) s);
-
-			img_tl = new Coordinates(f.apply(coords[0]), f.apply(coords[1]));
-			img_br = new Coordinates(f.apply(coords[2]), f.apply(coords[3]));
-		}
-
-		final BufferedImage img;
-		try {
-			File file = new File(System.getProperty("user.dir") + "\\src\\sandbox\\" + imgname);
-			System.out.println(file);
-			img = ImageIO.read(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-
-		Dimension img_dim = new Dimension(img.getWidth(), img.getHeight());
-
-		final Mapper mapper = new Mapper(img_tl, img_br, img_dim);
-
-		Coordinates cropped_tl, cropped_br;
-
-		{
-			// get positions and bounds from positions
-			double m = Double.MAX_VALUE;
-			double t = -m, l = m, b = m, r = -m;
-
-			for (EStation station : stations) {
-				Coordinates pos = station.getCoordinates();
-				t = Math.max(t, pos.latitude);
-				l = Math.min(l, pos.longitude);
-				b = Math.min(b, pos.latitude);
-				r = Math.max(r, pos.longitude);
-			}
-
-			cropped_tl = new Coordinates(t, l);
-			cropped_br = new Coordinates(b, r);
-		}
-
-		// create jpanel - map with these bounds
-
-		Point mapped_n_tl = mapper.map(cropped_tl);
-		Point mapped_n_br = mapper.map(cropped_br);
-		Point mapped_o_tl = mapper.map(img_tl);
-
-		int x = (int) Math.max(mapped_o_tl.getX(), mapped_n_tl.getX() - 30);
-		int y = (int) Math.max(mapped_o_tl.getY(), mapped_n_tl.getY() - 30);
-		int w = (int) Math.min((mapped_n_br.getX() - x) + 30, img_dim.width - x);
-		int h = (int) Math.min((mapped_n_br.getY() - y) + 30, img_dim.height - y);
-		System.out.printf("%d-%d-%d-%d%n", x, y, w, h);
-
-		final BufferedImage cropped = img.getSubimage(x, y, w, h);
-
-		JPanel p = new JPanel(null) {
-			@Override
-			public void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				g.drawImage(cropped, 0, 0, null);
-				System.out.println("drawing img");
-				System.out.printf("Drawing %d children:%n", this.getComponentCount());
-				for (Component c : this.getComponents()) {
-					Point pt = c.getLocation();
-					System.out.printf("At pos: %s%n", pt);
-					int size = 10;
-					g.fillOval(pt.x - (size / 2), pt.y - (size / 2), size, size);
-				}
-			}
-		};
-
-		Coordinates final_n_tl = mapper.invmap(new Point(x, y));
-		Coordinates final_n_br = mapper.invmap(new Point(x + w, y + h));
-
-		System.out.printf("%s - %s%n", final_n_tl, final_n_br);
-
-		final Mapper new_mapper = new Mapper(final_n_tl, final_n_br,
-		        new Dimension(cropped.getWidth(), cropped.getHeight()));
+		final JPanel p = forImage(iinfo.img);
 
 		// plot every station with factory
-		for (EStation station : stations) {
-			Coordinates pos    = station.getCoordinates();
-			Point    mapped = new_mapper.map(pos);
+		for (final EStation station : stations) {
+			final Coordinates coords = station.getCoordinates();
+			final Point       mapped = new Point();
+			iinfo.mapper.map(coords, mapped);
 
-			JComponent stationG = factory.getEStationRepresentation(station);
-			stationG.setLocation(mapped.x, mapped.y);
-			p.add(stationG);
+			final JComponent stationGraphic = factory.getEStationRepresentation(station);
+			final Dimension  dim      = stationGraphic.getSize();
+			stationGraphic.setLocation(mapped.x - (dim.width / 2), mapped.y - (dim.height / 2));
+			p.add(stationGraphic);
 		}
 
 		super.updatePanel(p);
-	}
-
-	private static class Mapper {
-		public final Coordinates  tl, br;
-		public final Dimension dim;
-
-		public Mapper(Coordinates tl, Coordinates br, Dimension dim) {
-			this.tl = tl;
-			this.br = br;
-			this.dim = dim;
-		}
-
-		public static void test() {
-			Mapper m = new Mapper(new Coordinates(0, 50), new Coordinates(50, 0),
-			        new Dimension(100, 100));
-
-			Coordinates pos    = new Coordinates(20, 30);
-			Point    mapped = m.map(pos);
-			Coordinates orig   = m.invmap(mapped);
-		}
-
-		public Point map(Coordinates p) {
-			double dx = (p.longitude - tl.longitude) / (br.longitude - tl.longitude);
-			double dy = (p.latitude - br.latitude) / (tl.latitude - br.latitude);
-
-			return new Point((int) (dx * dim.getWidth()), (int) ((1 - dy) * dim.getHeight()));
-		}
-
-		public Coordinates invmap(Point p) {
-
-			double dx = p.getX() / dim.getWidth();
-			double dy = (dim.getHeight() - p.getY()) / dim.getHeight();
-
-			double dlat = tl.latitude - br.latitude;
-			double dlon = br.longitude - tl.longitude;
-
-			return new Coordinates((dy * dlat) + br.latitude, (dx * dlon) + tl.longitude);
-		}
 	}
 
 	@Override
@@ -242,4 +128,136 @@ public class MapView extends AbstractGUIView {
 
 	}
 
+	private static <T> List<Coordinates> extractCoords(List<T> ls,
+	        Function<T, ? extends Coordinates> mapper) {
+		return ls.stream().map(mapper).collect(Collectors.toList());
+	}
+
+	private static JPanel forImage(BufferedImage img) {
+		return new JPanel(null) {
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.drawImage(img, 0, 0, null);
+			}
+		};
+	}
+
+	private static class ImageInfo {
+		private static BufferedImage fullImage;
+		private static Coordinates   topLeft, bottomRight;
+
+		private final BufferedImage img;
+		private final Mapper<Coordinates, Point> mapper;
+
+		private ImageInfo(BufferedImage img, Mapper<Coordinates, Point> mapper) {
+			this.img = img;
+			this.mapper = mapper;
+		}
+
+		public static void init(String filename) throws IOException {
+
+			fullImage = ImageIO.read(new File(filename));
+
+			final int      from   = filename.lastIndexOf(File.separatorChar);
+			final int      to     = filename.lastIndexOf('.');
+			final String[] coords = filename.substring(from + 1, to).split("_"); //$NON-NLS-1$
+
+			final Function<Object, Double> f = s -> Double.parseDouble((String) s);
+
+			topLeft = new Coordinates(f.apply(coords[0]), f.apply(coords[1]));
+			bottomRight = new Coordinates(f.apply(coords[2]), f.apply(coords[3]));
+		}
+
+		public static ImageInfo getCroppedInstance(List<Coordinates> coordinates) {
+
+			// find the Coordinates of top-left and bottom-right bounds
+			final Coordinates tl_bound, br_bound;
+
+			final double max    = Double.MAX_VALUE;
+			double       maxLat = -max, minLon = max, minLat = max, maxLon = -max;
+
+			for (final Coordinates coords : coordinates) {
+				minLon = Math.min(minLon, coords.getLongitude());
+				maxLon = Math.max(maxLon, coords.getLongitude());
+				minLat = Math.min(minLat, coords.getLatitude());
+				maxLat = Math.max(maxLat, coords.getLatitude());
+			}
+
+			tl_bound = new Coordinates(maxLat, minLon);
+			br_bound = new Coordinates(minLat, maxLon);
+
+			// map the Coordinate bounds to Point bounds
+			final int imgWidth  = fullImage.getWidth();
+			final int imgHeight = fullImage.getHeight();
+
+			final Coordinates tls = topLeft;
+			final Coordinates brs = bottomRight;
+			final Point       tld = new Point(0, 0);
+			final Point       brd = new Point(imgWidth, imgHeight);
+
+			final Mapper<Coordinates, Point> old_mapper = new Mapper<>(tls, brs, tld, brd);
+
+			final Point mapped_tl_bound, mapped_br_bound, mapped_tls;
+			old_mapper.map(tl_bound, mapped_tl_bound = new Point());
+			old_mapper.map(br_bound, mapped_br_bound = new Point());
+			old_mapper.map(tls, mapped_tls = new Point());
+
+			// crop the image according to Point bounds
+			final int x = (int) Math.max(mapped_tls.getX(), mapped_tl_bound.getX() - 30);
+			final int y = (int) Math.max(mapped_tls.getY(), mapped_tl_bound.getY() - 30);
+			final int w = (int) Math.min((mapped_br_bound.getX() - x) + 30, imgWidth - x);
+			final int h = (int) Math.min((mapped_br_bound.getY() - y) + 30, imgHeight - y);
+
+			final BufferedImage new_img = fullImage.getSubimage(x, y, w, h);
+
+			// create the mapper for the cropped image
+			final Coordinates cropped_tls, cropped_brs;
+			old_mapper.invmap(new Point(x, y), cropped_tls = new Coordinates());
+			old_mapper.invmap(new Point(x + w, y + h), cropped_brs = new Coordinates());
+
+			final Point cropped_tld, cropped_brd;
+			cropped_tld = new Point(0, 0);
+			cropped_brd = new Point(new_img.getWidth(), new_img.getHeight());
+
+			final Mapper<Coordinates, Point> new_mapper = new Mapper<>(cropped_tls, cropped_brs,
+			        cropped_tld, cropped_brd);
+
+			// returned the cropped image and its mapper
+			return new ImageInfo(new_img, new_mapper);
+		}
+	}
+
+	private static class Mapper<T extends Point2D, S extends Point2D> {
+		private final T tls, brs;
+		private final S tld, brd;
+
+		private final double dxs, dys, dxd, dyd;
+
+		public Mapper(T topLeftSrc, T bottomRightSrc, S topLeftDst, S bottomRightDst) {
+			tls = topLeftSrc;
+			brs = bottomRightSrc;
+			tld = topLeftDst;
+			brd = bottomRightDst;
+
+			dxs = brs.getX() - tls.getX();
+			dys = tls.getY() - brs.getY();
+			dxd = brd.getX() - tld.getX();
+			dyd = tld.getY() - brd.getY();
+		}
+
+		public void map(T from, S to) {
+			double dx = (from.getX() - tls.getX()) / dxs;
+			double dy = (from.getY() - brs.getY()) / dys;
+
+			to.setLocation(tld.getX() + (dx * dxd), brd.getY() + (dy * dyd));
+		}
+
+		public void invmap(S from, T to) {
+			double dx = (from.getX() - tld.getX()) / dxd;
+			double dy = (from.getY() - brd.getY()) / dyd;
+
+			to.setLocation(tls.getX() + (dx * dxs), brs.getY() + (dy * dys));
+		}
+	}
 }
