@@ -18,8 +18,10 @@ import model.IImageModel;
 import model.IModel;
 import model.MLocalImageModel;
 import model.Model;
+import view.ConsoleView;
 import view.IView;
 import view.MapView;
+import view.OASAView;
 
 /**
  * The entry point of the program. Constructs and runs an {@link view.IView
@@ -33,6 +35,7 @@ public class App {
 
 	private static final String OASA        = "oasa";                                       //$NON-NLS-1$
 	private static final String CONSOLE     = "console";                                    //$NON-NLS-1$
+	private static final String MAP         = "map";                                        //$NON-NLS-1$
 	private static final String USE_COMMAND = "java App [%s|%s] <options>\n\n"              //$NON-NLS-1$
 	        + "where possible options include:\n"                                           //$NON-NLS-1$
 	        + "\t-r       reset the database\n"                                             //$NON-NLS-1$
@@ -44,7 +47,7 @@ public class App {
 	 * @param args used to customise the functionality of the App
 	 */
 	public static void main(String[] args) {
-		boolean oasa, console, reset = false;
+		boolean oasa, console, map, reset = false;
 		String  ip = "localhost";            //$NON-NLS-1$
 
 		if (args.length == 0) {
@@ -54,7 +57,8 @@ public class App {
 
 		oasa = args[0].equals(OASA);
 		console = args[0].equals(CONSOLE);
-		if (oasa == console)
+		map = args[0].equals(MAP);
+		if (!(oasa || console || map))
 			fail(Languages.getString("App.4")); //$NON-NLS-1$
 
 		if (args.length > 1) {
@@ -83,8 +87,15 @@ public class App {
 		IImageModel      imageModel      = new MLocalImageModel();
 		IImageController imageController = new CLocalImageController(imageModel);
 
-		// IView view = oasa ? new OASAView(imageController) : new ConsoleView();
-		IView view = new MapView(imageController);
+		IView view;
+		if (oasa)
+			view = new OASAView(imageController);
+		else if (console)
+			view = new ConsoleView();
+		else if (map)
+			view = new MapView(imageController);
+		else
+			view = null;
 
 		IModel model;
 		if (ip.equals("localhost")) //$NON-NLS-1$
@@ -114,7 +125,7 @@ public class App {
 				{37.96817805399748, 23.90598612964807},
 		};
 
-		double[][] USE = poss3;
+		double[][] USE = poss2;
 
 		List<EStation> stations = new LinkedList<>();
 		for (double[] pos : USE) {
