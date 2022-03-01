@@ -62,7 +62,7 @@ class CoordinatesTest {
 	 */
 	@Test
 	final void testLatitude() {
-		assertEquals(1, defaultCoordinates.latitude);
+		assertEquals(1, defaultCoordinates.getLatitude());
 	}
 
 	/**
@@ -70,7 +70,7 @@ class CoordinatesTest {
 	 */
 	@Test
 	final void testLongitude() {
-		assertEquals(5.4, defaultCoordinates.longitude);
+		assertEquals(5.4, defaultCoordinates.getLongitude());
 	}
 
 	/**

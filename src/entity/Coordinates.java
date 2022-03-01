@@ -1,6 +1,8 @@
 package entity;
 
+import java.awt.geom.Point2D;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Represents geographical coordinates, that is latitude-longitude pairs.
@@ -8,17 +10,11 @@ import java.util.Objects;
  * @author Alex Mandelias
  * @author Dimitris Tsirbas
  */
-public class Coordinates {
+public class Coordinates extends Point2D {
 
 	private static final double VOLUMETRIC_MEAN_RADIUS = 6_371_000;
 
-	/** The latitude of these Coordinates */
-	public final double latitude;
-
-	/** The longitude of these Coordinates */
-	public final double longitude;
-
-	private final String repr;
+	private double latitude, longitude;
 
 	/**
 	 * Construct a new Coordinates object from latitude and longitude.
@@ -27,22 +23,13 @@ public class Coordinates {
 	 * @param longitude the longitude
 	 */
 	public Coordinates(double latitude, double longitude) {
-		final double absLat = Math.abs(latitude);
-		final double absLon = Math.abs(longitude);
+		super();
+		setLocation(longitude, latitude);
+	}
 
-		if (absLat > 90)
-			throw new IllegalArgumentException("Latitude has to be between -90 and 90"); //$NON-NLS-1$
-		if (absLon > 180)
-			throw new IllegalArgumentException("Longitude has to be between -180 and 180"); //$NON-NLS-1$
-
-		this.latitude = latitude;
-		this.longitude = longitude;
-
-		final char   NS  = latitude >= 0 ? 'N' : 'S';
-		final char   EW  = longitude >= 0 ? 'E' : 'W';
-		final String fmt = "(%8.5f%c, %9.5f%c)";      //$NON-NLS-1$
-
-		this.repr = String.format(fmt, absLat, NS, absLon, EW);
+	/** Constructs a new Coordinates object at [0, 0] */
+	public Coordinates() {
+		this(0.0, 0.0);
 	}
 
 	/**
@@ -54,17 +41,82 @@ public class Coordinates {
 	 */
 	public double greatCircleDistanceFrom(Coordinates other) {
 		return Coordinates.sphereDistanceInMeters(Coordinates.VOLUMETRIC_MEAN_RADIUS,
-		        this.latitude, this.longitude, other.latitude, other.longitude);
+		        this.getLatitude(), this.getLongitude(), other.getLatitude(), other.getLongitude());
+	}
+
+	/**
+	 * Returns this Coordinate's latitude.
+	 *
+	 * @return this Coordinate's latitude
+	 */
+	public double getLatitude() {
+		return latitude;
+	}
+
+	/**
+	 * Sets this Coordinate's latitude to latitude.
+	 *
+	 * @param latitude the new value
+	 */
+	public void setLatitude(double latitude) {
+		if ((latitude < -90) || (latitude > 90))
+			throw new IllegalArgumentException("Latitude has to be between -90 and 90"); //$NON-NLS-1$
+
+		this.latitude = latitude;
+	}
+
+	/**
+	 * Returns this Coordinate's longitude.
+	 *
+	 * @return this Coordinate's longitude
+	 */
+	public double getLongitude() {
+		return longitude;
+	}
+
+	/**
+	 * Sets this Coordinate's longitude to longitude.
+	 *
+	 * @param longitude the new value
+	 */
+	public void setLongitude(double longitude) {
+		if ((longitude < -180) || (longitude > 180))
+			throw new IllegalArgumentException("Longitude has to be between -180 and 180"); //$NON-NLS-1$
+
+		this.longitude = longitude;
+	}
+
+	@Override
+	public double getX() {
+		return getLongitude();
+	}
+
+	@Override
+	public double getY() {
+		return getLatitude();
+	}
+
+	@Override
+	public void setLocation(double x, double y) {
+		setLatitude(y);
+		setLongitude(x);
 	}
 
 	@Override
 	public String toString() {
-		return repr;
+		final double absLat = Math.abs(latitude);
+		final double absLon = Math.abs(longitude);
+
+		final char   NS  = latitude >= 0 ? 'N' : 'S';
+		final char   EW  = longitude >= 0 ? 'E' : 'W';
+		final String fmt = "(%8.5f%c, %9.5f%c)";      //$NON-NLS-1$
+
+		return String.format(fmt, absLat, NS, absLon, EW);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(latitude, longitude);
+		return Objects.hash(getLatitude(), getLongitude());
 	}
 
 	@Override
@@ -74,8 +126,9 @@ public class Coordinates {
 		if (!(obj instanceof Coordinates))
 			return false;
 		Coordinates other = (Coordinates) obj;
-		return (Double.doubleToLongBits(latitude) == Double.doubleToLongBits(other.latitude))
-		        && (Double.doubleToLongBits(longitude) == Double.doubleToLongBits(other.longitude));
+		final Function<java.lang.Double, Long> dTLB  = java.lang.Double::doubleToLongBits;
+		return (dTLB.apply(getLatitude()) == dTLB.apply(other.getLatitude()))
+		        && (dTLB.apply(getLongitude()) == dTLB.apply(other.getLongitude()));
 	}
 
 	// https://en.wikipedia.org/wiki/Haversine_formula

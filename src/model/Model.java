@@ -298,8 +298,8 @@ public class Model implements IModel {
 		doWithStatement((Statement stmt) -> {
 			stmt.execute(
 			        qInsertToStation.replace("@2", station.getName())
-			                .replace("@3", String.valueOf(coords.latitude))
-			                .replace("@4", String.valueOf(coords.longitude))
+			                .replace("@3", String.valueOf(coords.getLatitude()))
+			                .replace("@4", String.valueOf(coords.getLongitude()))
 			                .replace("@5", String.valueOf(station.getTown().getId())));
 		});
 	}
