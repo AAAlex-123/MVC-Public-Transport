@@ -4,15 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedList;
-import java.util.List;
 
 import controller.CLocalImageController;
 import controller.Controller;
 import controller.IController;
 import controller.IImageController;
-import entity.Coordinates;
-import entity.EStation;
 import localisation.Languages;
 import model.IImageModel;
 import model.IModel;
@@ -87,15 +83,13 @@ public class App {
 		IImageModel      imageModel      = new MLocalImageModel();
 		IImageController imageController = new CLocalImageController(imageModel);
 
-		IView view;
+		IView view = null;
 		if (oasa)
 			view = new OASAView(imageController);
 		else if (console)
 			view = new ConsoleView();
 		else if (map)
 			view = new MapView(imageController);
-		else
-			view = null;
 
 		IModel model;
 		if (ip.equals("localhost")) //$NON-NLS-1$
@@ -108,31 +102,6 @@ public class App {
 		view.registerController(controller);
 
 		view.start();
-
-		double[][] poss1 = {
-		        { 37.96813736609794, 23.909875351189413 },
-		        { 37.9624440657025, 23.92416521532049 },
-		};
-
-		double[][] poss2 = {
-		        { 37.962013754831936, 23.914131124507147 },
-		        { 37.959483801430416, 23.9208231190715 },
-		};
-
-		double[][] poss3 = {
-				{37.96648720107333, 23.908642493664612},
-				{37.95880806712703, 23.906399341828426},
-				{37.96817805399748, 23.90598612964807},
-		};
-
-		double[][] USE = poss2;
-
-		List<EStation> stations = new LinkedList<>();
-		for (double[] pos : USE) {
-			stations.add(new EStation(-1, null, new Coordinates(pos[0], pos[1]), null));
-		}
-
-		view.updateViewWithStations(stations);
 	}
 
 	private static void fail(String format, Object... args) {
