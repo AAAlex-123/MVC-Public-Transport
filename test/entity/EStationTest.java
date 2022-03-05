@@ -19,7 +19,7 @@ class EStationTest {
 	@BeforeEach
 	void setUp() {
 		final Coordinates coords = new Coordinates(5, 10);
-		final ETown       town   = new ETown(-2, "athens");
+		final ETown       town   = new ETown(-2, "athens", new Coordinates(0, 0));
 
 		defaultStation = new EStation(-1, "panepisthmio", coords, town);
 	}
@@ -45,6 +45,6 @@ class EStationTest {
 	 */
 	@Test
 	final void testGetTown() {
-		assertEquals(new ETown(-2, "athens"), defaultStation.getTown());
+		assertEquals(new ETown(-2, "athens", new Coordinates(0, 0)), defaultStation.getTown());
 	}
 }

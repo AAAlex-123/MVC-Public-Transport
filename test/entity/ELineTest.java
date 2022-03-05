@@ -23,8 +23,8 @@ class ELineTest {
 	/** Sets up a defaultLine object that will be used to test getter methods */
 	@BeforeEach
 	void setUp() {
-		final ETown a = new ETown(-1, "Town A");
-		final ETown b = new ETown(-2, "Town B");
+		final ETown a = new ETown(-1, "Town A", new Coordinates(0, 0));
+		final ETown b = new ETown(-2, "Town B", new Coordinates(1, 1));
 
 		stations = new LinkedList<>();
 		stations.add(new EStation(-1, "Station A", new Coordinates(1, 1), a));

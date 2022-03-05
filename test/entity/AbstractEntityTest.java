@@ -6,8 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * TODO
- *
+ * Test class for {@link entity.AbstractEntity}.
  *
  * @author Alex Mandelias
  */
@@ -18,7 +17,7 @@ class AbstractEntityTest {
 	/** Sets up a defaultStation object that will be used to test getter methods */
 	@BeforeEach
 	void setUp() {
-		defaultEntity = new ETown(-2, "athens"); //$NON-NLS-1$
+		defaultEntity = new ETown(-1, null, null);
 	}
 
 	/**
@@ -26,6 +25,6 @@ class AbstractEntityTest {
 	 */
 	@Test
 	final void testGetId() {
-		assertEquals(-2, defaultEntity.getId());
+		assertEquals(-1, defaultEntity.getId());
 	}
 }

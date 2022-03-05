@@ -47,11 +47,11 @@ class ModelTest {
 	private static final List<ETimestamp> tl305, tl421, tlB9, tl3;
 
 	static {
-		tSpata = new ETown(1, "spata");
-		tAgia_paraskevi = new ETown(2, "agia paraskevi");
-		tNea_filadelfia = new ETown(3, "nea filadelfia");
-		tMetamorfwsh = new ETown(4, "metamorfwsh");
-		tAthina = new ETown(5, "athina");
+		tSpata = new ETown(1, "spata", new Coordinates(17, 6));
+		tAgia_paraskevi = new ETown(2, "agia paraskevi", new Coordinates(13, 4));
+		tNea_filadelfia = new ETown(3, "nea filadelfia", new Coordinates(13.5, 19));
+		tMetamorfwsh = new ETown(4, "metamorfwsh", new Coordinates(19, 24));
+		tAthina = new ETown(5, "athina", new Coordinates(1, 10));
 
 		sSpata = new EStation(1, "spata", new Coordinates(18, 5), tSpata);
 		sAgia_paraskevi = new EStation(2, "agia paraskevi", new Coordinates(14, 5), tAgia_paraskevi);
@@ -96,7 +96,7 @@ class ModelTest {
 	static void setUpBeforeClass() throws Exception {
 
 		final String[] qCreateTables = {
-		        "CREATE TABLE IF NOT EXISTS City ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(31));",
+		        "CREATE TABLE IF NOT EXISTS City ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(31), latitude DOUBLE, longitude DOUBLE);",
 		        "CREATE TABLE IF NOT EXISTS Station ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(63), latitude DOUBLE, longitude DOUBLE, city_id INT, FOREIGN KEY (city_id) REFERENCES City (id));",
 		        "CREATE TABLE IF NOT EXISTS Line ( id INT AUTO_INCREMENT PRIMARY KEY, lineNo VARCHAR(7), description VARCHAR(255), type VARCHAR(15));",
 		        "CREATE TABLE IF NOT EXISTS LineStation ( line_id INT, station_id INT, station_index INT, PRIMARY KEY (line_id, station_id), FOREIGN KEY (line_id) REFERENCES Line(id), FOREIGN KEY (station_id) REFERENCES Station(id));",
@@ -146,7 +146,12 @@ class ModelTest {
 	void setUp() throws Exception {
 
 		final String[] qInsertIntoTables = {
-		        "INSERT INTO City (name) VALUES ('spata'), ('agia paraskevi'), ('nea filadelfia'), ('metamorfwsh'), ('athina');",
+		        "INSERT INTO City (name, latitude, longitude) VALUES "
+		                + "('spata', 17, 6),"
+		                + "('agia paraskevi', 13, 4),"
+		                + "('nea filadelfia', 13.5, 19),"
+		                + "('metamorfwsh', 19, 24),"
+		                + "('athina', 1, 10);",
 
 		        "INSERT INTO Station (name, latitude, longitude, city_id) VALUES "
 		                + "('spata', 18, 5, 1),"
@@ -374,7 +379,7 @@ class ModelTest {
 		assertIterableEquals(eTowns, aTowns);
 
 
-		ETown peiraias = new ETown(6, "peiraias");
+		ETown peiraias = new ETown(6, "peiraias", new Coordinates(-5, 15));
 		assertDoesNotThrow(() -> model.insertTown(peiraias));
 
 		eTowns.add(4, peiraias);
@@ -383,7 +388,7 @@ class ModelTest {
 		assertIterableEquals(eTowns, aTowns);
 
 
-		ETown ellhniko = new ETown(7, "ellhniko");
+		ETown ellhniko = new ETown(7, "ellhniko", new Coordinates(1, -5));
 		assertDoesNotThrow(() -> model.insertTown(ellhniko));
 
 		eTowns.add(2, ellhniko);
