@@ -1,7 +1,9 @@
 package view;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -12,7 +14,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import controller.IImageController;
@@ -21,6 +28,7 @@ import entity.ELine;
 import entity.EStation;
 import entity.ETimestamp;
 import entity.ETown;
+import localisation.Languages;
 import requirement.util.Requirements;
 
 /**
@@ -30,6 +38,10 @@ import requirement.util.Requirements;
  * @author Alex Mandelias
  */
 public class MapView extends AbstractGUIView {
+
+	private static final Font globalFont = new Font(Font.SANS_SERIF, Font.PLAIN, 22);
+
+	private JPanel cachedHomepage;
 
 	/**
 	 * TODO
@@ -41,8 +53,9 @@ public class MapView extends AbstractGUIView {
 
 		((MapEntityRepresentationFactory) factory).initializeView(this);
 
-		final String imgname  = "37.97066403382808_23.903633118641128_37.95683671311368_23.9314925592738.png"; //$NON-NLS-1$
-		final String fullPath = System.getProperty("user.dir") + "\\src\\sandbox\\" + imgname;                 //$NON-NLS-1$
+		// final String imgname  = "37.97066403382808_23.903633118641128_37.95683671311368_23.9314925592738.png"; //$NON-NLS-1$
+		final String imgname  = "38.10823767406228_23.62081227624487_37.796943185419764_24.016115410154413.png"; //$NON-NLS-1$
+		final String fullPath = System.getProperty("user.dir") + "\\resources\\maps\\" + imgname;                //$NON-NLS-1$ //$NON-NLS-2$
 
 		try {
 			ImageInfo.init(fullPath);
@@ -54,13 +67,62 @@ public class MapView extends AbstractGUIView {
 	@Override
 	public void updateViewWithHomepage() {
 		// TODO Auto-generated method stub
+		if (cachedHomepage == null) {
 
+			final JPanel contentPanel = new JPanel();
+			contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+
+			final JPanel imagePanel = new JPanel();
+			imagePanel.add(new JLabel(super.getImageIcon("oasa_home.jpg"))); //$NON-NLS-1$
+
+			final JPanel buttonPanel = new JPanel();
+			buttonPanel.setLayout(new GridLayout(3, 1, 0, 10));
+			buttonPanel.setBorder(BorderFactory.createEmptyBorder(15, 30, 30, 30));
+
+			final JButton button1 = new JButton(Languages.getString("OASAView.21")); //$NON-NLS-1$
+			final JButton button2 = new JButton(Languages.getString("OASAView.22")); //$NON-NLS-1$
+
+			button1.setFont(globalFont);
+			button2.setFont(globalFont);
+
+			button1.addActionListener(e -> MapView.super.getAllLines());
+			button2.addActionListener(e -> MapView.super.getAllTowns());
+
+			buttonPanel.add(button1);
+			buttonPanel.add(button2);
+
+			contentPanel.add(imagePanel);
+			contentPanel.add(Box.createVerticalStrut(15));
+			contentPanel.add(buttonPanel);
+
+			cachedHomepage = contentPanel;
+		}
+
+		super.updatePanel(cachedHomepage);
 	}
 
 	@Override
 	public void updateViewWithTowns(List<ETown> towns) {
-		// TODO Auto-generated method stub
 
+		List<Coordinates> coordinates = extractCoords(towns, (t) -> t.getCoordinates());
+
+		final ImageInfo iinfo = ImageInfo.getCroppedInstance(coordinates);
+
+		final JPanel p = forImage(iinfo.img);
+
+		// plot every town with factory
+		for (final ETown town : towns) {
+			final Coordinates coords = town.getCoordinates();
+			final Point       mapped = new Point();
+			iinfo.mapper.map(coords, mapped);
+
+			final JComponent townGraphic = factory.getETownRepresentation(town);
+			final Dimension  dim      = townGraphic.getSize();
+			townGraphic.setLocation(mapped.x - (dim.width / 2), mapped.y - (dim.height / 2));
+			p.add(townGraphic);
+		}
+
+		super.updatePanel(p);
 	}
 
 	@Override

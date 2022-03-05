@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 
@@ -22,6 +23,12 @@ import localisation.Languages;
  */
 public class MapEntityRepresentationFactory
         extends AbstractGraphicalEntityRepresentationFactory<MapView> {
+
+	private static final String FIND_TOWNS    = Languages.getString("OASAEntityGraphicFactory.0"); //$NON-NLS-1$
+	private static final String FIND_LINES    = Languages.getString("OASAEntityGraphicFactory.1"); //$NON-NLS-1$
+	private static final String FIND_TIMES    = Languages.getString("OASAEntityGraphicFactory.2"); //$NON-NLS-1$
+	private static final String FIND_STATIONS = Languages.getString("OASAEntityGraphicFactory.3"); //$NON-NLS-1$
+	private static final int    ICON_SIZE     = 54;
 
 	private MapView view;
 
@@ -41,8 +48,43 @@ public class MapEntityRepresentationFactory
 
 	@Override
 	public JComponent getETownRepresentation(ETown town) {
-		// TODO Auto-generated method stub
-		return null;
+		final int size = 20;
+
+		final JComponent panel = new JComponent() {
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.setColor(Color.BLACK);
+				g.fillOval(0, 0, size, size);
+			}
+		};
+
+
+		panel.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				final ImageIcon icon    = view.getImageIcon("town.png", ICON_SIZE, ICON_SIZE);      //$NON-NLS-1$
+				final String   msg     = String
+				        .format(Languages.getString("OASAEntityGraphicFactory.4"), town.getName()); //$NON-NLS-1$
+				final String   title   = Languages.getString("OASAEntityGraphicFactory.5");         //$NON-NLS-1$
+				final String[] options = { FIND_LINES, FIND_STATIONS };
+				final String   initial = FIND_LINES;
+
+				final String res = (String) JOptionPane.showInputDialog(view.frame,
+				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
+
+				if (res == null)
+					;
+				else if (res.equals(FIND_LINES))
+					view.getLinesByTown(town);
+				else if (res.equals(FIND_STATIONS))
+					view.getStationsByTown(town);
+			}
+		});
+		panel.setSize(size, size);
+
+		return panel;
 	}
 
 	@Override
