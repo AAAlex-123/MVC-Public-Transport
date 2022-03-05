@@ -148,7 +148,14 @@ public class Controller implements IController {
 			return;
 		}
 
-		final ETown newTown = new ETown(-1, reqs.getValue(ControllerStrings.NAME, String.class));
+		final Function<Object, Double> dtoi = (o) -> Double.parseDouble((String) o);
+
+		final String      name      = reqs.getValue(ControllerStrings.NAME, String.class);
+		final double      latitude  = reqs.getValue(ControllerStrings.LATITUDE, dtoi);
+		final double      longitude = reqs.getValue(ControllerStrings.LONGITUDE, dtoi);
+		final Coordinates coords    = new Coordinates(latitude, longitude);
+
+		final ETown newTown = new ETown(-1, name, coords);
 		try {
 			model.insertTown(newTown);
 		} catch (final SQLException e) {
@@ -186,7 +193,6 @@ public class Controller implements IController {
 
 		final double latitude  = reqs.getValue(ControllerStrings.LATITUDE, dtoi);
 		final double longitude = reqs.getValue(ControllerStrings.LONGITUDE, dtoi);
-
 		final Coordinates coords = new Coordinates(latitude, longitude);
 
 		final EStation newStation = new EStation(-1,
@@ -247,6 +253,8 @@ public class Controller implements IController {
 	public Requirements getInsertTownRequirements() {
 		final Requirements reqs = new Requirements();
 		reqs.add(ControllerStrings.NAME, StringType.NON_EMPTY);
+		reqs.add(ControllerStrings.LATITUDE, StringType.NON_NEG_INTEGER);
+		reqs.add(ControllerStrings.LONGITUDE, StringType.NON_NEG_INTEGER);
 		return reqs;
 	}
 

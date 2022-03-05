@@ -12,16 +12,19 @@ import java.util.Objects;
 public class ETown extends AbstractEntity {
 
 	private final String name;
+	private final Coordinates coords;
 
 	/**
 	 * Constructs a Town.
 	 *
-	 * @param id   the id of this Town
-	 * @param name the name of this Town
+	 * @param id          the id of this Town
+	 * @param name        the name of this Town
+	 * @param coordinates the Coordinates of this Town, its geographical location
 	 */
-	public ETown(int id, String name) {
+	public ETown(int id, String name, Coordinates coordinates) {
 		super(id);
 		this.name = name;
+		this.coords = coordinates;
 	}
 
 	/**
@@ -33,9 +36,18 @@ public class ETown extends AbstractEntity {
 		return name;
 	}
 
+	/**
+	 * Returns the geographical {@link Coordinates} of this Town.
+	 *
+	 * @return this Town's coordinates
+	 */
+	public Coordinates getCoordinates() {
+		return coords;
+	}
+
 	@Override
 	public String toString() {
-		return String.format("%s: %s", super.toString(), getName()); //$NON-NLS-1$
+		return String.format("%s: %s, %s", super.toString(), getName(), getCoordinates()); //$NON-NLS-1$
 	}
 
 	@Override

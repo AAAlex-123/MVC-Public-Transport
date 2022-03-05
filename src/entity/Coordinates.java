@@ -2,7 +2,6 @@ package entity;
 
 import java.awt.geom.Point2D;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Represents geographical coordinates, that is latitude-longitude pairs.
@@ -126,9 +125,10 @@ public class Coordinates extends Point2D {
 		if (!(obj instanceof Coordinates))
 			return false;
 		Coordinates other = (Coordinates) obj;
-		final Function<java.lang.Double, Long> dTLB  = java.lang.Double::doubleToLongBits;
-		return (dTLB.apply(getLatitude()) == dTLB.apply(other.getLatitude()))
-		        && (dTLB.apply(getLongitude()) == dTLB.apply(other.getLongitude()));
+		return (java.lang.Double.doubleToLongBits(getLatitude()) == java.lang.Double
+		        .doubleToLongBits(other.getLatitude()))
+		        && (java.lang.Double.doubleToLongBits(getLongitude()) == java.lang.Double
+		                .doubleToLongBits(other.getLongitude()));
 	}
 
 	// https://en.wikipedia.org/wiki/Haversine_formula

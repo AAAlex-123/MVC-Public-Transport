@@ -73,7 +73,7 @@ public class Model implements IModel {
 	@Override
 	public List<ETown> getTowns(ELine line) throws SQLException {
 		final String qSelectAllTowns    = "SELECT C.* FROM City AS C";
-		final String qSelectTownsByLine = "SELECT DISTINCT C.id, C.name FROM City AS C "
+		final String qSelectTownsByLine = "SELECT DISTINCT C.* FROM City AS C "
 		        + "JOIN Station AS S ON S.city_id = C.id "
 		        + "JOIN LineStation AS LS ON LS.station_id = S.id "
 		        + "JOIN Line AS L ON L.id = LS.line_id "
@@ -92,8 +92,13 @@ public class Model implements IModel {
 
 		doWithStatement((Statement stmt) -> {
 			try (ResultSet rs = stmt.executeQuery(qFinalisedQuery)) {
-				while (rs.next())
-					townsFromDatabase.add(new ETown(rs.getInt("C.id"), rs.getString("C.name")));
+				while (rs.next()) {
+					final int    id     = rs.getInt("C.id");
+					final String name   = rs.getString("C.name");
+					final double lat = rs.getDouble("C.latitude");
+					final double lon = rs.getDouble("C.longitude");
+					townsFromDatabase.add(new ETown(id, name, new Coordinates(lat, lon)));
+				}
 			}
 		});
 
@@ -159,8 +164,8 @@ public class Model implements IModel {
 				try (ResultSet rs = stmt.executeQuery(query)) {
 
 					while (rs.next()) {
-						final ETown       newTown = new ETown(rs.getInt("C.id"),
-						        rs.getString("C.name"));
+						final ETown newTown = new ETown(rs.getInt("C.id"), rs.getString("C.name"), new Coordinates(rs.getDouble("C.latitude"), rs.getDouble("C.longitude")));
+
 						final int         id      = rs.getInt("S.id");
 						final String      name    = rs.getString("S.name");
 						final Coordinates pos     = new Coordinates(rs.getDouble("S.latitude"),
@@ -250,7 +255,9 @@ public class Model implements IModel {
 
 					ETown newTown = town;
 					if (newTown == null)
-						newTown = new ETown(rs.getInt("C.id"), rs.getString("C.name"));
+						newTown = new ETown(rs.getInt("C.id"), rs.getString("C.name"),
+						        new Coordinates(rs.getDouble("C.latitude"),
+						                rs.getDouble("C.longitude")));
 
 					sationsFromDatabase.add(new EStation(rs.getInt("S.id"), rs.getString("S.name"),
 					        newCoords, newTown));
@@ -280,10 +287,13 @@ public class Model implements IModel {
 		if (town == null)
 			throw new IllegalArgumentException("town can't be null");
 
-		final String qInsertToCity = "INSERT INTO City(name) VALUES ('@2')";
+		final String      qInsertToCity = "INSERT INTO City (name, latitude, longitude) VALUES ('@2', @3, @4)";
+		final Coordinates coords        = town.getCoordinates();
 
 		doWithStatement((Statement stmt) -> {
-		    stmt.execute(qInsertToCity.replace("@2", town.getName()));
+			stmt.execute(qInsertToCity.replace("@2", town.getName())
+			        .replace("@3", String.valueOf(coords.getLatitude()))
+			        .replace("@4", String.valueOf(coords.getLatitude())));
 		});
 	}
 
