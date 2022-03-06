@@ -136,30 +136,31 @@ public class App {
 		// potential source to be used in the future: https://simplemaps.com/data/world-cities
 		final String[] qInsertIntoTables = {
 		        "INSERT INTO City (name, latitude, longitude) VALUES "
-		                + "('spata', 37.9667, 23.9167),"
-		                + "('agia paraskevi', 38.0053, 23.8208),"
-		                + "('nea filadelfia', 38.035, 23.7381),"
-		                + "('metamorfwsh', 38.0643, 23.7603),"
-		                + "('athina', 37.9842, 23.7281);",
+		                + "('Spata', 37.964726085901376, 23.90711123884409),"
+		                + "('Agia Paraskevi', 38.013635641541335, 23.821842200915835),"
+		                + "('Nea Filadelfeia', 38.033863580434875, 23.737784817644012),"
+		                + "('Metamorfosis', 38.063226353421896, 23.760918013856145),"
+		                + "('Athens', 37.984043267396316, 23.72763911966045);",
 
 		        "INSERT INTO Station (name, latitude, longitude, city_id) VALUES "
-		                + "('spata', 18, 5, 1),"
-		                + "('agia paraskevi', 14, 5, 2),"
-		                + "('nomismatokopeio', 12, 6, 2),"
+		                + "('Phournos', 37.963260781753874, 23.925781627657045, 1),"
+		                + "('Pallini', 38.005795341732345, 23.86958981065715, 1),"
+		                + "('ert', 38.0138378551, 23.822938361951255, 2),"
+		                + "('nomismatokopeio', 38.00921972340927, 23.80564713712815, 2),"
 
 						// agia paraskevi
-		                + "('nea ionia', 13, 17, 3),"
-		                + "('plateia', 14, 19, 3),"
+		                + "('ika nea ionia', 38.03926151328087, 23.753077896621797, 3),"
+		                + "('pl. patriarxou', 38.03359228597294, 23.73756871015507, 3),"
 
-		                + "('papandreou', 17, 25, 4),"
+		                + "('hrwwn', 38.063447275075326, 23.760910134208473, 4),"
 						// plateia
-		                + "('syntagma', 3, 10, 5),"
+		                + "('syntagma', 37.975616126169726, 23.73540837227412, 5),"
 
-		                + "('aerodromio', 20, 3, 1),"
+		                + "('aerodromio', 37.93694595215465, 23.944832305007893, 1),"
 						// agia paraskevi
 						// nomismatokopeio
 						// syntagma
-		                + "('monasthraki', 0, 12, 5);",
+		                + "('monasthraki', 37.976149195440065, 23.725662316788313, 5);",
 
 		        "INSERT INTO Line (lineNo, description, type) VALUES "
 		                + "('305', 'spata-nomismatokopeio', 'BUS'),"
@@ -171,20 +172,21 @@ public class App {
 		                + "(1, 1, 0),"
 		                + "(1, 2, 1),"
 		                + "(1, 3, 2),"
+		                + "(1, 4, 3),"
 
-		                + "(2, 2, 0),"
-		                + "(2, 4, 1),"
-		                + "(2, 5, 2),"
+		                + "(2, 3, 0),"
+		                + "(2, 5, 1),"
+		                + "(2, 6, 2),"
 
-		                + "(3, 6, 0),"
-		                + "(3, 5, 1),"
-		                + "(3, 7, 2),"
+		                + "(3, 7, 0),"
+		                + "(3, 6, 1),"
+		                + "(3, 8, 2),"
 
-		                + "(4, 8, 0),"
-		                + "(4, 2, 1),"
-		                + "(4, 3, 2),"
-		                + "(4, 7, 3),"
-		                + "(4, 9, 4);",
+		                + "(4, 9, 0),"
+		                + "(4, 3, 1),"
+		                + "(4, 4, 2),"
+		                + "(4, 8, 3),"
+		                + "(4, 10, 4);",
 
 		        "INSERT INTO LineTimetable (line_id, departure_time) VALUES "
 		                + "(1, '12:00'), (1, '13:00'), (1, '14:00'), (1, '15:00'), (1, '16:00'), (1, '17:00'), (1, '18:00'),"
