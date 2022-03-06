@@ -2,6 +2,7 @@ package view;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -9,6 +10,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,6 +22,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import controller.IImageController;
@@ -54,7 +57,7 @@ public class MapView extends AbstractGUIView {
 		((MapEntityRepresentationFactory) factory).initializeView(this);
 
 		// final String imgname  = "37.97066403382808_23.903633118641128_37.95683671311368_23.9314925592738.png"; //$NON-NLS-1$
-		final String imgname  = "38.10823767406228_23.62081227624487_37.796943185419764_24.016115410154413.png"; //$NON-NLS-1$
+		final String imgname  = "$38.10823767406228_23.62081227624487_37.796943185419764_24.016115410154413$_crappy_quality.png"; //$NON-NLS-1$
 		final String fullPath = System.getProperty("user.dir") + "\\resources\\maps\\" + imgname;                //$NON-NLS-1$ //$NON-NLS-2$
 
 		try {
@@ -127,14 +130,49 @@ public class MapView extends AbstractGUIView {
 
 	@Override
 	public void updateViewWithLines(List<ELine> lines) {
-		// TODO Auto-generated method stub
+		List<Coordinates> allCoords = new LinkedList<>();
+		for (ELine line : lines) {
+			List<Coordinates> coordinates = extractCoords(line.getStations(),
+			        s -> s.getCoordinates());
+			allCoords.addAll(coordinates);
+		}
 
+		final ImageInfo iinfo = ImageInfo.getCroppedInstance(allCoords);
+
+		final JPanel p = forImage(iinfo.img);
+
+		// plot every town with factory
+		for (final ELine line : lines) {
+			for (final EStation station : line.getStations()) {
+				final Coordinates coords = station.getCoordinates();
+				final Point       mapped = new Point();
+				iinfo.mapper.map(coords, mapped);
+
+				final JComponent stationGraphic = factory.getEStationRepresentation(station);
+				final Dimension  dim            = stationGraphic.getSize();
+				stationGraphic.setLocation(mapped.x - (dim.width / 2), mapped.y - (dim.height / 2));
+				p.add(stationGraphic);
+			}
+
+			final Coordinates coords = line.getStations().get(0).getCoordinates();
+			final Point       mapped = new Point();
+			iinfo.mapper.map(coords, mapped);
+
+			final JComponent lineGraphic = factory.getELineRepresentation(line);
+			final Dimension  dim         = lineGraphic.getSize();
+			lineGraphic.setLocation((mapped.x - (dim.width / 2)) + dim.width,
+			        (mapped.y - (dim.height / 2)) + dim.height);
+			p.add(lineGraphic);
+		}
+
+		super.updatePanel(p);
 	}
 
 	@Override
 	public void updateViewWithLineArrivalTimes(List<ELine> lines, EStation station) {
 		// TODO Auto-generated method stub
 
+		updateViewWithLines(lines);
 	}
 
 	@Override
@@ -169,8 +207,9 @@ public class MapView extends AbstractGUIView {
 
 	@Override
 	public void updateViewWithError(Exception e) {
-		// TODO Auto-generated method stub
-
+		JOptionPane.showMessageDialog(frame, e.getLocalizedMessage(),
+		        Languages.getString("OASAView.27"), //$NON-NLS-1$
+		        JOptionPane.ERROR_MESSAGE);
 	}
 
 	@Override
@@ -180,14 +219,20 @@ public class MapView extends AbstractGUIView {
 
 	@Override
 	protected void changeLanguage() {
-		// TODO Auto-generated method stub
+		final String file = Languages.FILE;
 
+		try {
+			final boolean languageChanged = Languages.editAndWriteToFile(frame);
+			if (languageChanged)
+				MapView.message(frame, file, null);
+		} catch (final IOException e) {
+			MapView.message(frame, file, e);
+		}
 	}
 
 	@Override
 	protected void fulfilRequirements(Requirements reqs, String prompt) {
-		// TODO Auto-generated method stub
-
+		reqs.fulfillWithDialog(frame, prompt);
 	}
 
 	private static <T> List<Coordinates> extractCoords(List<T> ls,
@@ -221,8 +266,8 @@ public class MapView extends AbstractGUIView {
 
 			fullImage = ImageIO.read(new File(filename));
 
-			final int      from   = filename.lastIndexOf(File.separatorChar);
-			final int      to     = filename.lastIndexOf('.');
+			final int      from   = filename.indexOf('$');
+			final int      to     = filename.lastIndexOf('$');
 			final String[] coords = filename.substring(from + 1, to).split("_"); //$NON-NLS-1$
 
 			final Function<Object, Double> f = s -> Double.parseDouble((String) s);
@@ -321,5 +366,24 @@ public class MapView extends AbstractGUIView {
 
 			to.setLocation(tls.getX() + (dx * dxs), brs.getY() + (dy * dys));
 		}
+	}
+
+	private static void message(Frame frame, String file, Exception e) {
+		final String messageString, titleString;
+		final int    messageType;
+
+		if (e == null) {
+			messageString = Languages.getString("OASAView.28"); //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.29"); //$NON-NLS-1$
+			messageType = JOptionPane.INFORMATION_MESSAGE;
+
+		} else {
+			messageString = Languages.getString("OASAView.30"); //$NON-NLS-1$
+			titleString = Languages.getString("OASAView.31"); //$NON-NLS-1$
+			messageType = JOptionPane.ERROR_MESSAGE;
+		}
+
+		JOptionPane.showMessageDialog(frame, String.format(messageString, file),
+		        titleString, messageType);
 	}
 }

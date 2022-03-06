@@ -54,7 +54,7 @@ public class MapEntityRepresentationFactory
 			@Override
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				g.setColor(Color.BLACK);
+				g.setColor(Color.GREEN);
 				g.fillOval(0, 0, size, size);
 			}
 		};
@@ -89,8 +89,47 @@ public class MapEntityRepresentationFactory
 
 	@Override
 	public JComponent getELineRepresentation(ELine line) {
-		// TODO Auto-generated method stub
-		return null;
+		final int size = 20;
+
+		final JComponent panel = new JComponent() {
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.setColor(Color.CYAN);
+				g.fillOval(0, 0, size, size);
+			}
+		};
+
+		panel.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				final ImageIcon icon    = view.getImageIcon(line.getType().getSpriteName(),
+				        ICON_SIZE,
+				        ICON_SIZE);
+				final String    msg     = String
+				        .format(Languages.getString("OASAEntityGraphicFactory.6"),           //$NON-NLS-1$
+				                line.getDescription());
+				final String    title   = Languages.getString("OASAEntityGraphicFactory.7"); //$NON-NLS-1$
+				final String[]  options = { FIND_TIMES, FIND_STATIONS, FIND_TOWNS };
+				final String    initial = FIND_TIMES;
+
+				final String res = (String) JOptionPane.showInputDialog(view.frame,
+				        msg, title, JOptionPane.QUESTION_MESSAGE, icon, options, initial);
+
+				if (res == null)
+					;
+				else if (res.equals(FIND_TIMES))
+					view.getTimetablesByLine(line);
+				else if (res.equals(FIND_STATIONS))
+					view.getStationsByLine(line);
+				else if (res.equals(FIND_TOWNS))
+					view.getTownsByLine(line);
+			}
+		});
+		panel.setSize(size, size);
+
+		return panel;
 	}
 
 	@Override
@@ -107,7 +146,7 @@ public class MapEntityRepresentationFactory
 			@Override
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				g.setColor(Color.BLACK);
+				g.setColor(Color.RED);
 				g.fillOval(0, 0, size, size);
 			}
 		};
@@ -133,8 +172,8 @@ public class MapEntityRepresentationFactory
 	}
 
 	@Override
-	public JComponent getETimestampRepresentation(ETimestamp timetable) {
-		// TODO Auto-generated method stub
-		return null;
+	public JComponent getETimestampRepresentation(ETimestamp timestamp) {
+		return new OASAEntityRepresentationFactory<>()
+		        .getETimestampRepresentation(timestamp);
 	}
 }
